@@ -43,6 +43,19 @@ repos:
       - id: djlint-reformat-django
       - id: djlint-django
 
+  # Tailwind class ordering commit hook
+  # Credit to: Jeff Triplett (https://jefftriplett.com/2023/rustywind-pre-commit-hook/)
+  - repo: local
+    hooks:
+      - id: rustywind
+        name: rustywind Tailwind CSS class formatter
+        language: node
+        additional_dependencies:
+          - rustywind@latest
+        entry: rustywind
+        args: [--write]
+        types_or: [html]
+
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly

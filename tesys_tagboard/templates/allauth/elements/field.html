@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% if attrs.type == "textarea" %}
-  <div class="row mb-3">
+  <div class="mb-3 row">
     <div class="col-sm-10">
       <label for="{{ attrs.id }}">
         {% slot label %}
@@ -20,7 +20,7 @@
             class="form-control">{% slot value %}{% endslot %}</textarea>
 </div>
 {% elif attrs.type == "radio" %}
-<div class="row mb-3">
+<div class="mb-3 row">
   <div class="col-sm-10">
     <div class="form-check">
       <input {% if attrs.required %}required{% endif %}
