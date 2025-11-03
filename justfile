@@ -19,10 +19,18 @@ up:
     @echo "Starting up containers..."
     @docker compose up -d --remove-orphans
 
+up-docs:
+    @echo "Starting up docs container..."
+    COMPOSE_FILE=docker-compose.docs.yml docker compose up -d
+
 # down: Stop containers.
 down:
     @echo "Stopping containers..."
     @docker compose down
+
+down-docs:
+    @echo "Stopping docs container..."
+    COMPOSE_FILE=docker-compose.docs.yml docker compose down
 
 # prune: Remove containers and their volumes.
 docker-prune *args:
@@ -40,6 +48,19 @@ docker-manage +args:
 # test: run pytest(s)
 docker-test *args:
     @docker compose -f docker-compose.local.yml run --rm django pytest {{args}}
+
+# coverage: run pytest(s) with coverage report
+docker-coverage *args:
+    @docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest
+    @docker compose -f docker-compose.local.yml run --rm django coverage report {{args}}
+
+# db backup: creates db backup in /backups dir of postgres container
+docker-db-backup *args:
+    @docker compose -f docker-compose.local.yml exec postgres backup
+
+# db clean backups: remove all postgres backups in /backups
+docker-db-rm-backups *args:
+    @docker compose -f docker-compose.local.yml exec -t postgres sh -c 'rm -f /backups/*'
 
 alias m := manage
 manage *args:
