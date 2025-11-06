@@ -33,17 +33,13 @@ down-docs:
     COMPOSE_FILE=docker-compose.docs.yml docker compose down
 
 # prune: Remove containers and their volumes.
-docker-prune *args:
+docker-prune-volumes *args:
     @echo "Killing containers and removing volumes..."
     @docker compose down -v {{args}}
 
 # logs: View container logs
 docker-logs *args:
     @docker compose logs -f {{args}}
-
-# manage: Executes `manage.py` command.
-docker-manage +args:
-    @docker compose run --rm django python ./manage.py {{args}}
 
 # test: run pytest(s)
 docker-test *args:
@@ -84,3 +80,8 @@ alias t := test
 test *args:
     @echo "Running tests..."
     DJANGO_READ_DOT_ENV_FILE=True pytest
+
+db-reset *args:
+    just manage reset_db
+    just manage migrate
+    just manage createsuperuser --username admin --email tesy-tagboard@example.com
