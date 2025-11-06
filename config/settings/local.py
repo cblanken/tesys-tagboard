@@ -38,6 +38,9 @@ EMAIL_BACKEND = env(
 # http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
 INSTALLED_APPS = ["whitenoise.runserver_nostatic", *INSTALLED_APPS]
 
+# django-crispy-forms
+# ------------------------------------------------------------------------------
+CRISPY_FAIL_SILENTLY = False
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------

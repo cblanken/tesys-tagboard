@@ -1,13 +1,20 @@
 """Models for Tesys's Tagboard"""
 
 import uuid
+from hashlib import md5
 
-from django.core import validators
+import imagehash
 from django.db import models
 from django.db.models import Q
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from PIL import Image as PIL_Image
 
 from config.settings.base import AUTH_USER_MODEL
+
+from .validators import valid_dhash
+from .validators import valid_md5
+from .validators import valid_phash
 
 
 class TagCategory(models.Model):
@@ -124,57 +131,86 @@ def unique_filename(instance, filename: str) -> str:
     return f"{new_name}"
 
 
-class Media(models.Model):
-    """Media linked to static files such as images, videos, or audio clips
-    including file metadata
-    """
+class MediaSource(models.Model):
+    url = models.URLField(max_length=255, unique=True)
 
-    file = models.FileField(upload_to=unique_filename, unique=True)
-    og_name = models.TextField()
+    def __str__(self) -> str:
+        return f"<MediaSource - : {self.url}>"
+
+
+class MediaMetadata(models.Model):
+    """Media file metadata"""
+
+    orig_name = models.TextField()
     type = models.ForeignKey(MediaType, on_delete=models.CASCADE)
-    upload_date = models.DateTimeField(auto_now=True)
-    edit_date = models.DateTimeField()
-    size = models.BigIntegerField()
-    source = models.URLField(max_length=255)
-
+    upload_date = models.DateTimeField(default=now, editable=False)
+    edit_date = models.DateTimeField(auto_now=True)
+    source = models.OneToOneField(MediaSource, null=True, on_delete=models.SET_NULL)
     md5 = models.CharField(
         unique=True,
-        validators=[
-            validators.RegexValidator(r"^[0-9A-Z]{32}$"),
-        ],
+        validators=[valid_md5],
     )
+
+    class Meta:
+        verbose_name_plural = "media metadata"
+
+    def __str__(self) -> str:
+        return f"<Media - orig_file: {self.orig_name}, source: {self.source}>"
+
+
+class Image(MediaMetadata):
+    """Media linked to static image files"""
+
+    file = models.ImageField(upload_to=unique_filename, unique=True)
 
     """Perceptual (DCT) hash"""
     phash = models.CharField(
-        validators=[
-            validators.RegexValidator(r"^[0-9a-z]{16}$"),
-        ],
+        validators=[valid_phash],
     )
 
     """Difference hash"""
     dhash = models.CharField(
-        validators=[
-            validators.RegexValidator(r"^[0-9a-z]{16}$"),
-        ],
+        validators=[valid_dhash],
     )
 
     # TODO: add duplicate detection
     # See https://github.com/JohannesBuchner/imagehash/issues/127 for
-    # index recs for hashes
 
-    class Meta:
-        verbose_name_plural = "media"
+    def save(self, *args, **kwargs):
+        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
+        self.phash = str(imagehash.phash(PIL_Image.open(self.file)))
+        self.dhash = str(imagehash.dhash(PIL_Image.open(self.file)))
+        super().save(*args, **kwargs)
 
-    def __str__(self) -> str:
-        return f"<Media - {self.file}, og_file: {self.og_name}, size: {self.source}>"
+
+class Video(MediaMetadata):
+    """Media linked to static video files"""
+
+    file = models.FileField(upload_to=unique_filename, unique=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.md5 = md5(self.file.file).hexdigest()  # noqa: S324
+
+
+class Audio(MediaMetadata):
+    """Media linked to static audio files"""
+
+    file = models.FileField(upload_to=unique_filename, unique=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.md5 = md5(self.file.file).hexdigest()  # noqa: S324
 
 
 class Post(models.Model):
     """Posts made by users with attached media"""
 
-    media = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
+    media = models.OneToOneField(
+        MediaMetadata, on_delete=models.CASCADE, primary_key=True
+    )
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post_date = models.DateTimeField(auto_now=True)
+    post_date = models.DateTimeField(default=now, editable=False)
     tags = models.ManyToManyField(Tag)
 
     def __str__(self) -> str:

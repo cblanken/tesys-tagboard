@@ -1,14 +1,18 @@
 from django.contrib import admin
 
 from .models import Artist
+from .models import Audio
 from .models import Comment
 from .models import Favorite
-from .models import Media
+from .models import Image
+from .models import MediaMetadata
+from .models import MediaSource
 from .models import MediaType
 from .models import Pool
 from .models import Post
 from .models import Tag
 from .models import TagCategory
+from .models import Video
 
 
 @admin.register(TagCategory)
@@ -40,14 +44,37 @@ class ArtistAdmin(admin.ModelAdmin):
     ordering = ["user"]
 
 
+@admin.register(MediaSource)
+class MediaSourceAdmin(admin.ModelAdmin):
+    search_fields = ["url"]
+
+
 @admin.register(MediaType)
 class MediaTypeAdmin(admin.ModelAdmin):
     list_display = ["name", "template", "desc"]
     search_fields = ["name", "template"]
 
 
-@admin.register(Media)
-class MediaAdmin(admin.ModelAdmin):
+@admin.register(MediaMetadata)
+class MediaMetadataAdmin(admin.ModelAdmin):
+    search_fields = ["type", "og_name", "source"]
+    autocomplete_fields = ["source"]
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["type"]
+    search_fields = ["type", "og_name", "source"]
+
+
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["type"]
+    search_fields = ["type", "og_name", "source"]
+
+
+@admin.register(Audio)
+class AudioAdmin(admin.ModelAdmin):
     autocomplete_fields = ["type"]
     search_fields = ["type", "og_name", "source"]
 
@@ -55,6 +82,7 @@ class MediaAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ["user", "text"]
+    list_filter = ["user"]
     autocomplete_fields = ["user"]
 
 
