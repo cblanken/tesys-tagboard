@@ -5,7 +5,7 @@ from .models import Audio
 from .models import Comment
 from .models import Favorite
 from .models import Image
-from .models import MediaMetadata
+from .models import Media
 from .models import MediaSource
 from .models import MediaType
 from .models import Pool
@@ -44,6 +44,12 @@ class ArtistAdmin(admin.ModelAdmin):
     ordering = ["user"]
 
 
+@admin.register(Media)
+class MediaAdmin(admin.ModelAdmin):
+    search_fields = ["orig_name"]
+    autocomplete_fields = ["type"]
+
+
 @admin.register(MediaSource)
 class MediaSourceAdmin(admin.ModelAdmin):
     search_fields = ["url"]
@@ -53,12 +59,6 @@ class MediaSourceAdmin(admin.ModelAdmin):
 class MediaTypeAdmin(admin.ModelAdmin):
     list_display = ["name", "template", "desc"]
     search_fields = ["name", "template"]
-
-
-@admin.register(MediaMetadata)
-class MediaMetadataAdmin(admin.ModelAdmin):
-    search_fields = ["type", "og_name", "source"]
-    autocomplete_fields = ["source"]
 
 
 @admin.register(Image)
@@ -88,8 +88,8 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["media", "tags"]
-    search_fields = ["uploader"]
+    search_fields = ["media__orig_name, source__url"]
+    autocomplete_fields = ["media"]
 
 
 @admin.register(Pool)

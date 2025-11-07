@@ -5,7 +5,7 @@ from django_htmx.middleware import HtmxDetails
 
 from .forms import UploadImage
 from .models import Image
-from .models import MediaMetadata
+from .models import Media
 from .models import MediaSource
 from .models import MediaType
 
@@ -62,7 +62,7 @@ def handle_img_upload(file: UploadedFile | None, src_url: str | None):
     else:
         src = None
 
-    meta = MediaMetadata(
+    meta = Media(
         orig_name=file,
         type=mediatype,
         source=src,

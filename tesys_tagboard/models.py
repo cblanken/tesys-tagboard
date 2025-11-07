@@ -138,7 +138,7 @@ class MediaSource(models.Model):
         return f"<MediaSource - : {self.url}>"
 
 
-class MediaMetadata(models.Model):
+class Media(models.Model):
     """Media file metadata"""
 
     orig_name = models.TextField()
@@ -146,32 +146,27 @@ class MediaMetadata(models.Model):
     upload_date = models.DateTimeField(default=now, editable=False)
     edit_date = models.DateTimeField(auto_now=True)
     source = models.OneToOneField(MediaSource, null=True, on_delete=models.SET_NULL)
-    md5 = models.CharField(
-        unique=True,
-        validators=[valid_md5],
-    )
 
     class Meta:
-        verbose_name_plural = "media metadata"
+        verbose_name_plural = "media"
 
     def __str__(self) -> str:
         return f"<Media - orig_file: {self.orig_name}, source: {self.source}>"
 
 
-class Image(MediaMetadata):
+class Image(Media):
     """Media linked to static image files"""
 
     file = models.ImageField(upload_to=unique_filename, unique=True)
 
+    """MD5 hash"""
+    md5 = models.CharField(validators=[valid_md5])
+
     """Perceptual (DCT) hash"""
-    phash = models.CharField(
-        validators=[valid_phash],
-    )
+    phash = models.CharField(validators=[valid_phash])
 
     """Difference hash"""
-    dhash = models.CharField(
-        validators=[valid_dhash],
-    )
+    dhash = models.CharField(validators=[valid_dhash])
 
     # TODO: add duplicate detection
     # See https://github.com/JohannesBuchner/imagehash/issues/127 for
@@ -183,20 +178,26 @@ class Image(MediaMetadata):
         super().save(*args, **kwargs)
 
 
-class Video(MediaMetadata):
+class Video(Media):
     """Media linked to static video files"""
 
     file = models.FileField(upload_to=unique_filename, unique=True)
+
+    """MD5 hash"""
+    md5 = models.CharField(validators=[valid_md5])
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.md5 = md5(self.file.file).hexdigest()  # noqa: S324
 
 
-class Audio(MediaMetadata):
+class Audio(Media):
     """Media linked to static audio files"""
 
     file = models.FileField(upload_to=unique_filename, unique=True)
+
+    """MD5 hash"""
+    md5 = models.CharField(validators=[valid_md5])
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -206,16 +207,16 @@ class Audio(MediaMetadata):
 class Post(models.Model):
     """Posts made by users with attached media"""
 
-    media = models.OneToOneField(
-        MediaMetadata, on_delete=models.CASCADE, primary_key=True
-    )
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     post_date = models.DateTimeField(default=now, editable=False)
     tags = models.ManyToManyField(Tag)
+    media = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
+
+    class Meta:
+        ordering = ["post_date"]
 
     def __str__(self) -> str:
-        return f"<Post - uploader: {self.uploader.name}, media: {self.media.file}, \
-posted: {self.post_date}>"
+        return f"<Post - uploader: {self.uploader.name}, posted: {self.post_date}>"
 
 
 class Pool(models.Model):
