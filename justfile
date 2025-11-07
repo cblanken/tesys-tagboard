@@ -17,7 +17,14 @@ build:
 # up: Start up containers.
 up:
     @echo "Starting up containers..."
-    @docker compose up -d --remove-orphans
+    @docker compose --profile all up -d --remove-orphans
+
+up-debug:
+    @echo "Starting up containers with debug console for Django app..."
+    @docker compose --profile debug up -d --remove-orphans
+    @docker compose run --rm --service-ports django # to handle python breakpoints
+    # Note when exiting (Ctrl-C) the debugger, the other docker services
+    # will remain up until brought down with `just down`
 
 up-docs:
     @echo "Starting up docs container..."
@@ -26,7 +33,7 @@ up-docs:
 # down: Stop containers.
 down:
     @echo "Stopping containers..."
-    @docker compose down
+    @docker compose --profile all down
 
 down-docs:
     @echo "Stopping docs container..."

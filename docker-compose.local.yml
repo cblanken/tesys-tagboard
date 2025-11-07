@@ -21,6 +21,7 @@ services:
     ports:
       - '55555:8000'
     command: /start
+    profiles: [all]
 
   postgres:
     build:
@@ -35,3 +36,4 @@ services:
       - tesys_tagboard_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+    profiles: [all, debug]
