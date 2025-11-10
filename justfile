@@ -93,3 +93,23 @@ db-reset *args:
     just manage reset_db
     just manage migrate
     just manage createsuperuser --username admin --email tesy-tagboard@example.com
+
+alias mkc := make-component
+make-component name:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    echo "Making '{{name}}' component"
+    dir="./tesys_tagboard/components/{{name}}"
+    mkdir "$dir"
+    py_file="$dir/{{name}}.py"
+    touch "$py_file"
+    touch "$dir/{{name}}.html"
+    touch "$dir/{{name}}.js"
+    echo 'from django_components import Component' >> "$py_file"
+    echo 'from django_components import register' >> "$py_file"
+    echo '' >> "$py_file"
+    echo '' >> "$py_file"
+    echo '@register("{{name}}")' >> "$py_file"
+    echo 'class ThemePicker(Component):' >> "$py_file"
+    echo '    template_file = "{{name}}.html"' >> "$py_file"
+    echo '    js_file = "{{name}}.js"' >> "$py_file"
