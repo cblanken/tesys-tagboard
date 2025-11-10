@@ -8,5 +8,11 @@
 .readthedocs.yml
 .travis.yml
 venv
+.venv
 .git
 .envs/
+.helix
+.coverage
+.ipython
+.pytest_cache
+staticfiles
