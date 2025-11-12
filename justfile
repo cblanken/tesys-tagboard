@@ -103,6 +103,7 @@ make-component name:
     mkdir "$dir"
     py_file="$dir/{{name}}.py"
     touch "$py_file"
+    touch "$dir/__init__.py"
     touch "$dir/{{name}}.html"
     touch "$dir/{{name}}.js"
     echo 'from django_components import Component' >> "$py_file"
