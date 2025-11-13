@@ -6,7 +6,6 @@ from .models import Comment
 from .models import Favorite
 from .models import Image
 from .models import Media
-from .models import MediaType
 from .models import Pool
 from .models import Post
 from .models import Tag
@@ -31,14 +30,14 @@ class ArtistAdmin(admin.ModelAdmin):
 @admin.register(Media)
 class MediaAdmin(admin.ModelAdmin):
     list_display = ["orig_name", "type", "src_url", "upload_date", "edit_date"]
-    search_fields = ["orig_name"]
-    autocomplete_fields = ["type"]
+    search_fields = ["orig_name", "type"]
+    list_filter = ["type"]
 
-
-@admin.register(MediaType)
-class MediaTypeAdmin(admin.ModelAdmin):
-    list_display = ["name", "template", "desc"]
-    search_fields = ["name", "template"]
+    def get_form(self, request, obj=None, *args, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if form:
+            form.base_fields["src_url"].required = False
+        return form
 
 
 @admin.register(Image)
@@ -78,13 +77,16 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = [
+        "pk",
         "uploader",
         "post_date",
+        "rating_level",
         "media__orig_name",
         "media__src_url",
     ]
     search_fields = ["media__orig_name, source__url"]
     autocomplete_fields = ["media"]
+    list_filter = ["rating_level", "uploader"]
 
 
 @admin.register(Pool)

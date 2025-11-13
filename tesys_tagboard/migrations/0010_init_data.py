@@ -4,24 +4,11 @@ from django.db import migrations
 from django.db.models import Model
 from tesys_tagboard.enums import TagCategory
 
-def remake_tag_categories(apps, schema_editor):
-    Tag: type[Model] = apps.get_model("tesys_tagboard", "Tag")
-
-    Tag.objects.all().delete()
-
-    Tag(name="unrated", category=TagCategory.RATING.value.shortcode, rating_level=0).save()
-    Tag(name="safe", category=TagCategory.RATING.value.shortcode, rating_level=10).save()
-    Tag(name="questionable", category=TagCategory.RATING.value.shortcode, rating_level=50).save()
-    Tag(name="explicit", category=TagCategory.RATING.value.shortcode, rating_level=100).save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("tesys_tagboard", "0009_alter_tag_category_delete_tagcategory"),
     ]
 
-    operations = [
-        migrations.RunPython(remake_tag_categories),
-    ]
+    operations = []
 

@@ -5,12 +5,12 @@ from hashlib import md5
 
 import imagehash
 from django.db import models
-from django.db.models import Q
 from django.utils.timezone import now
 from PIL import Image as PIL_Image
 
 from config.settings.base import AUTH_USER_MODEL
 
+from .enums import SupportedMediaTypes
 from .enums import TagCategory
 from .validators import valid_dhash
 from .validators import valid_md5
@@ -74,34 +74,6 @@ class Artist(models.Model):
         return f"<Artist - {self.tag}, bio: {self.bio}>"
 
 
-class MediaType(models.Model):
-    """Media types supported for uploaded media
-    See https://www.iana.org/assignments/media-types/media-types.xhtml
-    for details
-    """
-
-    name = models.TextField(unique=True)
-    template = models.TextField(primary_key=True)
-    desc = models.TextField(default="")
-
-    # TODO validate templates support only audio, image, and video media
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                condition=(
-                    Q(template__startswith="image/")
-                    | Q(template__startswith="audio/")
-                    | Q(template__startswith="video/")
-                ),
-                name="media_valid_mime_category",
-            )
-        ]
-
-    def __str__(self) -> str:
-        return f"<MediaType - name: {self.name}, template: {self.template}"
-
-
 def unique_filename(instance, filename: str) -> str:
     """Generate a unique (UUID) filename"""
     filename_split = filename.split(".")
@@ -115,8 +87,12 @@ def unique_filename(instance, filename: str) -> str:
 class Media(models.Model):
     """Media file metadata"""
 
+    media_choices = (
+        (x.name, x.value.desc) for x in SupportedMediaTypes.__members__.values()
+    )
+
     orig_name = models.TextField()
-    type = models.ForeignKey(MediaType, on_delete=models.CASCADE)
+    type = models.CharField(max_length=20, choices=media_choices)
     upload_date = models.DateTimeField(default=now, editable=False)
     edit_date = models.DateTimeField(auto_now=True)
     src_url = models.URLField(max_length=255)

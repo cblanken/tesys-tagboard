@@ -3,31 +3,10 @@
 from django.db import migrations
 from django.db.models import Model
 
-def add_media_types(apps, schema_editor):
-    MediaType: type[Model] = apps.get_model("tesys_tagboard", "MediaType")
-
-    MediaType(name="AVIF image", template="image/avif").save()
-    MediaType(name="GIF", template="image/gif").save()
-    MediaType(name="JPEG image", template="image/jpeg").save()
-    MediaType(name="MP3 audio", template="audio/mpeg").save()
-    MediaType(name="MP4 video", template="video/mp4").save()
-    MediaType(name="MPEG video", template="video/mpeg").save()
-    MediaType(name="Matroska audio", template="audio/matroska").save()
-    MediaType(name="Matroska video", template="video/matroska").save()
-    MediaType(name="PNG", template="image/png").save()
-    MediaType(name="SVG", template="image/svg+xml").save()
-    MediaType(name="WAV audio", template="audio/wav").save()
-    MediaType(name="WEBM video", template="video/webm").save()
-    MediaType(name="WEBP image", template="image/webp").save()
-    MediaType(name="Windows Bitmap Graphics", template="image/bmp").save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ('tesys_tagboard', '0001_initial'),
     ]
 
-    operations = [
-        migrations.RunPython(add_media_types),
-    ]
+    operations = []

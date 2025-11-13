@@ -5,11 +5,11 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django_htmx.middleware import HtmxDetails
 
+from .enums import SupportedMediaTypes
 from .enums import TagCategory
 from .forms import PostForm
 from .models import Image
 from .models import Media
-from .models import MediaType
 from .models import Post
 from .models import Tag
 from .search import PostSearch
@@ -74,20 +74,23 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> Media
     if file is None:
         msg = "A file must be provided to upload"
         raise ValueError(msg)
-    try:
-        mediatype = MediaType.objects.get(template=file.content_type)
-    except MediaType.DoesNotExist as e:
+
+    if file.content_type:
+        if smt := SupportedMediaTypes.find(file.content_type):
+            media = Media(orig_name=file.name, type=smt.name, src_url=src_url)
+            media.save()
+
+            # TODO: match on media type (image, video, audio)...
+            img = Image(file=file, meta=media)
+            img.save()
+
+            return media
+
         msg = "That file extension is not supported"
-        raise ValueError(msg) from e
+        raise ValueError(msg)
 
-    media = Media(orig_name=file, type=mediatype, src_url=src_url)
-    media.save()
-
-    # TODO: match on media type (image, video, audio)...
-    img = Image(file=file, meta=media)
-    img.save()
-
-    return media
+    msg = "Provided file doesn't have a content type"
+    raise ValueError(msg)
 
 
 def upload(request: HtmxHttpRequest) -> TemplateResponse:
