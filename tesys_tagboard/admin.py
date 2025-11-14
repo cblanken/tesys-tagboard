@@ -9,6 +9,7 @@ from .models import Media
 from .models import Pool
 from .models import Post
 from .models import Tag
+from .models import TagAlias
 from .models import Video
 
 
@@ -17,6 +18,19 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "category"]
     search_fields = ["name", "category"]
     list_filter = ["category"]
+
+
+@admin.register(TagAlias)
+class TagAliasAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "tag__name",
+        "tag__category",
+        "tag__rating_level",
+        "tag__description",
+    ]
+    search_fields = ["name", "tag__name", "tag__category"]
+    list_filter = ["tag__category", "tag__rating_level"]
 
 
 @admin.register(Artist)

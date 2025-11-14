@@ -28,6 +28,7 @@ class Tag(models.Model):
         choices=category_choices,
         default=TagCategory.BASIC.value.shortcode,
     )
+    description = models.TextField(max_length=255, blank=True, default="")
 
     """Rating levels to filter content. This field allows any tag to apply a rating
     """
@@ -52,6 +53,7 @@ class TagAlias(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
+        verbose_name_plural = "tag aliases"
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
@@ -67,7 +69,7 @@ class Artist(models.Model):
     """Model for Artists to identify all artwork from a particular source"""
 
     tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
-    bio = models.TextField()
+    bio = models.TextField(blank=True, default="")
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:
@@ -95,7 +97,7 @@ class Media(models.Model):
     type = models.CharField(max_length=20, choices=media_choices)
     upload_date = models.DateTimeField(default=now, editable=False)
     edit_date = models.DateTimeField(auto_now=True)
-    src_url = models.URLField(max_length=255)
+    src_url = models.URLField(max_length=255, blank=True, default="")
 
     class Meta:
         verbose_name_plural = "media"
