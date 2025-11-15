@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
+from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.http.response import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
@@ -40,7 +41,10 @@ def post(request: HtmxHttpRequest, media_id: int) -> TemplateResponse:
 
 def posts(request: HtmxHttpRequest) -> TemplateResponse:
     posts = Post.objects.all()
-    context = {"posts": posts}
+    pager = Paginator(posts, 12, 5)
+    page_num = request.GET.get("page", 1)
+    page = pager.get_page(page_num)
+    context = {"posts": posts, "pager": pager, "page": page}
     return TemplateResponse(request, "pages/posts.html", context)
 
 
