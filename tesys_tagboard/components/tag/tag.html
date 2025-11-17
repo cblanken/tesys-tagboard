@@ -7,7 +7,8 @@
     <button tabindex="0"
             role="button"
             class="btn {% if category == "basic" %}text-tag bg-tag-basic {% elif category == "artist" %}text-tag bg-tag-artist {% elif category == "copyright" %}text-tag bg-tag-copyright {% else %}text-secondary-content bg-secondary{% endif %}">
-      {{ tag.name }}
+      <div>{{ tag.name }}</div>
+      <div>({{ tag.post_count }})</div>
       <input id="tag-{{ tag.pk }}"
              type="hidden"
              name="tagset"

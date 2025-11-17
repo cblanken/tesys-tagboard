@@ -30,6 +30,7 @@ class Tag(models.Model):
         default=TagCategory.BASIC.value.shortcode,
     )
     description = models.TextField(max_length=255, blank=True, default="")
+    post_count = models.PositiveIntegerField(default=0)
 
     """Rating levels to filter content. This field allows any tag to apply a rating
     """
@@ -176,6 +177,22 @@ class Audio(models.Model):
         self.md5 = md5(self.file.file).hexdigest()  # noqa: S324
 
 
+def update_tag_post_counts():
+    tcounts = (
+        Tag.post_set.through.objects.values("tag")
+        .annotate(
+            post_count=models.Count("post"),
+            name=models.F("tag__name"),
+            category=models.F("tag__category"),
+            pk=models.F("tag"),
+        )
+        .order_by("tag__category")
+    )
+
+    tcount_tags = [Tag(pk=tc["pk"], post_count=tc["post_count"]) for tc in tcounts]
+    Tag.objects.bulk_update(tcount_tags, fields=["post_count"])
+
+
 class Post(models.Model):
     """Posts made by users with attached media"""
 
@@ -206,6 +223,11 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return f"<Post - uploader: {self.uploader.name}, posted: {self.post_date}>"
+
+    # TODO: also override update() to update post counts
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        update_tag_post_counts()
 
 
 class Pool(models.Model):
