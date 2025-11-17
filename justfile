@@ -36,6 +36,10 @@ down:
     @echo "Stopping containers..."
     @docker compose down
 
+down-debug:
+    @echo "Stopping containers required for Django app debug..."
+    @docker compose --profile debug down
+
 down-docs:
     @echo "Stopping docs container..."
     COMPOSE_FILE=docker-compose.docs.yml docker compose down
