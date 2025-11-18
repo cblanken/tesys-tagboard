@@ -6,8 +6,11 @@
   <div class="dropdown">
     <button tabindex="0"
             role="button"
-            class="btn {% if category == "basic" %}text-tag bg-tag-basic {% elif category == "artist" %}text-tag bg-tag-artist {% elif category == "copyright" %}text-tag bg-tag-copyright {% else %}text-secondary-content bg-secondary{% endif %}">
-      <div>{{ tag.name }}</div>
+            class="px-3 py-1 btn {% if category == "basic" %}text-tag bg-tag-basic {% elif category == "artist" %}text-tag bg-tag-artist {% elif category == "copyright" %}text-tag bg-tag-copyright {% else %}text-secondary-content bg-secondary{% endif %}">
+      <div class="flex gap-1 items-center">
+        <i data-feather="tag" class="feather feather-sm"></i>
+        <div>{{ tag.name }}</div>
+      </div>
       <div>({{ tag.post_count }})</div>
       <input id="tag-{{ tag.pk }}"
              type="hidden"
