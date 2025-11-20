@@ -2,8 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% if attrs.type == "textarea" %}
-  <div class="mb-3 row">
-    <div class="col-sm-10">
+  <div class="mb-3">
+    <div>
       <label for="{{ attrs.id }}">
         {% slot label %}
       {% endslot %}
@@ -20,8 +20,8 @@
             class="form-control">{% slot value %}{% endslot %}</textarea>
 </div>
 {% elif attrs.type == "radio" %}
-<div class="mb-3 row">
-  <div class="col-sm-10">
+<div class="mb-3">
+  <div>
     <div class="form-check">
       <input {% if attrs.required %}required{% endif %}
              {% if attrs.disabled %}disabled{% endif %}
@@ -41,13 +41,13 @@
 </div>
 </div>
 {% else %}
-<div class="col-sm-10">
+<div>
   <label for="{{ attrs.id }}">
     {% slot label %}
   {% endslot %}
 </label>
 </div>
-<div class="col-sm-10">
+<div>
   <input {% if attrs.required %}required{% endif %}
          {% if attrs.disabled %}disabled{% endif %}
          {% if attrs.readonly %}readonly{% endif %}

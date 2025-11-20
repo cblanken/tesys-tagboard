@@ -2,9 +2,6 @@
 
 {% load i18n %}
 
-{% block bodyclass %}
-  bg-light
-{% endblock bodyclass %}
 {% block css %}
   {{ block.super }}
 {% endblock css %}
@@ -14,11 +11,11 @@
   {% endblock head_title %}
 {% endblock title %}
 {% block body %}
-  <div class="py-4 d-flex justify-content-center h-100">
-    <div class="py-4 px-4 my-4 col-md-4">
+  <div class="flex justify-center h-full">
+    <div class="py-2 px-4 my-2">
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+          <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
             {{ message }}
             <button type="button"
                     class="btn-close"
