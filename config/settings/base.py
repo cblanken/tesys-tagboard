@@ -78,10 +78,10 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.discord",
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
-    "drf_spectacular",
     "django_htmx",
     "django_components",
 ]
@@ -136,17 +136,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    # Security
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    # Static files
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # allauth/account middleware
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # Locale
+    "django.middleware.locale.LocaleMiddleware",
+    # HTMX
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
@@ -182,7 +187,6 @@ TEMPLATES = [
         # https://docs.djangoproject.com/en/dev/ref/settings/#dirs
         "DIRS": [str(APPS_DIR / "templates")],
         # https://docs.djangoproject.com/en/dev/ref/settings/#app-dirs
-        # "APP_DIRS": True,
         "OPTIONS": {
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
@@ -299,7 +303,7 @@ ACCOUNT_LOGIN_METHODS = {"username"}
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_ADAPTER = "tesys_tagboard.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html
@@ -308,31 +312,20 @@ ACCOUNT_FORMS = {"signup": "tesys_tagboard.users.forms.UserSignupForm"}
 SOCIALACCOUNT_ADAPTER = "tesys_tagboard.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "tesys_tagboard.users.forms.UserSocialSignupForm"}
-
-# django-rest-framework
-# -------------------------------------------------------------------------------
-# django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+# https://docs.allauth.org/en/latest/socialaccount/configuration.html
+SOCIALACCOUNT_ENABLED = env.bool("TT_SOCIAL_LOGIN_ENABLED", default=True)
+SOCIALACCOUNT_PROVIDERS = {
+    "discord": {
+        "APP": {
+            "client_id": env.str("TT_DISCORD_CLIENT_ID", default=""),
+            "secret": env.str("TT_DISCORD_CLIENT_SECRET", default=""),
+            "key": env.str("TT_DISCORD_PUBLIC_KEY", default=""),
+        }
+    }
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
-
-# By Default swagger ui is available only to admin user(s). You can change permission classes to change that
-# See more configuration options at https://drf-spectacular.readthedocs.io/en/latest/settings.html#settings
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Tesy's Tagboard API",
-    "DESCRIPTION": "Documentation of API endpoints of Tesy's Tagboard",
-    "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
-    "SCHEMA_PATH_PREFIX": "/api/",
-}
 
 # ------------------------------------------------------------------------------
 # END Django Cookiecutter config
