@@ -1,5 +1,8 @@
 import functools
 
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+
 
 def debug(func):
     """Print the function signature and return value"""
@@ -24,3 +27,18 @@ def debug(func):
         return func
 
     return wrapper_debug
+
+
+def require(methods=("GET", "POST"), *, login=True):
+    """View decorator to require a set of HTTP methods and login
+    `login` is required by default"""
+
+    def wrapper(func):
+        wrapped = func
+        if methods is not None:
+            wrapped = require_http_methods(methods)(func)
+        if login:
+            wrapped = login_required(func)
+        return wrapped
+
+    return wrapper

@@ -11,20 +11,20 @@
 </li>
 {% if request.user.is_authenticated %}
   <li>
-    <a class="text-xl link link-hover" href="{% url 'collections' %}">Collections</a>
-  </li>
-  <li>
     <a class="text-xl link link-hover" href="{% url 'upload' %}">Upload</a>
   </li>
+{% endif %}
+<li>
+  <a class="text-xl link link-hover" href="{% url 'collections' %}">Collections</a>
+</li>
+<li>
+  <a class="text-xl link link-hover" href="{% url 'help' %}">Help</a>
+</li>
+{% if request.user.is_authenticated %}
   <li>
-    <a class="text-xl link link-hover" href="{% url 'help' %}">Help</a>
+    <a class="text-xl link link-hover"
+       href="{% url 'users:detail' request.user.username %}">{% translate "Profile" %}</a>
   </li>
-  {% if request.user.is_authenticated %}
-    <li>
-      <a class="text-xl link link-hover"
-         href="{% url 'users:detail' request.user.username %}">{% translate "Profile" %}</a>
-    </li>
-  {% endif %}
   {# URL provided by django-allauth/account/urls.py #}
   <li>
     <a class="text-xl link link-hover" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>

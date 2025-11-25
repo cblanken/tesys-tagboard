@@ -11,5 +11,9 @@ class CollectionPickerComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         post = kwargs.get("post")
-        collections = Collection.objects.filter(user=self.request.user)
+        user = self.request.user
+        collections = (
+            Collection.objects.filter(user=user) if user.is_authenticated else None
+        )
+
         return {"collections": collections, "post": post}

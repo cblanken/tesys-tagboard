@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
@@ -14,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
+from tesys_tagboard.decorators import require
 from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Post
 from tesys_tagboard.users.models import User
@@ -26,7 +26,7 @@ class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
 
 
-@login_required
+@require(["GET", "POST"], login=False)
 def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
     user = get_object_or_404(User, username=username)
 
@@ -52,7 +52,10 @@ def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
         }
     else:
         # Other users' pages
-        collections = Collection.objects.filter(public=True)
+        public_collections = Collection.objects.filter(user=user, public=True)
+        context |= {
+            "collections": public_collections,
+        }
 
     return TemplateResponse(request, "users/user_detail.html", context)
 

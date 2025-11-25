@@ -33,22 +33,24 @@
           <!-- End Action buttons -->
         {% endif %}
       </div>
-      <label class="flex gap-2 items-center text-lg tab">
-        <input type="radio" name="profile_tabs" />
-        {% include "icons/feather.html" with icon="heart" %}
-        Favorites
-      </label>
-      <div class="p-6 tab-content bg-base-100 border-base-300">
-        <div class="flex flex-col gap-4 items-center">
-          {% component "pager" with pager=favorites_pager page=favorites_page / %}
-          <div class="flex flex-wrap gap-4 justify-center">
-            {% for favorite in favorites_page %}
-              {% component "post_thumbnail" post=favorite / %}
-            {% endfor %}
+      {% if favorites_pager %}
+        <label class="flex gap-2 items-center text-lg tab">
+          <input type="radio" name="profile_tabs" />
+          {% include "icons/feather.html" with icon="heart" %}
+          Favorites
+        </label>
+        <div class="p-6 tab-content bg-base-100 border-base-300">
+          <div class="flex flex-col gap-4 items-center">
+            {% component "pager" with pager=favorites_pager page=favorites_page / %}
+            <div class="flex flex-wrap gap-4 justify-center">
+              {% for favorite in favorites_page %}
+                {% component "post_thumbnail" post=favorite / %}
+              {% endfor %}
+            </div>
+            {% component "pager" with pager=favorites_pager page=favorites_page / %}
           </div>
-          {% component "pager" with pager=favorites_pager page=favorites_page / %}
         </div>
-      </div>
+      {% endif %}
       <label class="flex gap-2 items-center text-lg tab">
         <input type="radio" name="profile_tabs" />
         {% include "icons/feather.html" with icon="list" %}
