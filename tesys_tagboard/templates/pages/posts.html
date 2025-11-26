@@ -6,24 +6,23 @@
   {{ block.super }} — Posts
 {% endblock title %}
 {% block content %}
-  <div class="flex flex-col gap-4 items-center">
+  <div class="flex flex-col gap-4 justify-center items-center max-w-svw">
     <form action="{% url 'posts' %}"
           method="post"
           enctype="multipart/form-data"
-          class="flex gap-2 items-center">
+          class="flex gap-2 justify-center items-center w-full">
       {% csrf_token %}
-      <div id="post-search-tags" class="flex gap-2">
+      <div id="post-search-tags"
+           class="flex flex-col gap-2 lg:flex-row grow lg:grow-0">
         {% component "add_tagset" autocomplete_url="post-autocomplete" tags=tags / %}
-        <input type="submit" value="Search" class="mt-4 text-xl btn btn-primary" />
+        <input type="submit"
+               value="Search"
+               class="mt-4 w-full text-xl lg:w-40 btn btn-primary" />
       </div>
     </form>
-    <section class="flex flex-col gap-4 items-center">
+    <section class="flex flex-col gap-4 items-center w-full">
       {% component "pager" with pager=pager page=page / %}
-      <div class="flex flex-wrap gap-4 justify-center">
-        {% for post in page %}
-          {% component "post_thumbnail" post=post / %}
-        {% endfor %}
-      </div>
+      {% include "posts/gallery.html" with posts=page %}
       {% component "pager" with pager=pager page=page / %}
     </section>
   </div>

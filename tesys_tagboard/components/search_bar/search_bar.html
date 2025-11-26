@@ -1,9 +1,10 @@
 {% load component_tags %}
 
-<div class="relative w-96 search-container">
+<div class="relative flex-grow lg:w-96 search-container">
   <label class="flex relative items-center">
     <div class="absolute left-2 z-5">{% include "icons/feather.html" with icon="search" %}</div>
     <input type="search"
+           name="search-bar"
            class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
            placeholder="Search tags..."
            hx-get='{{ autocomplete_url }}?partial='

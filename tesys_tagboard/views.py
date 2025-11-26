@@ -43,7 +43,9 @@ def home(request: HttpRequest) -> TemplateResponse:
 @require(["GET", "POST"], login=False)
 def post(request: HtmxHttpRequest, media_id: int) -> TemplateResponse:
     post = get_object_or_404(Post.objects.with_media_id(media_id))
-    context = {"post": post, "tags": Tag.objects.for_post(post)}
+    comments = post.comment_set.all()
+    tags = Tag.objects.for_post(post)
+    context = {"post": post, "tags": tags, "comments": comments}
     return TemplateResponse(request, "pages/post.html", context)
 
 

@@ -6,21 +6,47 @@
   {{ block.super }} — Posts
 {% endblock title %}
 {% block content %}
-  <div class="flex flex-wrap gap-4 justify-center">
-    <img class="bg-slate-200 border-2 rounded-md max-h-[1000px] max-w-[70%] object-cover"
-         src="{{ post.media.image.file.url }}"
-         alt="image" />
-    <div class="flex flex-col gap-2 text-xl grow">
-      <div>Uploader: {{ post.uploader.username }}</div>
-      <div>Post date: {{ post.post_date }}</div>
-      {% if post.media.src_url %}<div>Source: {{ post.media.src_url }}</div>{% endif %}
-      <div class="flex flex-wrap gap-2 max-w-[70%]">
-        Tags:
+  <div class="flex flex-col gap-4 items-center m-2 lg:flex-row lg:justify-center lg:items-start">
+    {% if post.title %}<h1 class="text-xl">{{ post.title }}</h1>{% endif %}
+    <div class="flex flex-col gap-2">
+      <img class="object-contain rounded-md max-h-[80vh] transparent-bg"
+           src="{{ post.media.image.file.url }}"
+           alt="image" />
+      <div class="flex flex-wrap gap-2 w-full">
         {% for tag in tags %}
-          {% component "tag" tag=tag / %}
+          {% component "tag" tag=tag size="small" / %}
         {% endfor %}
       </div>
-      <div>Rating: {{ post.get_rating_level_display }}</div>
+    </div>
+    <div class="flex flex-col gap-2 place-self-start text-base grow">
+      <div class="flex gap-1 items-center min-w-72">
+        <span class="font-bold">Uploaded by</span>
+        {% include "nav/user_link.html" with user=post.uploader %}
+      </div>
+      <div>
+        <span class="font-bold">Posted on</span> {{ post.post_date }}
+      </div>
+      <div>
+        <span class="font-bold">Rating</span>: {{ post.get_rating_level_display }}
+      </div>
+      <div>
+        <span class="font-bold">Source</span>:
+        {% if post.media.src_url %}
+          <a class="link" href="{{ post.media.src_url }}">{{ post.media.src_url }}</a>
+        {% else %}
+          Unknown
+        {% endif %}
+      </div>
     </div>
   </div>
+  {% if comments %}
+    <div class="mt-4 mb-8">
+      <h2>Comments</h2>
+      <div class="flex flex-col gap-1 w-full lg:w-100">
+        {% for comment in comments %}
+          <div class="p-1 border-2 border border-info bg-base-300">{{ comment.text }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 {% endblock content %}

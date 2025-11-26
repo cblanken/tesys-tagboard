@@ -254,6 +254,7 @@ class Post(models.Model):
         QUESTIONABLE = 50
         EXPLICIT = 100
 
+    title = models.TextField(default="", max_length=1000)
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     post_date = models.DateTimeField(default=now, editable=False)
     tags = models.ManyToManyField(Tag)
@@ -268,7 +269,7 @@ class Post(models.Model):
         ordering = ["post_date"]
 
     def __str__(self) -> str:
-        return f"<Post - uploader: {self.uploader.username}, posted: {self.post_date}>"
+        return f"<Post - id: {self.pk}; uploader: {self.uploader.username}; title: {self.title}; posted: {self.post_date}>"  # noqa: E501
 
     # TODO: also override update() to update post counts
     def save(self, **kwargs):

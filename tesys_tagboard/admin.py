@@ -83,7 +83,7 @@ class AudioAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ["user", "text"]
+    list_display = ["user", "text", "post"]
     list_filter = ["user"]
     autocomplete_fields = ["user"]
 

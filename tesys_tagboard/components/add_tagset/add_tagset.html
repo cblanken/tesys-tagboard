@@ -1,8 +1,8 @@
 {% load component_tags %}
 
-<div class="flex flex-col gap-2 align-start add-tagset-container">
-  <div class="flex gap-2 items-start my-4">
-    <div>{% component "search_bar" autocomplete_url=autocomplete_url / %}</div>
+<div class="flex flex-col gap-2 w-full align-start add-tagset-container">
+  <div class="flex gap-2 items-start my-4 w-full grow">
+    {% component "search_bar" autocomplete_url=autocomplete_url / %}
   </div>
   <div class="flex gap-2 items-center tagset">
     {% for tag in tags %}

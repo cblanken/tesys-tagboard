@@ -42,11 +42,7 @@
         <div class="p-6 tab-content bg-base-200">
           <div class="flex flex-col gap-4 items-center">
             {% component "pager" with pager=favorites_pager page=favorites_page / %}
-            <div class="flex flex-wrap gap-4 justify-center">
-              {% for favorite in favorites_page %}
-                {% component "post_thumbnail" post=favorite / %}
-              {% endfor %}
-            </div>
+            <div class="flex flex-wrap gap-4 justify-center">{% include "posts/gallery.html" with posts=favorites_page %}</div>
             {% component "pager" with pager=favorites_pager page=favorites_page / %}
           </div>
         </div>

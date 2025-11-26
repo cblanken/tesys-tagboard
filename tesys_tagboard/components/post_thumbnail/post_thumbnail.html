@@ -2,13 +2,15 @@
 
 <a data-post_id="{{ post.pk }}"
    {% if post.favorited %}data-favorite{% endif %}
-   class="relative skeleton post-thumbnail group/post w-[400px] h-[400px]"
+   class="relative skeleton post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh lg:max-w-100 lg:max-h-100"
    href="{% url "post" media_id=post.media.id %}">
   <img class="object-cover invisible w-full h-full rounded-md"
        loading="lazy"
        src="{{ post.media.image.file.url }}"
+       width="{{ post.media.image.width }}"
+       height="{{ post.media.image.height }}"
        alt="image" />
-  <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full post-thumbnail-hover group-hover/post:flex">
+  <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full rounded-md post-thumbnail-hover group-hover/post:flex">
     <section class="flex gap-1 self-end">
       {% if request.user.is_authenticated %}
         <button class="flex favorite-button align-center btn btn-secondary"
