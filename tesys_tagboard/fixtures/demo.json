@@ -1008,6 +1008,150 @@
   }
 },
 {
+  "model": "auth.permission",
+  "pk": 113,
+  "fields": {
+    "name": "Can add favorite",
+    "content_type": 22,
+    "codename": "add_favorite"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 114,
+  "fields": {
+    "name": "Can change favorite",
+    "content_type": 22,
+    "codename": "change_favorite"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 115,
+  "fields": {
+    "name": "Can delete favorite",
+    "content_type": 22,
+    "codename": "delete_favorite"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 116,
+  "fields": {
+    "name": "Can view favorite",
+    "content_type": 22,
+    "codename": "view_favorite"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 117,
+  "fields": {
+    "name": "Can add comment",
+    "content_type": 23,
+    "codename": "add_comment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 118,
+  "fields": {
+    "name": "Can change comment",
+    "content_type": 23,
+    "codename": "change_comment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 119,
+  "fields": {
+    "name": "Can delete comment",
+    "content_type": 23,
+    "codename": "delete_comment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 120,
+  "fields": {
+    "name": "Can view comment",
+    "content_type": 23,
+    "codename": "view_comment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 121,
+  "fields": {
+    "name": "Can add tag alias",
+    "content_type": 24,
+    "codename": "add_tagalias"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 122,
+  "fields": {
+    "name": "Can change tag alias",
+    "content_type": 24,
+    "codename": "change_tagalias"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 123,
+  "fields": {
+    "name": "Can delete tag alias",
+    "content_type": 24,
+    "codename": "delete_tagalias"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 124,
+  "fields": {
+    "name": "Can view tag alias",
+    "content_type": 24,
+    "codename": "view_tagalias"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 125,
+  "fields": {
+    "name": "Can add collection",
+    "content_type": 25,
+    "codename": "add_collection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 126,
+  "fields": {
+    "name": "Can change collection",
+    "content_type": 25,
+    "codename": "change_collection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 127,
+  "fields": {
+    "name": "Can delete collection",
+    "content_type": 25,
+    "codename": "delete_collection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 128,
+  "fields": {
+    "name": "Can view collection",
+    "content_type": 25,
+    "codename": "view_collection"
+  }
+},
+{
   "model": "auth.group",
   "pk": 1,
   "fields": {
@@ -1022,6 +1166,10 @@
       62,
       63,
       64,
+      97,
+      98,
+      99,
+      100,
       109,
       85,
       110,
@@ -1030,10 +1178,6 @@
       87,
       112,
       88,
-      93,
-      94,
-      95,
-      96,
       65,
       67,
       68,
@@ -1048,10 +1192,10 @@
       74,
       75,
       76,
-      97,
-      98,
-      99,
-      100,
+      93,
+      94,
+      95,
+      96,
       69,
       71,
       72,
@@ -1060,2391 +1204,11 @@
   }
 },
 {
-  "model": "contenttypes.contenttype",
-  "pk": 1,
-  "fields": {
-    "app_label": "auth",
-    "model": "permission"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 2,
-  "fields": {
-    "app_label": "auth",
-    "model": "group"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 3,
-  "fields": {
-    "app_label": "contenttypes",
-    "model": "contenttype"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 4,
-  "fields": {
-    "app_label": "sessions",
-    "model": "session"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 5,
-  "fields": {
-    "app_label": "sites",
-    "model": "site"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 6,
-  "fields": {
-    "app_label": "admin",
-    "model": "logentry"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 7,
-  "fields": {
-    "app_label": "account",
-    "model": "emailaddress"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 8,
-  "fields": {
-    "app_label": "account",
-    "model": "emailconfirmation"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 9,
-  "fields": {
-    "app_label": "mfa",
-    "model": "authenticator"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 10,
-  "fields": {
-    "app_label": "socialaccount",
-    "model": "socialaccount"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 11,
-  "fields": {
-    "app_label": "socialaccount",
-    "model": "socialapp"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 12,
-  "fields": {
-    "app_label": "socialaccount",
-    "model": "socialtoken"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 13,
-  "fields": {
-    "app_label": "authtoken",
-    "model": "token"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 14,
-  "fields": {
-    "app_label": "authtoken",
-    "model": "tokenproxy"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 15,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "media"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 16,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "audio"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 17,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "image"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 18,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "video"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 19,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "tag"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 20,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "artist"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 21,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "post"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 22,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "collection"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 23,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "favorite"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 24,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "comment"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 25,
-  "fields": {
-    "app_label": "tesys_tagboard",
-    "model": "tagalias"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 26,
-  "fields": {
-    "app_label": "users",
-    "model": "user"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "pk": 27,
-  "fields": {
-    "app_label": "debug_toolbar",
-    "model": "historyentry"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "buonsy140kt0l5355zxzzt7f11qgt46x",
-  "fields": {
-    "session_data": ".eJxVjMsOwiAQRf-FtSEMjwIu3fsNZOgMUjU0Ke3K-O_apAvd3nPOfYmE21rT1nlJE4mzAHH63TKOD247oDu22yzHua3LlOWuyIN2eZ2Jn5fD_Tuo2Ou3HiIWDxxMBDNY57QP5ECpUJgN2YikPBXCANEH7a3VRGAggPEKHWTx_gC81Da7:1vK2rh:NzkQBmPxkC75ghmESawz9yt0R_XHHZvP3wrhMOjGlVc",
-    "expire_date": "2025-11-28T23:06:01.218Z"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "e0t6p4w6v5cnb89hswta11313186gu5e",
-  "fields": {
-    "session_data": ".eJxVjEEOwiAQRe_C2pBSCgMu3fcMZAYGqRqalHZlvLtt0oVu_3vvv0XAbS1ha7yEKYmrsOLyuxHGJ9cDpAfW-yzjXNdlInko8qRNjnPi1-10_w4KtrLXBqBPwINyxnYMxMoMZK3N6FFFTdQ75Sjrbsfaa2_AGdJA2WuMiUF8vsgBN1o:1vNu5Z:lKLjL4XB3aY9EBClE_TzgZfmzW4unerlP7Ia0ECM8D0",
-    "expire_date": "2025-12-09T14:32:17.797Z"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "pux2k34euf73aiddbk42kfimbzniqcfy",
-  "fields": {
-    "session_data": ".eJxVjMsOwiAQRf-FtSEMjwIu3fsNZOgMUjU0Ke3K-O_apAvd3nPOfYmE21rT1nlJE4mzAHH63TKOD247oDu22yzHua3LlOWuyIN2eZ2Jn5fD_Tuo2Ou3HiIWDxxMBDNY57QP5ECpUJgN2YikPBXCANEH7a3VRGAggPEKHWTx_gC81Da7:1vNLu8:uZug0BbSrHlagl1K9atPmsOQj3bBK0osh0_pk4J2z48",
-    "expire_date": "2025-12-08T02:02:12.003Z"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "xgy1fgv9aqb7m8yb90vcyl3ujdyn2kbi",
-  "fields": {
-    "session_data": ".eJxVj0FuhDAMRe_iNUKYJCSw7L4nqCpksClpSzIiQW01mruXtLOZneX3_eR_BZrneIQ80pFXCdnPlH0M4yZ5jZxgeLnC_wwDXCilr7gzVEAZBrSd6lzv0NStVj0aVcGRZA-0yZkm3nyA22sFf_KxoNEXD8LDbqL5Q0IB_E7hLdZzDHn3U10i9Z2m-jmyfD7dsw-CldJ6Xnc9LRbFna-oThvTWscGm8YtIop1T9xYXpgc9ta1VuuWGRU6VLYhg1ORJkmp9Jfvi99_YGhuvwo5Xww:1vMGHv:JVIcy_fS2W5-lHN0l6H1Y65Pw3opvChTkNz5VWPzWYs",
-    "expire_date": "2025-12-05T01:50:15.289Z"
-  }
-},
-{
   "model": "sites.site",
   "pk": 1,
   "fields": {
     "domain": "example.com",
     "name": "Tesy's Tagboard"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 1,
-  "fields": {
-    "action_time": "2025-11-14T19:39:41.299Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "1",
-    "object_repr": "<Tag - red, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 2,
-  "fields": {
-    "action_time": "2025-11-14T19:39:46.714Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "2",
-    "object_repr": "<Tag - orange, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 3,
-  "fields": {
-    "action_time": "2025-11-14T19:39:52.361Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "3",
-    "object_repr": "<Tag - yellow, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 4,
-  "fields": {
-    "action_time": "2025-11-14T19:39:56.727Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "4",
-    "object_repr": "<Tag - green, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 5,
-  "fields": {
-    "action_time": "2025-11-14T19:40:00.649Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "5",
-    "object_repr": "<Tag - blue, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 6,
-  "fields": {
-    "action_time": "2025-11-14T19:40:06.862Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "6",
-    "object_repr": "<Tag - indigo, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 7,
-  "fields": {
-    "action_time": "2025-11-14T19:40:11.122Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "7",
-    "object_repr": "<Tag - violet, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 8,
-  "fields": {
-    "action_time": "2025-11-14T19:40:16.722Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "8",
-    "object_repr": "<Tag - brack, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 9,
-  "fields": {
-    "action_time": "2025-11-14T19:40:22.475Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "9",
-    "object_repr": "<Tag - onion_little, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 10,
-  "fields": {
-    "action_time": "2025-11-14T19:40:29.241Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "10",
-    "object_repr": "<Tag - public_domain, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 11,
-  "fields": {
-    "action_time": "2025-11-14T19:41:40.457Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "11",
-    "object_repr": "<Tag - CC_BY, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 12,
-  "fields": {
-    "action_time": "2025-11-14T19:41:56.230Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "12",
-    "object_repr": "<Tag - CC_BY_SA, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 13,
-  "fields": {
-    "action_time": "2025-11-14T19:56:06.452Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "11",
-    "object_repr": "<Tag - CC_BY, category: CO>",
-    "action_flag": 2,
-    "change_message": "[]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 14,
-  "fields": {
-    "action_time": "2025-11-14T19:56:31.486Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "13",
-    "object_repr": "<Tag - CC_BY_NC, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 15,
-  "fields": {
-    "action_time": "2025-11-14T20:11:50.114Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "11",
-    "object_repr": "<Tag - CC_BY, category: CO>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 16,
-  "fields": {
-    "action_time": "2025-11-14T20:11:56.249Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "13",
-    "object_repr": "<Tag - CC_BY_NC, category: CO>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 17,
-  "fields": {
-    "action_time": "2025-11-14T20:12:06.876Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "12",
-    "object_repr": "<Tag - CC_BY_SA, category: CO>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 18,
-  "fields": {
-    "action_time": "2025-11-14T20:33:39.936Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "14",
-    "object_repr": "<Tag - pixabay, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 19,
-  "fields": {
-    "action_time": "2025-11-14T20:34:26.880Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "15",
-    "object_repr": "<Tag - unsplash, category: CO>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 20,
-  "fields": {
-    "action_time": "2025-11-14T20:42:09.832Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "16",
-    "object_repr": "<Tag - bicycle, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 21,
-  "fields": {
-    "action_time": "2025-11-14T20:44:05.182Z",
-    "user": 1,
-    "content_type": 25,
-    "object_id": "1",
-    "object_repr": "<TagAlias - bike, tag: <Tag - bicycle, category: BA>>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 22,
-  "fields": {
-    "action_time": "2025-11-14T20:44:43.070Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "17",
-    "object_repr": "<Tag - trees, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 23,
-  "fields": {
-    "action_time": "2025-11-14T20:44:49.047Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "18",
-    "object_repr": "<Tag - road, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 24,
-  "fields": {
-    "action_time": "2025-11-14T20:44:58.806Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "19",
-    "object_repr": "<Tag - bricks, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 25,
-  "fields": {
-    "action_time": "2025-11-14T20:45:12.637Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "20",
-    "object_repr": "<Tag - fog, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 26,
-  "fields": {
-    "action_time": "2025-11-14T20:52:50.402Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "3",
-    "object_repr": "<Media - orig_file: rikki-chan-_k31aFqnmTM-unsplash.jpg, source: https://unsplash.com/de/fotos/...>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Src url\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 27,
-  "fields": {
-    "action_time": "2025-11-14T21:35:15.702Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "21",
-    "object_repr": "<Tag - Netherlands, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 28,
-  "fields": {
-    "action_time": "2025-11-14T21:37:10.156Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "22",
-    "object_repr": "<Tag - Fer_Troulik, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 29,
-  "fields": {
-    "action_time": "2025-11-14T21:38:21.875Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "23",
-    "object_repr": "<Tag - bike_garage, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 30,
-  "fields": {
-    "action_time": "2025-11-14T21:39:40.006Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "24",
-    "object_repr": "<Tag - sign, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 31,
-  "fields": {
-    "action_time": "2025-11-14T21:39:46.943Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "25",
-    "object_repr": "<Tag - grayscale, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 32,
-  "fields": {
-    "action_time": "2025-11-14T21:40:06.475Z",
-    "user": 1,
-    "content_type": 25,
-    "object_id": "2",
-    "object_repr": "<TagAlias - greyscale, tag: <Tag - grayscale, category: BA>>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 33,
-  "fields": {
-    "action_time": "2025-11-14T21:53:05.145Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "26",
-    "object_repr": "<Tag - train, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 34,
-  "fields": {
-    "action_time": "2025-11-14T21:53:11.730Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "27",
-    "object_repr": "<Tag - underground, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 35,
-  "fields": {
-    "action_time": "2025-11-14T21:53:16.740Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "28",
-    "object_repr": "<Tag - subway, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 36,
-  "fields": {
-    "action_time": "2025-11-14T21:55:10.529Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "29",
-    "object_repr": "<Tag - transportation, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 37,
-  "fields": {
-    "action_time": "2025-11-14T21:56:04.882Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "6",
-    "object_repr": "<Post - uploader: , posted: 2025-11-14 21:55:26.277212+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 38,
-  "fields": {
-    "action_time": "2025-11-14T21:56:25.338Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "6",
-    "object_repr": "<Media - orig_file: fer-troulik-DWv_jcGE3hE-unsplash.jpg, source: https://unsplash.com/photos/a-...>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Src url\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 39,
-  "fields": {
-    "action_time": "2025-11-14T21:58:07.628Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "30",
-    "object_repr": "<Tag - staircase, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 40,
-  "fields": {
-    "action_time": "2025-11-14T21:58:13.747Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "31",
-    "object_repr": "<Tag - stairs, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 41,
-  "fields": {
-    "action_time": "2025-11-14T21:58:21.104Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "32",
-    "object_repr": "<Tag - building, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 42,
-  "fields": {
-    "action_time": "2025-11-14T21:58:36.736Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "33",
-    "object_repr": "<Tag - urban, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 43,
-  "fields": {
-    "action_time": "2025-11-14T23:06:01.130Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "1",
-    "object_repr": "admin",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 44,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "8",
-    "object_repr": "<Media - orig_file: girl-8880144_640.png, source: ...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 45,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "7",
-    "object_repr": "<Media - orig_file: fer-troulik-jC_ewVSpYeo-unsplash.jpg, source: https://unsplash.com/photos/fi...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 46,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "6",
-    "object_repr": "<Media - orig_file: fer-troulik-DWv_jcGE3hE-unsplash.jpg, source: https://unsplash.com/photos/a-...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 47,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "5",
-    "object_repr": "<Media - orig_file: fer-troulik-qLEGfl9XJMs-unsplash.jpg, source: https://unsplash.com/de/fotos/...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 48,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "4",
-    "object_repr": "<Media - orig_file: marc-kleen-Hg5-RwwjHu0-unsplash.jpg, source: https://unsplash.com/de/fotos/...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 49,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "3",
-    "object_repr": "<Media - orig_file: rikki-chan-_k31aFqnmTM-unsplash.jpg, source: https://unsplash.com/de/fotos/...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 50,
-  "fields": {
-    "action_time": "2025-11-15T01:58:28.142Z",
-    "user": 1,
-    "content_type": 15,
-    "object_id": "2",
-    "object_repr": "<Media - orig_file: lemons-9934195_1280.png, source: ...>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 51,
-  "fields": {
-    "action_time": "2025-11-15T02:33:25.362Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "34",
-    "object_repr": "<Tag - marc_kleen, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 52,
-  "fields": {
-    "action_time": "2025-11-15T02:33:51.056Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "35",
-    "object_repr": "<Tag - rikki_chan, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 53,
-  "fields": {
-    "action_time": "2025-11-15T02:39:23.923Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "36",
-    "object_repr": "<Tag - train_station, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 54,
-  "fields": {
-    "action_time": "2025-11-15T02:39:31.557Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "37",
-    "object_repr": "<Tag - clock, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 55,
-  "fields": {
-    "action_time": "2025-11-15T02:39:38.248Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "38",
-    "object_repr": "<Tag - bench, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 56,
-  "fields": {
-    "action_time": "2025-11-15T02:43:31.040Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "39",
-    "object_repr": "<Tag - shadows, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 57,
-  "fields": {
-    "action_time": "2025-11-15T02:47:08.353Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "40",
-    "object_repr": "<Tag - Kyiv, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 58,
-  "fields": {
-    "action_time": "2025-11-15T02:47:15.599Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "41",
-    "object_repr": "<Tag - books, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 59,
-  "fields": {
-    "action_time": "2025-11-15T02:47:22.319Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "42",
-    "object_repr": "<Tag - book_shop, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 60,
-  "fields": {
-    "action_time": "2025-11-15T02:47:48.676Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "43",
-    "object_repr": "<Tag - library, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 61,
-  "fields": {
-    "action_time": "2025-11-15T03:00:18.562Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "44",
-    "object_repr": "<Tag - Olena_Bohovyk, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 62,
-  "fields": {
-    "action_time": "2025-11-15T03:02:40.609Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "45",
-    "object_repr": "<Tag - black_pants, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 63,
-  "fields": {
-    "action_time": "2025-11-15T03:02:46.831Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "46",
-    "object_repr": "<Tag - watch, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 64,
-  "fields": {
-    "action_time": "2025-11-15T03:03:04.483Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "47",
-    "object_repr": "<Tag - ring, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 65,
-  "fields": {
-    "action_time": "2025-11-15T03:04:47.119Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "48",
-    "object_repr": "<Tag - book, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 66,
-  "fields": {
-    "action_time": "2025-11-15T03:08:36.489Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "49",
-    "object_repr": "<Tag - tattoo, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 67,
-  "fields": {
-    "action_time": "2025-11-15T03:10:59.954Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "50",
-    "object_repr": "<Tag - handstand, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 68,
-  "fields": {
-    "action_time": "2025-11-15T03:11:09.255Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "51",
-    "object_repr": "<Tag - beach, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 69,
-  "fields": {
-    "action_time": "2025-11-15T03:11:12.608Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "52",
-    "object_repr": "<Tag - sunset, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 70,
-  "fields": {
-    "action_time": "2025-11-15T03:11:17.865Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "53",
-    "object_repr": "<Tag - sand, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 71,
-  "fields": {
-    "action_time": "2025-11-15T03:11:21.706Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "54",
-    "object_repr": "<Tag - footprints, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 72,
-  "fields": {
-    "action_time": "2025-11-15T03:11:49.961Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "9",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 02:21:49.601646+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 73,
-  "fields": {
-    "action_time": "2025-11-15T03:11:55.520Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "10",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 02:30:04.914308+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 74,
-  "fields": {
-    "action_time": "2025-11-15T03:11:59.725Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "11",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 02:36:06.041700+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 75,
-  "fields": {
-    "action_time": "2025-11-15T03:12:02.976Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "12",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 02:37:17.670590+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 76,
-  "fields": {
-    "action_time": "2025-11-15T03:12:07.344Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "13",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 02:43:44.149071+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 77,
-  "fields": {
-    "action_time": "2025-11-15T03:12:13.484Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "14",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 03:00:36.983665+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 78,
-  "fields": {
-    "action_time": "2025-11-15T03:12:18.355Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "15",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 03:08:42.885478+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 79,
-  "fields": {
-    "action_time": "2025-11-15T03:20:16.737Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "55",
-    "object_repr": "<Tag - annie_spratt, category: AR>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 80,
-  "fields": {
-    "action_time": "2025-11-15T03:20:35.629Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "56",
-    "object_repr": "<Tag - lord_of_the_rings, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 81,
-  "fields": {
-    "action_time": "2025-11-15T03:24:25.966Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "57",
-    "object_repr": "<Tag - white_pants, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 82,
-  "fields": {
-    "action_time": "2025-11-15T03:24:39.661Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "58",
-    "object_repr": "<Tag - neon_lights, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 83,
-  "fields": {
-    "action_time": "2025-11-15T03:29:36.075Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "59",
-    "object_repr": "<Tag - bridge, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 84,
-  "fields": {
-    "action_time": "2025-11-15T03:31:46.955Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "19",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 03:30:07.115859+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Tags\", \"Rating level\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 85,
-  "fields": {
-    "action_time": "2025-11-15T03:32:09.076Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "19",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 03:30:07.115859+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 86,
-  "fields": {
-    "action_time": "2025-11-15T03:33:37.214Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "60",
-    "object_repr": "<Tag - street, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 87,
-  "fields": {
-    "action_time": "2025-11-15T03:33:40.770Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "61",
-    "object_repr": "<Tag - crosswalk, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 88,
-  "fields": {
-    "action_time": "2025-11-15T03:33:46.995Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "62",
-    "object_repr": "<Tag - sidewalk, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 89,
-  "fields": {
-    "action_time": "2025-11-15T03:35:03.475Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "63",
-    "object_repr": "<Tag - bollards, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 90,
-  "fields": {
-    "action_time": "2025-11-15T03:37:57.303Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "64",
-    "object_repr": "<Tag - baguettes, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 91,
-  "fields": {
-    "action_time": "2025-11-15T03:38:48.987Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "65",
-    "object_repr": "<Tag - fence, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 92,
-  "fields": {
-    "action_time": "2025-11-15T03:39:09.920Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "66",
-    "object_repr": "<Tag - hat, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 93,
-  "fields": {
-    "action_time": "2025-11-15T03:39:27.406Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "67",
-    "object_repr": "<Tag - newspaper, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 94,
-  "fields": {
-    "action_time": "2025-11-15T03:40:39.229Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "68",
-    "object_repr": "<Tag - brown_hair, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 95,
-  "fields": {
-    "action_time": "2025-11-15T03:41:56.127Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "69",
-    "object_repr": "<Tag - pub, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 96,
-  "fields": {
-    "action_time": "2025-11-15T03:42:55.471Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "70",
-    "object_repr": "<Tag - Poland, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 97,
-  "fields": {
-    "action_time": "2025-11-15T03:43:00.017Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "71",
-    "object_repr": "<Tag - cafe, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 98,
-  "fields": {
-    "action_time": "2025-11-15T03:44:15.171Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "72",
-    "object_repr": "<Tag - chairs, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 99,
-  "fields": {
-    "action_time": "2025-11-15T03:44:37.471Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "73",
-    "object_repr": "<Tag - rain, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 100,
-  "fields": {
-    "action_time": "2025-11-15T03:45:16.905Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "74",
-    "object_repr": "<Tag - cars, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 101,
-  "fields": {
-    "action_time": "2025-11-15T03:48:15.476Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "23",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 03:47:57.052148+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 102,
-  "fields": {
-    "action_time": "2025-11-15T03:49:52.527Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "75",
-    "object_repr": "<Tag - snow, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 103,
-  "fields": {
-    "action_time": "2025-11-15T03:49:56.362Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "76",
-    "object_repr": "<Tag - water, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 104,
-  "fields": {
-    "action_time": "2025-11-15T03:50:27.606Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "77",
-    "object_repr": "<Tag - car, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 105,
-  "fields": {
-    "action_time": "2025-11-15T03:50:51.467Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "78",
-    "object_repr": "<Tag - tracks, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 106,
-  "fields": {
-    "action_time": "2025-11-15T04:04:49.755Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "79",
-    "object_repr": "<Tag - headphones, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 107,
-  "fields": {
-    "action_time": "2025-11-15T04:05:22.208Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "80",
-    "object_repr": "<Tag - sunlight, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 108,
-  "fields": {
-    "action_time": "2025-11-15T04:09:38.827Z",
-    "user": 1,
-    "content_type": 21,
-    "object_id": "26",
-    "object_repr": "<Post - uploader: , posted: 2025-11-15 04:09:23.487272+00:00>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 109,
-  "fields": {
-    "action_time": "2025-11-15T04:12:58.977Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "81",
-    "object_repr": "<Tag - sky, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 110,
-  "fields": {
-    "action_time": "2025-11-15T04:14:19.014Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "82",
-    "object_repr": "<Tag - illustration, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 111,
-  "fields": {
-    "action_time": "2025-11-15T04:15:08.577Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "83",
-    "object_repr": "<Tag - mountain, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 112,
-  "fields": {
-    "action_time": "2025-11-15T04:15:39.480Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "84",
-    "object_repr": "<Tag - sketch, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 113,
-  "fields": {
-    "action_time": "2025-11-15T04:16:49.916Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "85",
-    "object_repr": "<Tag - flower, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 114,
-  "fields": {
-    "action_time": "2025-11-15T04:17:13.477Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "86",
-    "object_repr": "<Tag - pear, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 115,
-  "fields": {
-    "action_time": "2025-11-15T04:18:10.033Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "87",
-    "object_repr": "<Tag - green_background, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 116,
-  "fields": {
-    "action_time": "2025-11-15T04:18:23.054Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "88",
-    "object_repr": "<Tag - fruit, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 117,
-  "fields": {
-    "action_time": "2025-11-15T04:18:50.865Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "89",
-    "object_repr": "<Tag - black_background, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 118,
-  "fields": {
-    "action_time": "2025-11-15T04:19:43.857Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "90",
-    "object_repr": "<Tag - smile, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 119,
-  "fields": {
-    "action_time": "2025-11-15T04:25:07.773Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "91",
-    "object_repr": "<Tag - mountains, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 120,
-  "fields": {
-    "action_time": "2025-11-15T04:30:24.475Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "92",
-    "object_repr": "<Tag - mushrooms, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 121,
-  "fields": {
-    "action_time": "2025-11-15T04:30:34.229Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "93",
-    "object_repr": "<Tag - fungi, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 122,
-  "fields": {
-    "action_time": "2025-11-15T04:31:24.480Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "94",
-    "object_repr": "<Tag - white, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 123,
-  "fields": {
-    "action_time": "2025-11-15T04:31:52.705Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "95",
-    "object_repr": "<Tag - window, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 124,
-  "fields": {
-    "action_time": "2025-11-15T04:35:20.111Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "8",
-    "object_repr": "<Tag - brack, category: AR>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 125,
-  "fields": {
-    "action_time": "2025-11-15T04:35:36.713Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "9",
-    "object_repr": "<Tag - onion_little, category: AR>",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 126,
-  "fields": {
-    "action_time": "2025-11-15T04:35:49.686Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "35",
-    "object_repr": "<Tag - Rikki_Chan, category: AR>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 127,
-  "fields": {
-    "action_time": "2025-11-15T04:36:08.123Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "34",
-    "object_repr": "<Tag - Marc_Kleen, category: AR>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 128,
-  "fields": {
-    "action_time": "2025-11-15T04:49:32.375Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "96",
-    "object_repr": "<Tag - tram_tracks, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 129,
-  "fields": {
-    "action_time": "2025-11-15T04:49:45.496Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "97",
-    "object_repr": "<Tag - railing, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 130,
-  "fields": {
-    "action_time": "2025-11-15T04:50:48.994Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "98",
-    "object_repr": "<Tag - bus, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 131,
-  "fields": {
-    "action_time": "2025-11-15T04:51:22.911Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "99",
-    "object_repr": "<Tag - tram, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 132,
-  "fields": {
-    "action_time": "2025-11-15T04:51:33.764Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "100",
-    "object_repr": "<Tag - buildings, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 133,
-  "fields": {
-    "action_time": "2025-11-15T04:54:05.541Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "101",
-    "object_repr": "<Tag - windows, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 134,
-  "fields": {
-    "action_time": "2025-11-15T04:55:38.156Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "102",
-    "object_repr": "<Tag - dog, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 135,
-  "fields": {
-    "action_time": "2025-11-15T04:57:04.480Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "103",
-    "object_repr": "<Tag - blue_hat, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 136,
-  "fields": {
-    "action_time": "2025-11-15T04:57:26.498Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "104",
-    "object_repr": "<Tag - doors, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 137,
-  "fields": {
-    "action_time": "2025-11-15T04:59:20.609Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "105",
-    "object_repr": "<Tag - traffic_lights, category: BA>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 138,
-  "fields": {
-    "action_time": "2025-11-15T05:03:03.571Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "55",
-    "object_repr": "<Tag - Annie_Spratt, category: AR>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 139,
-  "fields": {
-    "action_time": "2025-11-15T05:03:46.508Z",
-    "user": 1,
-    "content_type": 19,
-    "object_id": "46",
-    "object_repr": "<Tag - wristwatch, category: BA>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 140,
-  "fields": {
-    "action_time": "2025-11-20T17:19:35.279Z",
-    "user": 1,
-    "content_type": 11,
-    "object_id": "1",
-    "object_repr": "Discord Oauth",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 141,
-  "fields": {
-    "action_time": "2025-11-20T21:29:13.240Z",
-    "user": 1,
-    "content_type": 11,
-    "object_id": "1",
-    "object_repr": "Discord Oauth",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 142,
-  "fields": {
-    "action_time": "2025-11-21T15:25:14.080Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "1",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 02:21:49.601000+00:00>, user: admin>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 143,
-  "fields": {
-    "action_time": "2025-11-21T15:25:23.685Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "2",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 03:51:15.750000+00:00>, user: admin>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 144,
-  "fields": {
-    "action_time": "2025-11-21T15:25:32.791Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "3",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 04:06:45.370000+00:00>, user: admin>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 145,
-  "fields": {
-    "action_time": "2025-11-21T17:01:12.158Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "1",
-    "object_repr": "<Collection - name: Test Collection 1, user: admin, desc: A Test collection :)>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 146,
-  "fields": {
-    "action_time": "2025-11-21T20:33:36.720Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "4",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 04:09:23.487000+00:00>, user: admin>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 147,
-  "fields": {
-    "action_time": "2025-11-23T15:07:34.762Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "2",
-    "object_repr": "<Collection - name: Test #2 :P, user: admin, desc: A second test collection>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 148,
-  "fields": {
-    "action_time": "2025-11-23T20:54:20.190Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "2",
-    "object_repr": "<Collection - name: Collection #2, user: admin, desc: A second test collection :P>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\", \"Desc\", \"Posts\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 149,
-  "fields": {
-    "action_time": "2025-11-23T20:54:35.502Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "1",
-    "object_repr": "<Collection - name: Collection #1, user: admin, desc: A Test collection>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\", \"Desc\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 150,
-  "fields": {
-    "action_time": "2025-11-23T21:00:20.465Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "2",
-    "object_repr": "gmail",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 151,
-  "fields": {
-    "action_time": "2025-11-23T21:00:20.465Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "3",
-    "object_repr": "gmail2",
-    "action_flag": 3,
-    "change_message": ""
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 152,
-  "fields": {
-    "action_time": "2025-11-23T21:02:45.712Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "2",
-    "object_repr": "<Collection - name: Admin Collection #2, user: admin, desc: A second test collection :P>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 153,
-  "fields": {
-    "action_time": "2025-11-23T21:02:52.349Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "1",
-    "object_repr": "<Collection - name: Admin Collection #1, user: admin, desc: A Test collection>",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 154,
-  "fields": {
-    "action_time": "2025-11-24T01:35:37.240Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "5",
-    "object_repr": "user2",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 155,
-  "fields": {
-    "action_time": "2025-11-24T02:49:12.228Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "17",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 03:44:44.374000+00:00>, user: user1>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 156,
-  "fields": {
-    "action_time": "2025-11-24T02:49:17.400Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "18",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 02:30:04.914000+00:00>, user: user1>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 157,
-  "fields": {
-    "action_time": "2025-11-24T02:49:22.930Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "19",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 03:00:36.983000+00:00>, user: user2>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 158,
-  "fields": {
-    "action_time": "2025-11-24T02:49:29.424Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "20",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 03:22:17.753000+00:00>, user: user2>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 159,
-  "fields": {
-    "action_time": "2025-11-24T02:49:37.125Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "21",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 04:57:40.239000+00:00>, user: user2>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 160,
-  "fields": {
-    "action_time": "2025-11-24T02:49:45.069Z",
-    "user": 1,
-    "content_type": 23,
-    "object_id": "22",
-    "object_repr": "<Favorite - post: <Post - uploader: admin, posted: 2025-11-15 02:21:49.601000+00:00>, user: user2>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 161,
-  "fields": {
-    "action_time": "2025-11-24T02:51:05.283Z",
-    "user": 1,
-    "content_type": 22,
-    "object_id": "3",
-    "object_repr": "<Collection - name: User 1 Collection, user: user1, desc: Test collection for user1>",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 162,
-  "fields": {
-    "action_time": "2025-11-25T14:18:59.915Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "6",
-    "object_repr": "mod1",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 163,
-  "fields": {
-    "action_time": "2025-11-25T14:29:46.673Z",
-    "user": 1,
-    "content_type": 2,
-    "object_id": "1",
-    "object_repr": "Moderator",
-    "action_flag": 1,
-    "change_message": "[{\"added\": {}}]"
-  }
-},
-{
-  "model": "admin.logentry",
-  "pk": 164,
-  "fields": {
-    "action_time": "2025-11-25T14:31:41.546Z",
-    "user": 1,
-    "content_type": 26,
-    "object_id": "6",
-    "object_repr": "mod1",
-    "action_flag": 2,
-    "change_message": "[{\"changed\": {\"fields\": [\"Email address\", \"Staff status\", \"Groups\"]}}]"
   }
 },
 {
@@ -5187,6 +2951,7 @@
   "model": "tesys_tagboard.post",
   "pk": 9,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T02:21:49.601Z",
     "rating_level": 0,
@@ -5203,6 +2968,7 @@
   "model": "tesys_tagboard.post",
   "pk": 10,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T02:30:04.914Z",
     "rating_level": 0,
@@ -5221,6 +2987,7 @@
   "model": "tesys_tagboard.post",
   "pk": 11,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T02:36:06.041Z",
     "rating_level": 0,
@@ -5238,6 +3005,7 @@
   "model": "tesys_tagboard.post",
   "pk": 12,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T02:37:17.670Z",
     "rating_level": 0,
@@ -5255,6 +3023,7 @@
   "model": "tesys_tagboard.post",
   "pk": 13,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T02:43:44.149Z",
     "rating_level": 0,
@@ -5275,6 +3044,7 @@
   "model": "tesys_tagboard.post",
   "pk": 14,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:00:36.983Z",
     "rating_level": 0,
@@ -5290,6 +3060,7 @@
   "model": "tesys_tagboard.post",
   "pk": 15,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:08:42.885Z",
     "rating_level": 0,
@@ -5308,6 +3079,7 @@
   "model": "tesys_tagboard.post",
   "pk": 16,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:17:11.074Z",
     "rating_level": 1,
@@ -5329,6 +3101,7 @@
   "model": "tesys_tagboard.post",
   "pk": 17,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:22:17.753Z",
     "rating_level": 1,
@@ -5345,6 +3118,7 @@
   "model": "tesys_tagboard.post",
   "pk": 18,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:25:15.458Z",
     "rating_level": 1,
@@ -5361,6 +3135,7 @@
   "model": "tesys_tagboard.post",
   "pk": 19,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:30:07.115Z",
     "rating_level": 0,
@@ -5379,6 +3154,7 @@
   "model": "tesys_tagboard.post",
   "pk": 20,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:35:22.504Z",
     "rating_level": 1,
@@ -5398,6 +3174,7 @@
   "model": "tesys_tagboard.post",
   "pk": 21,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:40:47.118Z",
     "rating_level": 1,
@@ -5416,6 +3193,7 @@
   "model": "tesys_tagboard.post",
   "pk": 22,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:44:44.374Z",
     "rating_level": 1,
@@ -5434,6 +3212,7 @@
   "model": "tesys_tagboard.post",
   "pk": 23,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:47:57.052Z",
     "rating_level": 1,
@@ -5454,6 +3233,7 @@
   "model": "tesys_tagboard.post",
   "pk": 24,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T03:51:15.750Z",
     "rating_level": 1,
@@ -5472,6 +3252,7 @@
   "model": "tesys_tagboard.post",
   "pk": 25,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:06:45.370Z",
     "rating_level": 1,
@@ -5489,6 +3270,7 @@
   "model": "tesys_tagboard.post",
   "pk": 26,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:09:23.487Z",
     "rating_level": 1,
@@ -5505,6 +3287,7 @@
   "model": "tesys_tagboard.post",
   "pk": 27,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:15:56.399Z",
     "rating_level": 1,
@@ -5521,6 +3304,7 @@
   "model": "tesys_tagboard.post",
   "pk": 28,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:18:30.912Z",
     "rating_level": 1,
@@ -5539,6 +3323,7 @@
   "model": "tesys_tagboard.post",
   "pk": 29,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:21:25.499Z",
     "rating_level": 1,
@@ -5558,6 +3343,7 @@
   "model": "tesys_tagboard.post",
   "pk": 30,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:28:38.743Z",
     "rating_level": 1,
@@ -5575,6 +3361,7 @@
   "model": "tesys_tagboard.post",
   "pk": 31,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:32:08.221Z",
     "rating_level": 1,
@@ -5595,6 +3382,7 @@
   "model": "tesys_tagboard.post",
   "pk": 32,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:50:00.586Z",
     "rating_level": 1,
@@ -5614,6 +3402,7 @@
   "model": "tesys_tagboard.post",
   "pk": 33,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:54:41.124Z",
     "rating_level": 1,
@@ -5638,6 +3427,7 @@
   "model": "tesys_tagboard.post",
   "pk": 34,
   "fields": {
+    "title": "",
     "uploader": 1,
     "post_date": "2025-11-15T04:57:40.239Z",
     "rating_level": 1,
