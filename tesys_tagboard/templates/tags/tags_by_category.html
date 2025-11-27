@@ -1,7 +1,6 @@
 {% load component_tags %}
 
-<div id="tags-container"
-     class="flex flex-col gap-4 p-8 w-full rounded-sm bg-base-100">
+<div id="tags-container" class="flex flex-col gap-4">
   {% for cat, tags in tags_by_cat.items %}
     {% if tags %}
       <div>

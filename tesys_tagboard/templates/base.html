@@ -35,7 +35,7 @@
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
   </head>
-  <nav class="flex justify-between px-2 shadow-sm lg:text-lg navbar bg-primary text-primary-content">
+  <nav class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm !h-6">
     <div class="flex">
       <div class="text-left dropdown">
         <div tabindex="0" role="button" class="lg:hidden btn btn-ghost">
@@ -55,7 +55,7 @@
       <a class="text-2xl btn btn-ghost" href="{% url 'home' %}">Tesy's Tagboard</a>
     </div>
     <div class="hidden lg:flex navbar-center">
-      <ul class="px-1 text-2xl menu menu-horizontal">
+      <ul class="px-1 text-lg menu menu-horizontal">
         {% include "nav/navbar_links.html" %}
       </ul>
     </div>
@@ -64,25 +64,23 @@
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
         class="{% block bodyclass %}{% endblock bodyclass %}">
     {% block body %}
-      <div class="flex justify-center p-2 sm:w-full lg:p-4 bg-base-100 lg:max-w-1600px">
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-              {{ message }}
-              <button type="button"
-                      class="btn-close"
-                      data-bs-dismiss="alert"
-                      aria-label="Close"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-        {% block main %}
-          <main class="flex flex-col justify-center w-full max-w-[1600px] lg:w-[80%]">
-            {% block content %}
-            {% endblock content %}
-          </main>
-        {% endblock main %}
-      </div>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% block main %}
+        <div class="p-6">
+          {% block content %}
+          {% endblock content %}
+        </div>
+      {% endblock main %}
     {% endblock body %}
     {% block modal %}
     {% endblock modal %}

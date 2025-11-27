@@ -6,19 +6,21 @@
   {{ block.super }} — Tags
 {% endblock title %}
 {% block content %}
-  <label class="flex relative items-center self-center w-96">
-    <div class="absolute left-2 z-5">{% include "icons/feather.html" with icon="filter" %}</div>
-    <input type="search"
-           class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
-           placeholder="Filter tags..."
-           name="q"
-           value="{{ request.GET.q }}"
-           hx-get=""
-           hx-trigger="input changed delay:500ms, keyup[key=='Enter'], search"
-           hx-target="#tags-container"
-           hx-swap="outerHTML"
-           hx-boost="true"
-           hx-preserve="true" />
-  </label>
-  {% include "tags/tags_by_category.html" %}
+  <main>
+    <label class="flex relative items-center self-center mb-4 w-full lg:min-w-100">
+      <div class="absolute left-3 z-5">{% include "icons/feather.html" with icon="filter" %}</div>
+      <input type="search"
+             class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-9 input grow f-full"
+             placeholder="Filter tags..."
+             name="q"
+             value="{{ request.GET.q }}"
+             hx-get=""
+             hx-trigger="input changed delay:500ms, keyup[key=='Enter'], search"
+             hx-target="#tags-container"
+             hx-swap="outerHTML"
+             hx-boost="true"
+             hx-preserve="true" />
+    </label>
+    {% include "tags/tags_by_category.html" %}
+  </main>
 {% endblock content %}

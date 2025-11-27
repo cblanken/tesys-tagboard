@@ -163,10 +163,3 @@
   width: var(--text-lg);
   height: var(--text-lg);
 }
-
-.transparent-bg {
-  background-image: repeating-conic-gradient(#C2C2C2 0% 25%, #E4E4ED 0% 50%);
-  background-position: 0 0, 24px 24px;
-  background-size: 24px 24px;
-  background-color: #E4E4ED;
-}

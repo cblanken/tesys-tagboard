@@ -6,19 +6,8 @@
   {{ block.super }} — Posts
 {% endblock title %}
 {% block content %}
-  <div class="flex flex-col gap-4 items-center m-2 lg:flex-row lg:justify-center lg:items-start">
-    {% if post.title %}<h1 class="text-xl">{{ post.title }}</h1>{% endif %}
-    <div class="flex flex-col gap-2">
-      <img class="object-contain rounded-md max-h-[80vh] transparent-bg"
-           src="{{ post.media.image.file.url }}"
-           alt="image" />
-      <div class="flex flex-wrap gap-2 w-full">
-        {% for tag in tags %}
-          {% component "tag" tag=tag size="small" / %}
-        {% endfor %}
-      </div>
-    </div>
-    <div class="flex flex-col gap-2 place-self-start text-base grow">
+  <main class="flex flex-col-reverse gap-4 lg:flex-row">
+    <div class="w-full post-meta-data lg:max-w-142">
       <div class="flex gap-1 items-center min-w-72">
         <span class="font-bold">Uploaded by</span>
         {% include "nav/user_link.html" with user=post.uploader %}
@@ -37,16 +26,27 @@
           Unknown
         {% endif %}
       </div>
-    </div>
-  </div>
-  {% if comments %}
-    <div class="mt-4 mb-8">
-      <h2>Comments</h2>
-      <div class="flex flex-col gap-1 w-full lg:w-100">
-        {% for comment in comments %}
-          <div class="p-1 border-2 border border-info bg-base-300">{{ comment.text }}</div>
+      <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
+        {% for tag in tags %}
+          {% component "tag" tag=tag size="small" / %}
         {% endfor %}
       </div>
+      {% if comments %}
+        <div class="mt-4 mb-8">
+          <h2>Comments</h2>
+          <div class="flex flex-col gap-1 w-full lg:w-100">
+            {% for comment in comments %}
+              <div class="p-1 border-2 border border-info bg-base-300">{{ comment.text }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
     </div>
-  {% endif %}
+    <figure class="self-center rounded-md bg-base-300">
+      <img class="rounded-t-md max-h-[80svh]"
+           src="{{ post.media.image.file.url }}"
+           alt="{{ post.title }}" />
+      {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}
+    </figure>
+  </main>
 {% endblock content %}
