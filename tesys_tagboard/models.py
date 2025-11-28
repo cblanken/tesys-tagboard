@@ -309,6 +309,12 @@ class Collection(models.Model):
         return f"<Collection - name: {self.name}, user: {self.user}, desc: {self.desc}>"
 
 
+class CommentQuerySet(models.QuerySet):
+    def for_post(self, post_id: int):
+        """Returns comments for the specified `post_id`"""
+        return self.filter(post__pk=post_id).order_by("-post_date")
+
+
 class Comment(models.Model):
     """User comments"""
 
@@ -332,6 +338,8 @@ class Comment(models.Model):
     edit_date = models.DateTimeField(
         auto_now=True, db_comment="Date and time when the comment was last edited"
     )
+
+    objects = CommentQuerySet.as_manager()
 
     def __str__(self) -> str:
         return f'<Comment: user: {self.user}, text: "{self.text}">'

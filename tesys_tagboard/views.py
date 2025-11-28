@@ -13,9 +13,11 @@ from django.template.response import TemplateResponse
 from .decorators import require
 from .enums import SupportedMediaTypes
 from .enums import TagCategory
+from .forms import CommentForm
 from .forms import PostForm
 from .forms import PostSearchForm
 from .models import Collection
+from .models import Comment
 from .models import Favorite
 from .models import Image
 from .models import Media
@@ -43,7 +45,7 @@ def home(request: HttpRequest) -> TemplateResponse:
 @require(["GET", "POST"], login=False)
 def post(request: HtmxHttpRequest, media_id: int) -> TemplateResponse:
     post = get_object_or_404(Post.objects.with_media_id(media_id))
-    comments = post.comment_set.all()
+    comments = post.comment_set.order_by("-post_date")
     tags = Tag.objects.for_post(post)
     context = {"post": post, "tags": tags, "comments": comments}
     return TemplateResponse(request, "pages/post.html", context)
@@ -208,10 +210,39 @@ def remove_post_from_collection(
     return HttpResponse("Not allowed", status=403)
 
 
+@require(["POST"])
+def add_comment(
+    request: HtmxHttpRequest, media_id: int
+) -> TemplateResponse | HttpResponse:
+    post = get_object_or_404(Post.objects.with_media_id(media_id))
+
+    data = CommentForm(request.POST)
+    if data.is_valid():
+        comment = Comment(
+            post=post, text=data.cleaned_data.get("text"), user=request.user
+        )
+
+        comment.save()
+        comments = Comment.objects.for_post(post.pk)
+        context = {"post": post, "comments": comments}
+        return render(request, "posts/comments.html", context=context)
+    return HttpResponse(status=422)
+
+
+@require(["POST"])
+def edit_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    pass
+
+
+@require(["DELETE"])
+def delete_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    pass
+
+
 @require(["GET"], login=False)
 def post_search_autocomplete(
     request: HtmxHttpRequest,
-) -> TemplateResponse | HttpResponseNotAllowed:
+) -> TemplateResponse | HttpResponse:
     if request.method == "GET" and request.htmx:
         tag_prefixes = [key.lower() for key in TagCategory.__members__]
         query = request.GET.get("q", "")

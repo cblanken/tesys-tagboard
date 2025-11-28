@@ -47,6 +47,16 @@ class TagsetField(forms.Field):
         return value
 
 
+class PostSearchForm(forms.Form):
+    """Form for searching Posts
+    tagset: an array of tag IDs
+    funcset: an array of search function IDs
+    """
+
+    tagset = TagsetField(required=False, widget=forms.HiddenInput)
+    funcset = TagsetField(required=False, widget=forms.HiddenInput)
+
+
 class PostForm(forms.Form):
     """Form for media posts
     src_url = a URL linking to the source of the media
@@ -58,11 +68,7 @@ class PostForm(forms.Form):
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
-class PostSearchForm(forms.Form):
-    """Form for searching Posts
-    tagset: an array of tag IDs
-    funcset: an array of search function IDs
-    """
+class CommentForm(forms.Form):
+    """Form for adding and editing Comments"""
 
-    tagset = TagsetField(required=False, widget=forms.HiddenInput)
-    funcset = TagsetField(required=False, widget=forms.HiddenInput)
+    text = forms.CharField(widget=forms.Textarea, required=True)

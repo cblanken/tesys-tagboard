@@ -6,7 +6,7 @@
   {{ block.super }} — Posts
 {% endblock title %}
 {% block content %}
-  <main class="flex flex-col-reverse gap-4 lg:flex-row">
+  <main class="flex flex-col-reverse gap-6 lg:flex-row">
     <div class="w-full post-meta-data lg:max-w-142">
       <div class="flex gap-1 items-center min-w-72">
         <span class="font-bold">Uploaded by</span>
@@ -31,19 +31,41 @@
           {% component "tag" tag=tag size="small" / %}
         {% endfor %}
       </div>
-      {% if comments %}
-        <div class="mt-4 mb-8">
-          <h2>Comments</h2>
-          <div class="flex flex-col gap-2 items-stretch w-full">
-            {% for comment in comments %}
-              {% component "comment" comment=comment / %}
-            {% endfor %}
+      <div class="mt-4 mb-8">
+        <h2>Comments</h2>
+        <div class="flex flex-col gap-4 items-stretch my-2 w-full">
+          {% if request.user.is_authenticated %}
+            <form class="flex flex-col"
+                  method="post"
+                  id="post-add-comment-form"
+                  action="{% url "post-add-comment" media_id=post.media.pk %}">
+              {% csrf_token %}
+              <fieldset class="text-lg fieldset">
+                <textarea maxlength="1000"
+                          name="text"
+                          class="w-full h-24 text-base focus:border-none textarea max-h-100 focus:outline-secondary focus:outline-2"
+                          placeholder="Add a comment..."></textarea>
+              </fieldset>
+              <input class="my-1 w-full lg:w-36 btn btn-secondary btn-lg"
+                     type="submit"
+                     value="Post"
+                     hx-post="{% url "post-add-comment" media_id=post.media.pk %}"
+                     hx-target="#post-comments"
+                     hx-swap="innerHTML"
+                     hx-confirm="Are you sure you want to post this coment?"
+                     hx-on::after-request="document.querySelector('#post-add-comment-form textarea').value = ''" />
+            </form>
+          {% endif %}
+          <div id="post-comments">
+            {% if comments %}
+              {% include "posts/comments.html" with comments=comments %}
+            {% endif %}
           </div>
         </div>
-      {% endif %}
+      </div>
     </div>
-    <figure class="self-center rounded-md bg-base-300">
-      <img class="rounded-t-md max-h-[80svh]"
+    <figure class="rounded-md">
+      <img class="rounded-t-md {% if not post.title %}rounded-b-md{% endif %} max-h-[80svh]"
            src="{{ post.media.image.file.url }}"
            alt="{{ post.title }}" />
       {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}

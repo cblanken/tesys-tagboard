@@ -1,0 +1,7 @@
+{% load component_tags %}
+
+<section class="flex flex-col gap-2">
+  {% for comment in comments %}
+    {% component "comment" comment=comment / %}
+  {% endfor %}
+</section>
