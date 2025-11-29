@@ -5,15 +5,18 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from django.http.response import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.template.response import TemplateResponse
 
+from .components.comment.comment import CommentComponent
 from .decorators import require
 from .enums import SupportedMediaTypes
 from .enums import TagCategory
-from .forms import CommentForm
+from .forms import AddCommentForm
+from .forms import EditCommentForm
 from .forms import PostForm
 from .forms import PostSearchForm
 from .models import Collection
@@ -216,7 +219,7 @@ def add_comment(
 ) -> TemplateResponse | HttpResponse:
     post = get_object_or_404(Post.objects.with_media_id(media_id))
 
-    data = CommentForm(request.POST)
+    data = AddCommentForm(request.POST)
     if data.is_valid():
         comment = Comment(
             post=post, text=data.cleaned_data.get("text"), user=request.user
@@ -231,12 +234,31 @@ def add_comment(
 
 @require(["POST"])
 def edit_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    pass
+    data = EditCommentForm(request.POST)
+    if data.is_valid():
+        comment_id = data.cleaned_data.get("comment_id")
+        comment = Comment.objects.get(pk=comment_id, user=request.user)
+        comment.text = data.cleaned_data.get("text")
+        comment.save()
+        kwargs = {"comment": comment}
+        return CommentComponent.render_to_response(request=request, kwargs=kwargs)
+    return HttpResponse(status=422)
 
 
 @require(["DELETE"])
 def delete_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    pass
+    comment_id = request.POST.get("comment_id")
+    try:
+        comment = Comment.objects.get(user=request.user, pk=comment_id)
+        post = comment.post
+        comment.delete()
+        comments = Comment.objects.for_post(post.pk)
+        context = {"post": post, "comments": comments}
+        return render(request, "posts/comments.html", context=context)
+    except Comment.DoesNotExist:
+        return HttpResponseNotFound(
+            "That comment doesn't exist under the logged in user"
+        )
 
 
 @require(["GET"], login=False)

@@ -68,7 +68,14 @@ class PostForm(forms.Form):
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
-class CommentForm(forms.Form):
-    """Form for adding and editing Comments"""
+class AddCommentForm(forms.Form):
+    """Form for adding Comments"""
 
+    text = forms.CharField(widget=forms.Textarea, required=True)
+
+
+class EditCommentForm(forms.Form):
+    """Form for editing Comments"""
+
+    comment_id = forms.IntegerField(required=True)
     text = forms.CharField(widget=forms.Textarea, required=True)

@@ -52,7 +52,7 @@
                      hx-post="{% url "post-add-comment" media_id=post.media.pk %}"
                      hx-target="#post-comments"
                      hx-swap="innerHTML"
-                     hx-confirm="Are you sure you want to post this coment?"
+                     hx-confirm="Are you sure you want to post this comment?"
                      hx-on::after-request="document.querySelector('#post-add-comment-form textarea').value = ''" />
             </form>
           {% endif %}
