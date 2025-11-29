@@ -11,6 +11,10 @@
   logs: true;
 }
 
+@utility input {
+  @apply focus:outline-none focus:border-2;
+}
+
 @layer base {
   h1 {
     @apply text-3xl font-bold tracking-tight;

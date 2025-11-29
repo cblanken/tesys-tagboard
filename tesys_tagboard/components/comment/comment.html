@@ -21,7 +21,7 @@
         <input type="hidden" name="comment_id" value="{{ comment.pk }}" />
         <textarea maxlength="1000"
                   name="text"
-                  class="w-full h-24 text-base focus:border-none focus:outline-none textarea max-h-100">{{comment.text}}</textarea>
+                  class="w-full h-24 text-base input textarea max-h-100 focus:input-secondary">{{comment.text}}</textarea>
         <input hx-post="{% url 'post-edit-comment' %}"
                hx-include="inherit, [name='text']"
                hx-target="[data-comment='{{ comment.pk }}']"
