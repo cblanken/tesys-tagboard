@@ -2,7 +2,7 @@
 
 <a data-post_id="{{ post.pk }}"
    {% if post.favorited %}data-favorite{% endif %}
-   class="relative skeleton post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh lg:max-w-100 lg:max-h-100"
+   class="relative skeleton post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh lg:w-100 lg:h-100 lg:max-w-100 lg:max-h-100"
    href="{% url "post" media_id=post.media.id %}">
   <img class="object-cover invisible w-full h-full rounded-md"
        loading="lazy"
