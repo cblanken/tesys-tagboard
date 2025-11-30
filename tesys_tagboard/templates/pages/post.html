@@ -1,13 +1,25 @@
 {% extends "base.html" %}
 
-{% load component_tags %}
+{% load static component_tags %}
 
 {% block title %}
   {{ block.super }} — Posts
 {% endblock title %}
+{% block javascript %}
+  {{ block.super }}
+  <script defer src="{% static 'js/post.js' %}"></script>
+{% endblock javascript %}
 {% block content %}
   <main class="flex flex-col-reverse gap-6 lg:flex-row">
-    <div class="w-full post-meta-data lg:max-w-142">
+    <div class="w-full leading-8 post-meta-data lg:max-w-142">
+      <div class="flex gap-2 items-center">
+        <span class="font-bold">Title:</span>
+        {% if post.title %}
+          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url text=post.title / %}
+        {% else %}
+          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url empty_text="No title" / %}
+        {% endif %}
+      </div>
       <div class="flex gap-1 items-center min-w-72">
         <span class="font-bold">Uploaded by</span>
         {% include "nav/user_link.html" with user=post.uploader %}
@@ -38,18 +50,18 @@
             <form class="flex flex-col"
                   method="post"
                   id="post-add-comment-form"
-                  action="{% url "post-add-comment" media_id=post.media.pk %}">
+                  action="{% url "post-add-comment" post_id=post.pk %}">
               {% csrf_token %}
               <fieldset class="text-lg fieldset">
                 <textarea maxlength="1000"
                           name="text"
-                          class="w-full h-24 text-base focus:border-none textarea max-h-100 focus:outline-secondary focus:outline-2"
+                          class="w-full h-24 text-base input textarea max-h-100 focus:input-secondary focus:outline-secondary focus:outline-2"
                           placeholder="Add a comment..."></textarea>
               </fieldset>
               <input class="my-1 w-full lg:w-36 btn btn-secondary btn-lg"
                      type="submit"
                      value="Post"
-                     hx-post="{% url "post-add-comment" media_id=post.media.pk %}"
+                     hx-post="{% url "post-add-comment" post_id=post.pk %}"
                      hx-target="#post-comments"
                      hx-swap="innerHTML"
                      hx-confirm="Are you sure you want to post this comment?"

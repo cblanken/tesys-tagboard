@@ -68,6 +68,14 @@ class PostForm(forms.Form):
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
+class EditPostForm(forms.Form):
+    """Form for editing Post metadata"""
+
+    title = forms.CharField(max_length=200, label=_("Title"), required=False)
+    src_url = forms.URLField(label=_("Source"), required=False, assume_scheme="https")
+    tagset = TagsetField(required=False, widget=forms.HiddenInput)
+
+
 class AddCommentForm(forms.Form):
     """Form for adding Comments"""
 

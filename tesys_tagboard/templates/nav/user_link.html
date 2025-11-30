@@ -2,7 +2,7 @@
 
 <a href="{% url "users:detail" user.username %}"
    role="button"
-   class="flex items-center btn btn-sm bg-user text-user-content w-fit">
+   class="flex gap-2 items-center btn btn-xs bg-user text-user-content w-fit">
   <div>{% include "icons/feather.html" with icon="user" %}</div>
   <div>{{ user.username }}</div>
 </a>

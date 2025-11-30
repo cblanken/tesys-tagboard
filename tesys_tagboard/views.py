@@ -10,6 +10,7 @@ from django.http.response import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
 from .components.comment.comment import CommentComponent
 from .decorators import require
@@ -17,6 +18,7 @@ from .enums import SupportedMediaTypes
 from .enums import TagCategory
 from .forms import AddCommentForm
 from .forms import EditCommentForm
+from .forms import EditPostForm
 from .forms import PostForm
 from .forms import PostSearchForm
 from .models import Collection
@@ -50,8 +52,31 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
     post = get_object_or_404(Post.objects.filter(pk=post_id))
     comments = post.comment_set.order_by("-post_date")
     tags = Tag.objects.for_post(post)
-    context = {"post": post, "tags": tags, "comments": comments}
+    post_edit_url = reverse("post-edit", args=[post.pk])
+    context = {
+        "post": post,
+        "tags": tags,
+        "comments": comments,
+        "post_edit_url": post_edit_url,
+    }
     return TemplateResponse(request, "pages/post.html", context)
+
+
+@require(["POST"])
+def edit_post(
+    request: HtmxHttpRequest, post_id: int
+) -> TemplateResponse | HttpResponse:
+    post = get_object_or_404(Post.objects.filter(pk=post_id, uploader=request.user))
+
+    data = EditPostForm(request.POST)
+    if data.is_valid():
+        if title := data.cleaned_data.get("title"):
+            post.title = title
+            post.save()
+            return HttpResponse(post.title, status=200)
+
+        return HttpResponse(status=200)
+    return HttpResponse(status=422)
 
 
 @require(["GET", "POST"], login=False)
