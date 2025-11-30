@@ -1,30 +1,29 @@
-<form class="flex gap-2 items-center text-field-edit-form">
-  <div class="field-display">
+<form class="inline gap-2 items-center text-field-edit-form">
+  <span class="align-middle field-display">
     {% if empty_text %}
       <span class="italic opacity-50">{{ empty_text }}</span>
     {% else %}
       {{ text }}
     {% endif %}
+  </span>
+  <div class="inline-flex gap-2 items-center mx-1 align-middle">
+    <input class="hidden text-base input input-sm focus:input-secondary"
+           type="text"
+           name="{{ input_name }}"
+           value="{{ text|default:"" }}" />
+    <label class="flex gap-2 items-center btn btn-xs btn-warning" role="button">
+      <div>{% include "icons/feather.html" with icon="edit" %}</div>
+      <div class="uppercase">{{ toggle_text|default:"Edit" }}</div>
+      <input name="edit-enabled" hidden type="checkbox" />
+    </label>
+    <button type="submit"
+            class="flex hidden gap-1 items-center btn btn-xs btn-success"
+            {% if edit_url %}hx-post="{{ edit_url }}"{% endif %}
+            hx-target="previous .field-display"
+            hx-swap="innerHTML"
+            hx-confirm="Are you sure you want to update this value?">
+      <div>{% include "icons/feather.html" with icon="check-square" %}</div>
+      <div class="uppercase">Confirm</div>
+    </button>
   </div>
-  <input class="hidden text-base input input-sm focus:input-secondary"
-         type="text"
-         name="{{ input_name }}"
-         value="{{ text|default:"" }}" />
-  <label class="flex gap-2 items-center btn btn-xs btn-warning"
-         role="button"
-         form="{{ form_id }}"
-         for="{{ input_id }}">
-    <div>{% include "icons/feather.html" with icon="edit" %}</div>
-    <div class="uppercase">{{ toggle_text|default:"Edit" }}</div>
-    <input id="{{ input_id }}" hidden form="{{ form_id }}" type="checkbox" />
-  </label>
-  <button type="submit"
-          class="flex hidden gap-1 items-center btn btn-xs btn-success"
-          {% if edit_url %}hx-post="{{ edit_url }}"{% endif %}
-          hx-target=".field-display"
-          hx-swap="innerHTML"
-          hx-confirm="Are you sure you want to update this value?">
-    <div>{% include "icons/feather.html" with icon="check-square" %}</div>
-    <div class="uppercase">Confirm</div>
-  </button>
 </form>

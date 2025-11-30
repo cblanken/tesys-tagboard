@@ -9,8 +9,8 @@
     field_text_input.setSelectionRange(field_text_input.textContent.length-1, field_text_input.textContent.length-1);
 
     // Swap readonly comment text for editable field
-    function toggle_edit_field(enable) {
-      if (enable) {
+    function toggle_edit_field(editing) {
+      if (editing) {
         field_text_input.classList.remove("hidden");
         field_submit_btn.classList.remove("hidden");
         field_display.classList.add("hidden");
@@ -22,24 +22,23 @@
       }
     }
 
-    document.querySelectorAll(".text-field-edit-form").forEach(form => {
-      const checkbox = form.querySelector("input[type='checkbox']");
+    const checkbox = form.querySelector("input[name='edit-enabled']");
 
-      // Toggle comment editable textarea
-      checkbox.addEventListener("change", e => {
-        checkbox.checked = !checkbox.checked
-        toggle_edit_field(checkbox.checked);
-      });
+    // Toggle comment editable textarea
+    checkbox.addEventListener("change", e => {
+      toggle_edit_field(checkbox.checked);
+    });
 
-      // The label is styled as a button, but doesn't propgate change event
-      // of the related input without manually dispatching the event.
-      form.querySelector("label").addEventListener("click", e => {
-        checkbox.dispatchEvent(new Event("change"));
-      });
+    // The label is styled as a button, but doesn't propgate change event
+    // of the related input without manually dispatching the event.
+    form.querySelector("label").addEventListener("click", e => {
+      checkbox.dispatchEvent(new Event("change"));
+    });
 
-      field_submit_btn.addEventListener("htmx:afterRequest", e => {
+    field_submit_btn.addEventListener("htmx:afterRequest", e => {
+      if (e.detail.target = field_display) {
         toggle_edit_field(false);
-      });
+      }
     });
   };
 
@@ -55,11 +54,4 @@
 
   let forms = get_edit_text_forms();
   setup(forms);
-
-  document.addEventListener("htmx:afterRequest", e => {
-    // Re-setup comment event listeners when an edit is made
-    // TODO: target only edited comment instead of running setup over all comments
-    let comments = get_edit_text_forms();
-    setup(comments);
-  });
 })()

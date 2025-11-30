@@ -75,6 +75,11 @@ def edit_post(
             post.save()
             return HttpResponse(post.title, status=200)
 
+        if src_url := data.cleaned_data.get("src_url"):
+            post.media.src_url = src_url
+            post.media.save()
+            return HttpResponse(post.media.src_url, status=200)
+
         return HttpResponse(status=200)
     return HttpResponse(status=422)
 

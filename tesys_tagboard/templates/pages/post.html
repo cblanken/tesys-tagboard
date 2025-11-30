@@ -30,12 +30,12 @@
       <div>
         <span class="font-bold">Rating</span>: {{ post.get_rating_level_display }}
       </div>
-      <div>
-        <span class="font-bold">Source</span>:
+      <div class="flex gap-2 items-center">
+        <span class="self-start font-bold">Source:</span>
         {% if post.media.src_url %}
-          <a class="link" href="{{ post.media.src_url }}">{{ post.media.src_url }}</a>
+          {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
         {% else %}
-          Unknown
+          {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
         {% endif %}
       </div>
       <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
