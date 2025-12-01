@@ -10,6 +10,8 @@
     form.addEventListener("tagAction", e => {
       if (e.detail.action == "search") {
         form.submit();
+      } else if (e.detail.action == "remove") {
+        form.remove();
       }
     });
     form.addEventListener("click", e => {

@@ -80,6 +80,13 @@
     }
 
 
+    root.addEventListener("tagAction", e => {
+      // Update tags when a tag is removed
+      if (e.detail.action == "remove") {
+        htmx.trigger(confirm_tag_btn, "click");
+      };
+    });
+
     htmx.on(root.querySelector(".result-container"), "htmx:afterSettle", (e) => {
       let search_results = get_search_results();
       if (search_results) {

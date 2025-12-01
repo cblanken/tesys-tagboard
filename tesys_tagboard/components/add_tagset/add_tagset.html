@@ -3,7 +3,7 @@
 <div class="flex flex-col gap-2 w-full align-start add-tagset-container">
   <div class="flex flex-wrap gap-2 items-center tagset">
     {% for tag in tags %}
-      {% component "tag" tag=tag size=size / %}
+      {% component "tag" tag=tag size=size actions=actions / %}
     {% endfor %}
   </div>
   {% if add_tag_enabled %}

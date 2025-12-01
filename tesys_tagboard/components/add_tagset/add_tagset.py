@@ -2,6 +2,8 @@ from django.urls import reverse
 from django_components import Component
 from django_components import register
 
+from tesys_tagboard.components.tag.tag import Action
+
 
 @register("add_tagset")
 class AddTagsetComponent(Component):
@@ -16,6 +18,7 @@ class AddTagsetComponent(Component):
             "size": size,
             "add_tag_enabled": bool(add_tag_enabled),
             "tags": kwargs.get("tags"),
+            "actions": [Action("remove", "Remove this tag from the tag set", "")],
         }
 
         post = kwargs.get("post")

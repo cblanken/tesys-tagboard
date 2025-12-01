@@ -23,8 +23,6 @@ class TagComponent(Component):
         extra_actions = kwargs.get("actions", [])
         actions = [
             Action("search", "Search for posts with this tag", ""),
-            Action("favorite", "Add this tag to your favorites", ""),
-            Action("blocklist", "Add this tag to your tag blocklist", ""),
             *extra_actions,
         ]
         return {"tag": tag, "size": size, "category": category, "actions": actions}
