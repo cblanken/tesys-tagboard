@@ -40,15 +40,18 @@
     }
 
     add_tag_btn.addEventListener("click", e => {
+      e.preventDefault()
       show_tag_search();
     });
 
     cancel_tag_btn.addEventListener("click", e => {
+      e.preventDefault()
       hide_tag_search();
       delete_uncommitted_tags();
     });
 
     confirm_tag_btn.addEventListener("click", e => {
+      e.preventDefault()
       hide_tag_search();
     });
 
