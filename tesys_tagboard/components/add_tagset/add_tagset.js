@@ -55,11 +55,15 @@
     });
 
     const add_tag_to_set_handler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const tagset = get_tagset();
       let autocomplete_item = e.currentTarget;
       const tag_id = autocomplete_item.dataset['id'];
       let tagset_ids = get_tagset_ids(tagset);
-      if (!tagset_ids.includes(tag_id)) {
+      if (tagset_ids.includes(tag_id)) {
+        console.warn("Duplicate tag/search items may not be added to a tagset.")
+      } else {
         const tag_name = autocomplete_item.dataset['name'];
         const tag_div = document.createElement("div");
         tag_div.classList.add("p-3", "py-1", "border-2", "border-dashed", "rounded-md", "opacity-60");
@@ -74,8 +78,6 @@
 
         tag_div.appendChild(tag_input);
         tagset.appendChild(tag_div);
-      } else {
-        console.warn("Duplicate tag/search items may not be added to a tagset.")
       }
 
       search_input.value = "";
@@ -98,6 +100,7 @@
           htmx.on(autocomplete_item, "keydown", (e) => {
             switch (e.code) {
               case "Enter":
+                e.preventDefault();
                 add_tag_to_set_handler(e);
                 break;
               case "Escape":
@@ -114,6 +117,7 @@
                 break;
               default:
                 // Do nothing
+                e.preventDefault();
             }
           });
         });
@@ -125,14 +129,16 @@
     tagset_containers = document.querySelectorAll(".add-tagset-container");
     tagset_containers.forEach(container => {
       setup_tagset(container);
-      container.addEventListener("htmx:afterSettle", e => {
-        setup_tagset(container);
-      });
     });
   }
 
-  setup();
-  document.addEventListener("htmx:afterSwap", e => {
+  document.addEventListener("DOMContentLoaded", e => {
     setup();
+  });
+
+  document.addEventListener("htmx:afterSwap", e => {
+    if (Array.from(e.detail.elt.classList).includes("add-tagset-container")) {
+      setup_tagset(e.detail.elt);
+    }
   });
 })();

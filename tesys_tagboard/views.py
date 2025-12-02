@@ -103,6 +103,7 @@ def edit_post(
                 "size": "small",
                 "tags": tags,
                 "add_tag_enabled": True,
+                "post": post,
             }
 
             return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
@@ -137,7 +138,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             tags = Tag.objects.in_tagset(tagset)
             posts = posts.has_tags(tags)
 
-    pager = Paginator(posts, 20, 5)
+    pager = Paginator(posts, 18, 3)
     page_num = request.GET.get("page", 1)
     page = pager.get_page(page_num)
     context = {"posts": posts, "pager": pager, "page": page, "tags": tags}
