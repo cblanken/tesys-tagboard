@@ -20,7 +20,9 @@
           {% if action.name == "search" %}
             <a href='{% url "posts" %}?tag={{ tag.pk }}' class="p-3 w-full h-full">{{ action.name }}</a>
           {% else %}
-            <button data-action="{{ action.name }}" class="p-3 w-full h-full">{{ action.name }}</button>
+            <button type="button"
+                    data-action="{{ action.name }}"
+                    class="p-3 w-full h-full">{{ action.name }}</button>
           {% endif %}
           <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-40 h-content bg-info text-info-content">
             {{ action.desc }}

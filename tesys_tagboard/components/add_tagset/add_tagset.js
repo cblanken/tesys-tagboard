@@ -34,7 +34,7 @@
     }
     const delete_uncommitted_tags = () => {
       const tagset = get_tagset();
-      tagset.querySelectorAll(":scope > div").forEach(uncommitted_tag => {
+      tagset.querySelectorAll(":scope > div[data-new]").forEach(uncommitted_tag => {
         uncommitted_tag.remove();
       });
     }
@@ -63,8 +63,9 @@
       if (!tagset_ids.includes(tag_id)) {
         const tag_name = autocomplete_item.dataset['name'];
         const tag_div = document.createElement("div");
-        tag_div.classList.add("rounded-md", "bg-secondary", "text-secondary-content", "h-8", "px-2", "py-1");
-        tag_div.textContent = tag_name;
+        tag_div.classList.add("p-3", "py-1", "border-2", "border-dashed", "rounded-md", "opacity-60");
+        tag_div.textContent = `+ ${tag_name}`;
+        tag_div.setAttribute("data-new", true);
 
         let tag_input = document.createElement("input");
         tag_input.setAttribute("id", `tag-${tag_id}`);

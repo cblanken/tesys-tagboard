@@ -15,7 +15,7 @@
              value="Search"
              class="w-full text-xl btn btn-lg btn-primary" />
       {% csrf_token %}
-      {% component "add_tagset" tags=tags add_tag_enabled=True size="large" / %}
+      {% component "add_tagset" tags=tags add_tag_enabled=True / %}
     </form>
     <section class="flex flex-col gap-4 items-center w-full">
       {% component "pager" with pager=pager page=page / %}

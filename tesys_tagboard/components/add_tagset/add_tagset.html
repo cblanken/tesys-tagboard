@@ -26,7 +26,7 @@
                 {% if post_url %}hx-post="{{ post_url }}"{% endif %}
                 hx-target="previous .tagset"
                 hx-include="closest .add-tagset-container"
-                hx-swap="outerHTML">
+                hx-swap="innerHTML">
           <div class="flex gap-1 items-center">
             {% include "icons/feather.html" with icon="check-square" %}
             <div>Confirm</div>
