@@ -57,12 +57,17 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
         posts = posts.annotate_favorites(favorites)
     post = get_object_or_404(posts)
     comments = post.comment_set.order_by("-post_date")
+
+    comments_pager = Paginator(comments, 10, 5)
+    comments_page_num = request.GET.get("page", 1)
+    comments_page = comments_pager.get_page(comments_page_num)
     tags = Tag.objects.for_post(post)
     post_edit_url = reverse("post-edit", args=[post.pk])
     context = {
         "post": post,
         "tags": tags,
-        "comments": comments,
+        "comments_pager": comments_pager,
+        "comments_page": comments_page,
         "post_edit_url": post_edit_url,
     }
     return TemplateResponse(request, "pages/post.html", context)
@@ -283,7 +288,15 @@ def add_comment(
 
         comment.save()
         comments = Comment.objects.for_post(post.pk)
-        context = {"post": post, "comments": comments}
+        comments_pager = Paginator(comments, 10, 5)
+        comments_page_num = request.GET.get("page", 1)
+        comments_page = comments_pager.get_page(comments_page_num)
+        context = {
+            "post": post,
+            "comments": comments,
+            "comments_pager": comments_pager,
+            "comments_page": comments_page,
+        }
         return render(request, "posts/comments.html", context=context)
     return HttpResponse(status=422)
 

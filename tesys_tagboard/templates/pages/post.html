@@ -42,7 +42,7 @@
         {% component "add_tagset" post=post tags=tags size="small" add_tag_enabled=True / %}
       </div>
       <div class="mt-4 mb-8">
-        {% if comments or request.user.is_authenticated %}<h2>Comments</h2>{% endif %}
+        {% if comments_pager or request.user.is_authenticated %}<h2>Comments</h2>{% endif %}
         <div class="flex flex-col gap-4 items-stretch my-2 w-full">
           {% if request.user.is_authenticated %}
             <form class="flex flex-col"
@@ -67,9 +67,9 @@
             </form>
           {% endif %}
           <div id="post-comments">
-            {% if comments %}
-              {% include "posts/comments.html" with comments=comments %}
-            {% endif %}
+            <section class="flex flex-col gap-4 items-center w-full">
+              {% include "posts/comments.html" with comments=comments_page %}
+            </section>
           </div>
         </div>
       </div>
