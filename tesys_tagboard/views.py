@@ -50,7 +50,11 @@ def home(request: HttpRequest) -> TemplateResponse:
 
 @require(["GET", "POST"], login=False)
 def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
-    post = get_object_or_404(Post.objects.filter(pk=post_id))
+    posts = Post.objects.filter(pk=post_id)
+    if request.user.is_authenticated:
+        favorites = Favorite.objects.for_user(request.user)
+        posts = posts.annotate_favorites(favorites)
+    post = get_object_or_404(posts)
     comments = post.comment_set.order_by("-post_date")
     tags = Tag.objects.for_post(post)
     post_edit_url = reverse("post-edit", args=[post.pk])

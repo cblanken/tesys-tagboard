@@ -14,14 +14,7 @@
   <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full rounded-md post-thumbnail-hover group-hover/post:flex">
     <section class="flex gap-1 self-end z-5">
       {% if request.user.is_authenticated %}
-        <button class="flex favorite-button align-center btn btn-secondary"
-                hx-swap="innerHTML"
-                hx-target="#post-{{ post.pk }}-fav"
-                hx-trigger="click"
-                {% if post.favorited %} hx-delete="{% url 'remove-favorite' post_id=post.pk %}" {% else %} hx-put="{% url 'add-favorite' post_id=post.pk %}" {% endif %}>
-          <div>Favorite</div>
-          <div id="post-{{ post.pk }}-fav">{% include "icons/feather.html" with icon="heart" fill=post.favorited %}</div>
-        </button>
+        {% component "favorite_toggle" post=post / %}
         {% component "collection_picker" post=post / %}
       {% endif %}
     </section>

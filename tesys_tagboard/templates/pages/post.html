@@ -10,7 +10,7 @@
   <script defer src="{% static 'js/post.js' %}"></script>
 {% endblock javascript %}
 {% block content %}
-  <main class="flex flex-col-reverse gap-6 lg:flex-row">
+  <main class="flex flex-col-reverse gap-6 lg:flex-row lg:items-start">
     <div class="w-full leading-8 post-meta-data lg:max-w-142">
       <div class="flex gap-2 items-center">
         <span class="font-bold">Title:</span>
@@ -42,7 +42,7 @@
         {% component "add_tagset" post=post tags=tags size="small" add_tag_enabled=True / %}
       </div>
       <div class="mt-4 mb-8">
-        <h2>Comments</h2>
+        {% if comments or request.user.is_authenticated %}<h2>Comments</h2>{% endif %}
         <div class="flex flex-col gap-4 items-stretch my-2 w-full">
           {% if request.user.is_authenticated %}
             <form class="flex flex-col"
@@ -74,11 +74,19 @@
         </div>
       </div>
     </div>
-    <figure class="rounded-md">
-      <img class="rounded-t-md {% if not post.title %}rounded-b-md{% endif %} max-h-[80svh]"
-           src="{{ post.media.image.file.url }}"
-           alt="{{ post.title }}" />
-      {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}
-    </figure>
+    <section class="flex flex-col gap-2 lg:flex-col-reverse">
+      <figure class="rounded-md">
+        <img class="rounded-t-md {% if not post.title %}rounded-b-md{% endif %} max-h-[80svh]"
+             src="{{ post.media.image.file.url }}"
+             alt="{{ post.title }}" />
+        {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}
+      </figure>
+      <div class="flex gap-2 items-center">
+        {% if request.user.is_authenticated %}
+          {% component "favorite_toggle" post=post / %}
+          {% component "collection_picker" post=post / %}
+        {% endif %}
+      </div>
+    </section>
   </main>
 {% endblock content %}
