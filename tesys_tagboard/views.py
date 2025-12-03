@@ -23,6 +23,7 @@ from .forms import EditCommentForm
 from .forms import EditPostForm
 from .forms import PostForm
 from .forms import PostSearchForm
+from .forms import TagsetForm
 from .models import Collection
 from .models import Comment
 from .models import Favorite
@@ -386,7 +387,27 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> Media
 
 
 @require(["GET", "POST"])
-def upload(request: HtmxHttpRequest) -> TemplateResponse:
+def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    if request.htmx:
+        # Confirming tagset
+        data: dict[str, str | list[Any] | None] = {
+            key: request.POST.get(key) for key in request.POST
+        }
+        data["tagset"] = request.POST.getlist("tagset")
+        form = (
+            TagsetForm(data, request.FILES)
+            if request.method == "POST"
+            else TagsetForm()
+        )
+
+        if form.is_valid():
+            tagset = form.cleaned_data.get("tagset")
+            tags = Tag.objects.in_tagset(tagset)
+
+            kwargs = {"tags": tags, "add_tag_enabled": True, "post_url": "upload"}
+
+            return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
+
     data: dict[str, str | list[Any] | None] = {
         key: request.POST.get(key) for key in request.POST
     }

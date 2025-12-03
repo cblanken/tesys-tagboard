@@ -68,6 +68,10 @@ class PostForm(forms.Form):
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
+class TagsetForm(forms.Form):
+    tagset = TagsetField(required=False, widget=forms.HiddenInput)
+
+
 class EditPostForm(forms.Form):
     """Form for editing Post metadata"""
 

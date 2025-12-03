@@ -6,15 +6,50 @@
   {{ block.super }} — Upload
 {% endblock title %}
 {% block content %}
-  <div class="flex gap-4">
+  <div class="hidden">
+    <!--
+    Dummy tag to load Tag-related JS. This is necessary for Tags to properly execute
+    their click actions. Otherwise, tags loaded in via the `add_tagset` component
+    won't be interactive
+     -->
+    {% component "tag" / %}
+  </div>
+  <div class="flex gap-4 justify-center">
     <form action="{% url 'upload' %}"
           method="post"
           enctype="multipart/form-data"
-          class="flex flex-col gap-4 items-center">
+          class="flex flex-col gap-4 p-8 w-full rounded-lg lg:w-1/2 bg-base-300 sm:min-w-[450px] lg:max-w-[800px]">
       {% csrf_token %}
-      {{ form }}
+      {{ form.non_field_errors }}
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Pick a file</legend>
+        <input type="file"  class="w-full file-input file-input-lg" />
+        <label class="label">Supported file types: PNG, JPEG, BMP, GIF, WebP</label>
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Source</legend>
+        <label class="w-full input validator">
+          {% include "icons/feather.html" with icon="link" %}
+          <input name="src_url"
+                 type="url"
+                 required
+                 placeholder="https://"
+                 value="https://"
+                 pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
+                 title="Must be valid URL" />
+        </label>
+        <p class="hidden validator-hint">Must be valid URL</p>
+      </fieldset>
+      <div id="all-posts-tagset" class="flex">
+        {% component "add_tagset" autocomplete_url="tag-autocomplete" add_tag_enabled=True post_url="upload" / %}
+      </div>
       <input type="submit" value="Post" class="text-xl btn btn-primary" />
-      <div id="all-posts-tagset" class="flex">{% component "add_tagset" autocomplete_url="tag-autocomplete" / %}</div>
+      {% if form.errors %}
+        <div role="alert" class="alert alert-error">
+          {% include "icons/feather.html" with icon="alert-circle" %}
+          {{ form.errors }}
+        </div>
+      {% endif %}
     </form>
   </div>
 {% endblock content %}

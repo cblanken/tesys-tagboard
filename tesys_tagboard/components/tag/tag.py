@@ -18,6 +18,8 @@ class TagComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         tag = kwargs.get("tag")
+        if tag is None:
+            return {}
         size = kwargs.get("size")
         category = tag.get_category_display()
         extra_actions = kwargs.get("actions", [])
