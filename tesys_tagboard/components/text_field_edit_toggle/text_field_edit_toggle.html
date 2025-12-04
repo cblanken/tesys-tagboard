@@ -2,6 +2,8 @@
   <span class="align-middle field-display">
     {% if empty_text %}
       <span class="italic opacity-50">{{ empty_text }}</span>
+    {% elif is_link %}
+      <a class="link" target="_blank" href="{{ text }}">{{ text }}</a>
     {% else %}
       {{ text }}
     {% endif %}
@@ -11,10 +13,17 @@
            type="text"
            name="{{ input_name }}"
            value="{{ text|default:"" }}" />
-    <label class="flex gap-2 items-center btn btn-xs btn-warning" role="button">
-      <div>{% include "icons/feather.html" with icon="edit" %}</div>
-      <div class="uppercase">{{ toggle_text|default:"Edit" }}</div>
-      <input name="edit-enabled" hidden type="checkbox" />
+    <label class="edit-btn" role="button">
+      <div class="flex hidden gap-2 items-center edit-btn_cancel btn btn-xs btn-error">
+        <div>{% include "icons/feather.html" with icon="x-square" %}</div>
+        <div class="uppercase">{{ toggle_text|default:"Cancel" }}</div>
+        <input name="edit-enabled" hidden type="checkbox" />
+      </div>
+      <div class="flex gap-2 items-center edit-btn_edit btn btn-xs btn-warning">
+        <div>{% include "icons/feather.html" with icon="edit" %}</div>
+        <div class="uppercase">{{ toggle_text|default:"Edit" }}</div>
+        <input name="edit-enabled" hidden type="checkbox" />
+      </div>
     </label>
     <button type="submit"
             class="flex hidden gap-1 items-center btn btn-xs btn-success"

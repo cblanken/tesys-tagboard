@@ -13,10 +13,12 @@ class TextFieldEditToggleComponent(Component):
         empty_text = kwargs.get("empty_text")
         edit_url = kwargs.get("edit_url")
         input_name = kwargs.get("input_name")
+        is_link = kwargs.get("is_link")
         return {
             "text": text,
             "toggle_text": toggle_btn_text,
             "empty_text": empty_text,
             "edit_url": edit_url,
             "input_name": input_name,
+            "is_link": is_link,
         }

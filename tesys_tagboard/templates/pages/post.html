@@ -33,7 +33,7 @@
       <div class="flex gap-2 items-center">
         <span class="self-start font-bold">Source:</span>
         {% if post.media.src_url %}
-          {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+          {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
         {% else %}
           {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
         {% endif %}
