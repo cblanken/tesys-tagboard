@@ -2,14 +2,14 @@
 
 <div data-post_id="{{ post.pk }}"
      {% if post.favorited %}data-favorite{% endif %}
-     class="relative skeleton post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh lg:w-100 lg:h-100 lg:max-w-100 lg:max-h-100">
+     class="relative skeleton post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh md:w-75 md:h-75 md:max-w-75 md:max-h-75">
   <a class="absolute w-full h-full z-1"
      href="{% url "post" post_id=post.pk %}"></a>
   <img class="object-cover invisible w-full h-full rounded-md"
        loading="lazy"
-       src="{{ post.media.image.file.url }}"
-       width="{{ post.media.image.width }}"
-       height="{{ post.media.image.height }}"
+       src="{{ post.media.image.thumbnail.url }}"
+       width="{{ post.media.image.thumbnail.width }}"
+       height="{{ post.media.image.thumbnail.height }}"
        alt="image" />
   <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full rounded-md post-thumbnail-hover group-hover/post:flex">
     <section class="flex gap-1 self-end z-5">

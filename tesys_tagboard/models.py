@@ -2,8 +2,10 @@
 
 import uuid
 from hashlib import md5
+from io import BytesIO
 
 import imagehash
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.db.models import Case
 from django.db.models import QuerySet
@@ -99,6 +101,13 @@ def media_upload_path(instance, filename: str) -> str:
     return f"uploads/{now.year}/{now.month}/{now.day}/{filename}"
 
 
+def media_thumbnail_upload_path(instance, filename: str) -> str:
+    """Generate a unique upload path for a Media file thumbnail"""
+    filename = str(uuid.uuid4())
+    now = timezone.now()
+    return f"thumbnails/{now.year}/{now.month}/{now.day}/{filename}"
+
+
 def unique_filename(instance, filename: str) -> str:
     """Generate a unique (UUID) filename"""
     filename_split = filename.split(".")
@@ -133,7 +142,23 @@ class Image(models.Model):
     """Media linked to static image files"""
 
     meta = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
-    file = models.ImageField(upload_to=media_upload_path, unique=True)
+    file = models.ImageField(
+        upload_to=media_upload_path,
+        unique=True,
+        width_field="width",
+        height_field="height",
+    )
+    width = models.PositiveIntegerField(default=0)
+    height = models.PositiveIntegerField(default=0)
+    thumbnail = models.ImageField(
+        upload_to=media_thumbnail_upload_path,
+        unique=True,
+        width_field="width",
+        height_field="height",
+        null=True,
+    )
+    thumbnail_width = models.PositiveIntegerField(default=0)
+    thumbnail_height = models.PositiveIntegerField(default=0)
 
     """MD5 hash"""
     md5 = models.CharField(validators=[valid_md5])
@@ -151,9 +176,33 @@ class Image(models.Model):
         return f"<Image - meta: {self.meta}, file: {self.file}>"
 
     def save(self, *args, **kwargs):
+        # Update hashes
         self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
         self.phash = str(imagehash.phash(PIL_Image.open(self.file)))
         self.dhash = str(imagehash.dhash(PIL_Image.open(self.file)))
+
+        image = PIL_Image.open(self.file)
+
+        if image.mode not in ("L", "RGB"):
+            image = image.convert("RGB")
+
+        # Set thumbnail size
+        thumb_size = kwargs.get("thumb_size", (400, 400))
+        image.thumbnail(thumb_size)
+
+        # Save thumbnail to memory
+        handle = BytesIO()
+        image.save(handle, "png")
+        handle.seek(0)
+
+        thumbnail_name = f"{self.file.name}.png"
+        suf = SimpleUploadedFile(
+            thumbnail_name, handle.read(), content_type="image/png"
+        )
+
+        self.thumbnail.save(f"{suf.name}.png", suf, save=False)
+        self.thumbnail_width, self.thumbnail_height = image.size
+
         super().save(*args, **kwargs)
 
 

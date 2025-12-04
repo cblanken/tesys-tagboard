@@ -139,7 +139,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             tags = Tag.objects.in_tagset(tagset)
             posts = posts.has_tags(tags)
 
-    pager = Paginator(posts, 18, 3)
+    pager = Paginator(posts, 32, 4)
     page_num = request.GET.get("page", 1)
     page = pager.get_page(page_num)
     context = {"posts": posts, "pager": pager, "page": page, "tags": tags}
