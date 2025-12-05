@@ -18,7 +18,9 @@ class TagComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         tag = kwargs.get("tag")
-        if tag is None:
+        alias = kwargs.get("alias")
+        tag = alias.tag if alias else kwargs.get("tag")
+        if tag is None and alias is None:
             return {}
         size = kwargs.get("size")
         category = tag.get_category_display()
@@ -27,4 +29,10 @@ class TagComponent(Component):
             Action("search", "Search for posts with this tag", ""),
             *extra_actions,
         ]
-        return {"tag": tag, "size": size, "category": category, "actions": actions}
+        return {
+            "tag": tag,
+            "size": size,
+            "category": category,
+            "actions": actions,
+            "alias": alias,
+        }

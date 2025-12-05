@@ -31,6 +31,7 @@ from .models import Image
 from .models import Media
 from .models import Post
 from .models import Tag
+from .models import TagAlias
 from .search import PostSearch
 from .search import tag_autocomplete
 
@@ -149,13 +150,15 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 @require(["GET"], login=False)
 def tags(request: HtmxHttpRequest) -> TemplateResponse:
     categories = TagCategory.__members__.values()
-    tag_name = request.GET.get("q", "")
+    tag_query = request.GET.get("q", "")
     tags_by_cat = {
-        cat: Tag.objects.filter(category=cat.value.shortcode, name__icontains=tag_name)
+        cat: Tag.objects.filter(category=cat.value.shortcode, name__icontains=tag_query)
         for cat in categories
     }
 
-    context = {"tags_by_cat": tags_by_cat, "tag_name": tag_name}
+    aliases = TagAlias.objects.filter(name__icontains=tag_query)
+
+    context = {"tags_by_cat": tags_by_cat, "tag_name": tag_query, "aliases": aliases}
     if request.htmx:
         return TemplateResponse(request, "tags/tags_by_category.html", context)
 

@@ -2,8 +2,16 @@
   <button tabindex="0"
           role="button"
           class="{% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn text-tag-content {% if category == "basic" %}bg-tag-basic{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
-    <div class="flex gap-1 items-center">
-      {% include "icons/feather.html" with icon="tag" %}
+    <div class="flex gap-1 items-center w-fit nowrap">
+      {% if alias %}
+        {% include "icons/feather.html" with icon="corner-down-right" %}
+      {% else %}
+        {% include "icons/feather.html" with icon="tag" %}
+      {% endif %}
+      {% if alias %}
+        <div class="font-bold">{{ alias.name }}</div>
+        <div>{% include "icons/feather.html" with icon="arrow-right" %}</div>
+      {% endif %}
       <div>{{ tag.name }}</div>
     </div>
     <div>({{ tag.post_count }})</div>
