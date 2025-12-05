@@ -91,7 +91,7 @@ startapp +args:
 alias t := test
 test *args:
     @echo "Running tests..."
-    DJANGO_READ_DOT_ENV_FILE=True pytest
+    DJANGO_READ_DOT_ENV_FILE=True uv run pytest
 
 db-reset *args:
     just manage reset_db
