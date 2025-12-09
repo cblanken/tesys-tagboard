@@ -87,9 +87,6 @@ INSTALLED_APPS += ["django_watchfiles"]
 
 
 # Tesy's Tagboard dev apps
-INSTALLED_APPS += [
-    "tailwind",
-    "theme",
-]
+INSTALLED_APPS += []
 
 TAILWIND_APP_NAME = "theme"
