@@ -1,4 +1,4 @@
-{% load component_tags %}
+{% load component_tags static %}
 
 <div data-post_id="{{ post.pk }}"
      {% if post.favorited %}data-favorite{% endif %}
@@ -7,9 +7,7 @@
      href="{% url "post" post_id=post.pk %}"></a>
   <img class="object-cover invisible w-full h-full rounded-md"
        loading="lazy"
-       src="{{ post.media.image.thumbnail.url }}"
-       width="{{ post.media.image.thumbnail.width }}"
-       height="{{ post.media.image.thumbnail.height }}"
+       {% if post.media.image.thumbnail %} src="{{ post.media.image.thumbnail.url }}" width="{{ post.media.image.thumbnail.width }}" height="{{ post.media.image.thumbnail.height }}" {% else %} src="{% static "images/default_thumbnail.png" %}" width="400px" height="400px" {% endif %}
        alt="image" />
   <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full rounded-md post-thumbnail-hover group-hover/post:flex">
     <section class="flex gap-1 self-end z-5">
