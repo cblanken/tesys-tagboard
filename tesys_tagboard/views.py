@@ -117,6 +117,19 @@ def edit_post(
     return HttpResponse(status=422)
 
 
+@require(["DELETE"])
+def delete_post(
+    request: HtmxHttpRequest, post_id: int
+) -> TemplateResponse | HttpResponse:
+    try:
+        post = Post.objects.get(pk=post_id, uploader=request.user)
+        post.delete()
+        return redirect(reverse("posts"))
+
+    except Post.DoesNotExist:
+        return HttpResponseNotFound("That post doesn't exist")
+
+
 @require(["GET", "POST"], login=False)
 def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     posts = Post.objects.select_related("media", "media__image").prefetch_related(

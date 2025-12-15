@@ -83,10 +83,21 @@
              alt="{{ post.title }}" />
         {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}
       </figure>
-      <div class="flex gap-2 items-center">
+      <div class="flex flex-wrap gap-2 items-center">
         {% if request.user.is_authenticated %}
           {% component "favorite_toggle" post=post / %}
           {% component "collection_picker" post=post / %}
+          {% if request.user == post.uploader %}
+            <form method="delete"
+                  action="{% url 'post-delete' post_id=post.pk %}"
+                  class="p-0"
+                  onsubmit="return confirm('Are you sure you want to delete this post?');">
+              <button type="submit" class="flex p-3 align-center btn btn-error text-nowrap">
+                <div>{% include "icons/feather.html" with icon="trash" %}</div>
+                <div>Delete post</div>
+              </button>
+            </form>
+          {% endif %}
         {% endif %}
       </div>
     </section>
