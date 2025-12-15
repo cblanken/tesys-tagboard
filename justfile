@@ -11,14 +11,14 @@ default:
     @just --list
 
 # build: Build python image.
-build:
+build *args:
     @echo "Building python image..."
-    @docker compose build
+    @docker compose build {{args}}
 
 # up: Start up containers.
-up:
+up *args:
     @echo "Starting up containers..."
-    @docker compose up -d --remove-orphans
+    @docker compose up -d --remove-orphans {{args}}
 
 up-debug:
     @echo "Starting up containers with debug console for Django app..."
@@ -27,14 +27,14 @@ up-debug:
     # Note when exiting (Ctrl-C) the debugger, the other docker services
     # will remain up until brought down with `just down`
 
-up-docs:
+up-docs *args:
     @echo "Starting up docs container..."
-    COMPOSE_FILE=docker-compose.docs.yml docker compose up -d
+    COMPOSE_FILE=docker-compose.docs.yml docker compose up -d {{args}}
 
 # down: Stop containers.
-down:
+down *args:
     @echo "Stopping containers..."
-    @docker compose down
+    @docker compose down {{args}}
 
 down-debug:
     @echo "Stopping containers required for Django app debug..."
@@ -91,9 +91,9 @@ startapp +args:
 alias t := test
 test *args:
     @echo "Running tests..."
-    DJANGO_READ_DOT_ENV_FILE=True uv run pytest
+    DJANGO_READ_DOT_ENV_FILE=True uv run pytest {{args}}
 
-db-reset *args:
+db-reset:
     just manage reset_db
     just manage migrate
     just manage createsuperuser --username admin --email tesy-tagboard@example.com
