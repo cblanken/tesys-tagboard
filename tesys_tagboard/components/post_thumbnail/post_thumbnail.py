@@ -13,7 +13,7 @@ class PostThumbnailComponent(Component):
     def get_template_data(self, args, kwargs, slots, context):
         post = kwargs.get("post")
         max_tags = kwargs.get("max_tags", 15)
-        tags = Tag.objects.filter(post=post)
+        tags = Tag.objects.filter(post=post).order_by("category", "-post_count")
         post_ids_by_collection = {}
 
         # TODO: optimize these queries, they might need to be lifted out
