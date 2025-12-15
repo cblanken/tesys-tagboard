@@ -13,10 +13,14 @@
     <div class="w-full leading-8 post-meta-data lg:max-w-142">
       <div class="flex gap-2 items-center">
         <span class="font-bold">Title:</span>
-        {% if post.title %}
-          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url text=post.title / %}
+        {% if request.user.is_authenticated %}
+          {% if post.title %}
+            {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url text=post.title / %}
+          {% else %}
+            {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url empty_text="No title" / %}
+          {% endif %}
         {% else %}
-          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url empty_text="No title" / %}
+          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.title|default:"No title" }}</div>
         {% endif %}
       </div>
       <div class="flex gap-1 items-center min-w-72">
@@ -31,10 +35,14 @@
       </div>
       <div class="flex gap-2 items-center">
         <span class="self-start font-bold">Source:</span>
-        {% if post.media.src_url %}
-          {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+        {% if request.user.is_authenticated %}
+          {% if post.media.src_url %}
+            {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+          {% else %}
+            {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
+          {% endif %}
         {% else %}
-          {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
+          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.media.src_url|default:"Unknown" }}</div>
         {% endif %}
       </div>
       <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
