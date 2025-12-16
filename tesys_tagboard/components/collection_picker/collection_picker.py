@@ -1,8 +1,6 @@
 from django_components import Component
 from django_components import register
 
-from tesys_tagboard.models import Collection
-
 
 @register("collection_picker")
 class CollectionPickerComponent(Component):
@@ -11,9 +9,8 @@ class CollectionPickerComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         post = kwargs.get("post")
-        user = self.request.user
-        collections = (
-            Collection.objects.filter(user=user) if user.is_authenticated else None
+        collections = kwargs.get(
+            "collections",
+            self.request.user.collection_set.prefetch_related("posts"),
         )
-
         return {"collections": collections, "post": post}

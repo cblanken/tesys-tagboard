@@ -1,0 +1,15 @@
+{% load component_tags %}
+
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 5xl:grid-cols-6">
+  {% if collections %}
+    {% for post in posts %}
+      {% component "post_thumbnail" post=post collections=collections / %}
+    {% endfor %}
+  {% else %}
+    {% with collections=request.user.collection_set.all %}
+      {% for post in posts %}
+        {% component "post_thumbnail" post=post collections=collections / %}
+      {% endfor %}
+    {% endwith %}
+  {% endif %}
+</div>

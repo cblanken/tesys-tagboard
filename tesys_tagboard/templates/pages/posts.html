@@ -19,9 +19,9 @@
     </form>
     {% if page|length > 0 %}
       <section class="flex flex-col gap-4 items-center w-full">
-        {% component "pager" with pager=pager page=page / %}
-        {% include "posts/gallery.html" with posts=page %}
-        {% component "pager" with pager=pager page=page / %}
+        {% component "pager" pager=pager page=page / %}
+        {% component "post_gallery" posts=page / %}
+        {% component "pager" pager=pager page=page / %}
       </section>
     {% else %}
       <div class="text-2xl italic">No posts yet!</div>

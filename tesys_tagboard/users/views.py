@@ -35,7 +35,7 @@ def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
         # This user's page
         collections = Collection.objects.filter(user=user)
         favorited_posts = (
-            Post.objects.select_related("media")
+            Post.objects.with_gallery_data()
             .filter(
                 pk__in=user.favorite_set.prefetch_related("post").values_list("post")
             )

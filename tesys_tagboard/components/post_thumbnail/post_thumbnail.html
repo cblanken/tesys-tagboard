@@ -13,11 +13,11 @@
     <section class="flex gap-1 self-end z-5">
       {% if request.user.is_authenticated %}
         {% component "favorite_toggle" post=post / %}
-        {% component "collection_picker" post=post / %}
+        {% component "collection_picker" post=post collections=collections / %}
       {% endif %}
     </section>
     <section class="flex overflow-y-auto flex-wrap gap-1 text-sm z-5 max-h-1/4">
-      {% for tag in tags %}
+      {% for tag in post.tags.all %}
         {% component "tag" tag=tag size="small" / %}
       {% endfor %}
     </section>

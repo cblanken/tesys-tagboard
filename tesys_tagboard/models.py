@@ -277,6 +277,10 @@ class PostQuerySet(models.QuerySet):
         """Return Posts matching the given `media_id`"""
         return self.filter(media__id=media_id)
 
+    def with_gallery_data(self):
+        """Return PostQuerySet including prefetched data such as meida, and tags"""
+        return self.select_related("media", "media__image").prefetch_related("tags")
+
     def has_tags(self, tags: QuerySet[Tag]):
         """Return Posts tagged with _all_ of the provided `tags`"""
         filter_expr = self
@@ -334,6 +338,11 @@ class CollectionQuerySet(models.QuerySet):
     def for_user(self, user):
         """Return Collections of a `user`"""
         return self.filter(user=user)
+
+    def with_gallery_data(self, user):
+        """Return optimized CollectionQuerySet including gallery data
+        such as related posts for the given user"""
+        return self.for_user(user).prefetch_related("posts")
 
 
 class Collection(models.Model):

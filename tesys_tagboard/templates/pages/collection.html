@@ -14,7 +14,7 @@
     <div class="flex flex-col gap-4 items-center">
       <section class="flex flex-col gap-4 items-center">
         {% component "pager" with pager=pager page=page / %}
-        <div class="flex flex-wrap gap-4 justify-center">{% include "posts/gallery.html" with posts=page %}</div>
+        <div class="flex flex-wrap gap-4 justify-center">{% component "post_gallery" with posts=page / %}</div>
         {% component "pager" with pager=pager page=page / %}
       </section>
     </div>

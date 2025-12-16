@@ -56,12 +56,12 @@ def home(request: HttpRequest) -> TemplateResponse:
 
 @require(["GET", "POST"], login=False)
 def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
-    posts = Post.objects.filter(pk=post_id)
+    posts = Post.objects.filter(pk=post_id).select_related("uploader")
     if request.user.is_authenticated:
         favorites = Favorite.objects.for_user(request.user)
         posts = posts.annotate_favorites(favorites)
     post = get_object_or_404(posts)
-    comments = post.comment_set.order_by("-post_date")
+    comments = post.comment_set.order_by("-post_date").select_related("user")
 
     comments_pager = Paginator(comments, 10, 5)
     comments_page_num = request.GET.get("page", 1)
@@ -132,9 +132,7 @@ def delete_post(
 
 @require(["GET", "POST"], login=False)
 def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    posts = Post.objects.select_related("media", "media__image").prefetch_related(
-        "tags"
-    )
+    posts = Post.objects.with_gallery_data()
     if request.user.is_authenticated:
         favorites = Favorite.objects.for_user(request.user)
         posts = posts.annotate_favorites(favorites)
@@ -159,7 +157,12 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     pager = Paginator(posts, 32, 4)
     page_num = request.GET.get("page", 1)
     page = pager.get_page(page_num)
-    context = {"posts": posts, "pager": pager, "page": page, "tags": tags}
+    context = {
+        "posts": posts,
+        "pager": pager,
+        "page": page,
+        "tags": tags,
+    }
     return TemplateResponse(request, "pages/posts.html", context)
 
 
@@ -228,7 +231,7 @@ def collection(
     user = request.user
     collection = get_object_or_404(Collection.objects.filter(pk=collection_id))
     if user == collection.user or collection.public is True:
-        posts = Post.objects.filter(
+        posts = Post.objects.with_gallery_data().filter(
             pk__in=collection.posts.values_list("pk", flat=True)
         )
         pager = Paginator(posts, 25, 5)
