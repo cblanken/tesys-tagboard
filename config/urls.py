@@ -31,6 +31,7 @@ urlpatterns = [
     ),
     path("collections/", views.collections, name="collections"),
     path("collections/<int:collection_id>/", views.collection, name="collection"),
+    path("collections/create/", views.create_collection, name="create-collection"),
     path(
         "collections/<int:collection_id>/add/",
         views.add_post_to_collection,

@@ -1,0 +1,38 @@
+<div class="p-4 w-full rounded-md bg-base-300 lg:min-w-30 lg:w-fit">
+  <h2>Create a collection</h2>
+  <form class="flex flex-wrap gap-2 w-full"
+        id="create-collection"
+        action="{% url "create-collection" %}"
+        method="post">
+    {% csrf_token %}
+    <fieldset class="w-full fieldset">
+      <legend class="fieldset-legend">
+        Name<span class="text-warning">*</span>
+      </legend>
+      <input type="text" class="w-full input" name="name" placeholder="Name" />
+    </fieldset>
+    <fieldset class="w-full fieldset">
+      <legend class="fieldset-legend">Description</legend>
+      <input type="text"
+             class="w-full input"
+             name="desc"
+             placeholder="A short description for your collection..." />
+    </fieldset>
+    <fieldset class="w-full fieldset">
+      <legend class="fieldset-legend">Visibility</legend>
+      <select class="w-full select" name="public">
+        <option selected value="true">Public</option>
+        <option value="false">Private</option>
+      </select>
+    </fieldset>
+    <input type="submit"
+           value="Create"
+           class="my-2 w-full text-xl btn btn-primary" />
+    {% if form.errors %}
+      <div role="alert" class="alert alert-error">
+        {% include "icons/feather.html" with icon="alert-circle" %}
+        {{ form.errors }}
+      </div>
+    {% endif %}
+  </form>
+</div>

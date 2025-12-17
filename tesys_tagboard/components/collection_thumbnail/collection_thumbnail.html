@@ -1,11 +1,26 @@
+{% load static %}
+
 <div class="shadow-sm card bg-base-300 lg:min-w-80">
-  <div class="relative pr-24 card-body">
-    <h2 class="card-title">{{ collection.name }}</h2>
-    {% include "nav/user_link.html" with user=collection.user %}
-    <p>{{ collection.desc }}</p>
-    <div class="absolute right-4 bottom-4 card-actions">
-      <a class="btn btn-primary"
-         href="{% url 'collection' collection_id=collection.id %}">Open</a>
+  <div class="relative card-body">
+    <div class="inline-flex gap-4">
+      <h2 class="card-title wrap-normal grow text-balance">{{ collection.name }}</h2>
+      <div class="flex gap-2 items-center">
+        {% if collection.public %}
+          {% include "icons/feather.html" with icon="eye" %}
+          Public
+        {% else %}
+          {% include "icons/feather.html" with icon="eye-off" %}
+          Private
+        {% endif %}
+      </div>
+    </div>
+    <div class="inline-flex gap-3">{% include "nav/user_link.html" with user=collection.user %}</div>
+    <div class="flex">
+      <p class="overflow-y-auto pr-16 max-h-32 overflow-x-clip text-wrap">{{ collection.desc }}</p>
+      <div class="absolute right-4 bottom-4 card-actions">
+        <a class="btn btn-primary"
+           href="{% url 'collection' collection_id=collection.id %}">Open</a>
+      </div>
     </div>
   </div>
 </div>

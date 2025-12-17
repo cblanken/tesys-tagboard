@@ -62,7 +62,7 @@
     <div>{% component "theme_picker" %}{% endcomponent %}</div>
   </nav>
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-        class="{% block bodyclass %}{% endblock bodyclass %}">
+        class="max-w-screen {% block bodyclass %}{% endblock bodyclass %}">
     <!-- Form for global search from tag widget popup -->
     <input id="tagSearchForm"
            type="hidden"

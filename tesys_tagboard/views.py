@@ -20,6 +20,7 @@ from .decorators import require
 from .enums import SupportedMediaTypes
 from .enums import TagCategory
 from .forms import AddCommentForm
+from .forms import CreateCollectionForm
 from .forms import CreateTagAliasForm
 from .forms import CreateTagForm
 from .forms import EditCommentForm
@@ -252,6 +253,17 @@ def collection(
         raise PermissionDenied
 
     return TemplateResponse(request, "pages/collection.html", context)
+
+
+@require(["POST"])
+def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    create_collection_form = CreateCollectionForm(request.POST)
+    if create_collection_form.is_valid():
+        create_collection_form.instance.user = request.user
+        create_collection_form.save()
+
+    user_url = reverse("users:detail", args=[request.user.get_username()])
+    return redirect(f"{user_url}?tab=collections")
 
 
 @require(["PUT"])

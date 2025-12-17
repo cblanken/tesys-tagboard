@@ -352,7 +352,7 @@ class Collection(models.Model):
     name = models.CharField(max_length=128)
     desc = models.TextField(max_length=1024)
     posts = models.ManyToManyField(Post)
-    public = models.BooleanField(default=True)
+    public = models.BooleanField(default=True, blank=True)
 
     objects = CollectionQuerySet.as_manager()
 

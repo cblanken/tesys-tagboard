@@ -30,7 +30,7 @@ class HtmxHttpRequest(HttpRequest):
 def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
     user = get_object_or_404(User, username=username)
 
-    context = {"user": user}
+    context = {"user": user, "tab": request.GET.get("tab")}
     if request.user == user:
         # This user's page
         collections = Collection.objects.filter(user=user)

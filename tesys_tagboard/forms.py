@@ -2,6 +2,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from tesys_tagboard.users.models import User
+
+from .models import Collection
 from .models import Image
 from .models import Post
 from .models import Tag
@@ -33,6 +36,16 @@ class CreateTagAliasForm(forms.ModelForm):
     class Meta:
         model = TagAlias
         fields = ["name", "tag"]
+
+
+class CreateCollectionForm(forms.ModelForm):
+    user = forms.ModelChoiceField(User.objects.all(), required=False)
+    public = forms.BooleanField(required=False, initial=True)
+    desc = forms.CharField(required=False)
+
+    class Meta:
+        model = Collection
+        fields = ["name", "desc", "public", "user"]
 
 
 class TagsetField(forms.Field):
