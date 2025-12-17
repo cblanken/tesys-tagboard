@@ -22,16 +22,23 @@
         <textarea maxlength="1000"
                   name="text"
                   class="w-full text-base text-wrap h-30 input textarea max-h-100 focus:input-secondary">{{comment.text}}</textarea>
-        <button hx-post="{% url 'post-edit-comment' %}"
-                hx-include="inherit, [name='text']"
-                hx-target="[data-comment='{{ comment.pk }}']"
-                hx-swap="outerHTML"
-                hx-confirm="Are you sure you want to update this post?"
-                class="inline-flex items-center mt-2 comment-edit-submit btn btn-sm btn-success"
-                type="submit">
-          {% include "icons/feather.html" with icon="check-square" %}
-          <div>Confirm</div>
-        </button>
+        <div class="flex gap-1 items-center">
+          <button hx-post="{% url 'post-edit-comment' %}"
+                  hx-include="inherit, [name='text']"
+                  hx-target="[data-comment='{{ comment.pk }}']"
+                  hx-swap="outerHTML"
+                  hx-confirm="Are you sure you want to update this post?"
+                  class="inline-flex items-center mt-2 comment-edit-submit btn btn-sm btn-success"
+                  type="submit">
+            {% include "icons/feather.html" with icon="check-square" %}
+            <div>Confirm</div>
+          </button>
+          <button type="button"
+                  class="inline-flex items-center mt-2 ml-1 comment-edit-cancel btn btn-sm btn-error">
+            {% include "icons/feather.html" with icon="x-square" %}
+            <div>Cancel</div>
+          </button>
+        </div>
       </form>
     </div>
     {% if request.user == comment.user %}

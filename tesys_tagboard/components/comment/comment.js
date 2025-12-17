@@ -3,6 +3,7 @@
   const setup_comment = (comment) => {
     const comment_text = comment.querySelector(".comment-text");
     const comment_edit_form = comment.querySelector(".comment-edit-form");
+    const comment_edit_mode_form = comment.querySelector(".comment-edit-mode-form");
     const comment_edit_form_textarea = comment_edit_form.querySelector("textarea");
 
     // Set textarea cursor to last position
@@ -21,8 +22,15 @@
       }
     }
 
-    comment.querySelectorAll(".comment-edit-mode-form").forEach(form => {
-      const checkbox = form.querySelector("input[type='checkbox']");
+
+    if (comment_edit_mode_form) {
+      const comment_edit_cancel_btn = comment_edit_form.querySelector(".btn.comment-edit-cancel");
+      const checkbox = comment_edit_mode_form.querySelector("input[type='checkbox']");
+
+      comment_edit_cancel_btn.addEventListener("click", e => {
+        checkbox.checked = false;
+        swapCommentEditField(false)
+      });
 
       // Toggle comment editable textarea
       checkbox.addEventListener("change", e => {
@@ -31,10 +39,10 @@
 
       // The label is styled as a button, but doesn't propgate change event
       // of the related input without manually dispatching the event.
-      form.querySelector("label").addEventListener("click", e => {
+      comment_edit_mode_form.querySelector("label").addEventListener("click", e => {
         checkbox.dispatchEvent(new Event("change"));
       });
-    });
+    }
   };
 
   const setup = (comments) => {
