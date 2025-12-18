@@ -31,6 +31,11 @@ urlpatterns = [
     ),
     path("collections/", views.collections, name="collections"),
     path("collections/<int:collection_id>/", views.collection, name="collection"),
+    path(
+        "collections/<int:collection_id>/delete/",
+        views.delete_collection,
+        name="delete-collection",
+    ),
     path("collections/create/", views.create_collection, name="create-collection"),
     path(
         "collections/<int:collection_id>/add/",

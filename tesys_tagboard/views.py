@@ -266,6 +266,26 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
     return redirect(f"{user_url}?tab=collections")
 
 
+@require(["DELETE"])
+def delete_collection(
+    request: HtmxHttpRequest, collection_id: int
+) -> TemplateResponse | HttpResponse:
+    if request.htmx:
+        try:
+            collection = Collection.objects.get(user=request.user, pk=collection_id)
+            collection.delete()
+            collections = request.user.collection_set.with_gallery_data()
+            context = {"collections": collections}
+
+            return TemplateResponse(
+                request, "users/user_detail.html#collection-gallery", context
+            )
+        except Collection.DoesNotExist:
+            return HttpResponseNotFound("That collection doesn't exist")
+
+    return redirect(reverse("collections"))
+
+
 @require(["PUT"])
 def add_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
     try:

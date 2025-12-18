@@ -10,7 +10,9 @@
   <div class="w-screen xl:max-w-screen xl:w-350">
     <div class="tabs">
       <label id="account-tab" class="flex gap-2 items-center text-lg tab">
-        <input type="radio" name="profile_tabs" checked />
+        <input type="radio"
+               name="profile_tabs"
+               {% if not tab or tab == "account" %}checked{% endif %} />
         {% include "icons/feather.html" with icon="user" %}
         Account
       </label>
@@ -53,18 +55,20 @@
           </div>
         </div>
       {% endif %}
-      <label id="collections-tab" class="flex gap-2 items-center text-lg tab">
+      <label id="collection-tab" class="flex gap-2 items-center text-lg tab">
         <input type="radio"
                name="profile_tabs"
                {% if tab == "collections" %}checked{% endif %} />
         {% include "icons/feather.html" with icon="list" %}
-        <div>Collections</div>
+        Collections
       </label>
-      <div class="rounded-none lg:p-6 tab-content lg:bg-base-200">
+      <div class="p-3 rounded-none lg:p-6 tab-content lg:bg-base-200">
         <div class="flex flex-col gap-8 md:flex-row">
           <div class="grow-0">{% component "create_collection" / %}</div>
-          <div class="grid grid-cols-1 gap-4 w-full xl:grid-cols-2">
-            {% if collections|length == 0 %}
+          {% partialdef collection-gallery inline %}
+          <div id="user-collection-gallery"
+               class="grid grid-cols-1 gap-4 w-full xl:grid-cols-2">
+            {% if collections.count == 0 %}
               <div class="text-lg italic">No collections yet!</div>
             {% else %}
               {% for collection in collections %}
@@ -72,8 +76,9 @@
               {% endfor %}
             {% endif %}
           </div>
-        </div>
+        {% endpartialdef %}
       </div>
     </div>
   </div>
+</div>
 {% endblock content %}
