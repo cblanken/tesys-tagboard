@@ -49,7 +49,7 @@
     @apply text-2xl font-bold mt-3 mb-1 font-heading tracking-widest;
   }
 
-  ul {
+  ul:not(.dropdown-content) {
     @apply list-disc list-outside ms-5;
   }
 
