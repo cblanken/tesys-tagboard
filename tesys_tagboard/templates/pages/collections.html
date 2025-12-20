@@ -6,7 +6,7 @@
   {{ block.super }} — Collections
 {% endblock title %}
 {% block content %}
-  <h1 class="mt-8 text-5xl tracking-wider divider divider-primary">COLLECTIONS</h1>
+  {% include "heading.html" with text="COLLECTIONS" %}
   <div class="flex gap-4 justify-center py-4">
     {% component "pager" with pager=pager page=page / %}
     <div class="grid grid-cols-1 gap-4 w-full lg:grid-cols-2 xl:grid-cols-3">

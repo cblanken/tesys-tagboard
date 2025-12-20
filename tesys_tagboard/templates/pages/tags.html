@@ -7,6 +7,7 @@
 {% endblock title %}
 {% block content %}
   <main class="pb-24 m-auto max-w-[2400px]">
+    {% include "heading.html" with text="TAGS" %}
     <label class="flex relative items-center self-center mb-4 w-full lg:min-w-100">
       <div class="absolute left-3 z-5">{% include "icons/feather.html" with icon="filter" %}</div>
       <input type="search"
@@ -27,9 +28,21 @@
         {% component "create_tag_alias" / %}
       </div>
     {% endif %}
-    {% include "tags/tags_by_category.html" %}
-    {% if tags|length == 0 %}
-      <div class="py-8 w-full text-4xl italic text-center opacity-75">No tags yet!</div>
-    {% endif %}
+    <div class="mt-8">
+      {% include "tags/tags_by_category.html" %}
+      {% if aliases %}
+        <section class="mt-16">
+          <h2 class="mb-10 text-5xl tracking-wider divider divider-primary">ALIASES</h2>
+          <div class="flex flex-wrap gap-2">
+            {% for alias in aliases %}
+              {% component "tag" alias=alias size="large" / %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+      {% if tags|length == 0 %}
+        <div class="py-8 w-full text-4xl italic text-center opacity-75">No tags yet!</div>
+      {% endif %}
+    </div>
   </main>
 {% endblock content %}

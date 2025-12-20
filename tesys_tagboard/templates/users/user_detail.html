@@ -7,8 +7,8 @@
   {{ object.username }}
 {% endblock title %}
 {% block content %}
-  <h1 class="mt-8 text-5xl tracking-wider divider divider-primary">PROFILE</h1>
-  <div class="w-full xl:max-w-screen xl:w-350">
+  {% include "heading.html" with text="PROFILE" %}
+  <div class="w-full xl:max-w-screen">
     <div class="tabs">
       <label id="account-tab" class="flex gap-2 items-center text-lg tab">
         <input type="radio"

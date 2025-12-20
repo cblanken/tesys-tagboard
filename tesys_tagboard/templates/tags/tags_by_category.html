@@ -2,7 +2,6 @@
 
 <div id="tags-container" class="flex flex-col gap-8">
   <section class="flex flex-col gap-4">
-    <h2 class="mt-8 text-5xl tracking-wider divider divider-primary">TAGS</h2>
     {% for cat, tags in tags_by_cat.items %}
       {% if tags %}
         <h3 class="text-3xl font-bold not-last:divider not-last:divider-start">{{ cat.name|capfirst }}</h3>
@@ -16,14 +15,4 @@
       {% endif %}
     {% endfor %}
   </section>
-  {% if aliases %}
-    <section class="mt-16">
-      <h2 class="text-5xl tracking-wider divider divider-primary">ALIASES</h2>
-      <div class="flex flex-wrap gap-2 mt-8">
-        {% for alias in aliases %}
-          {% component "tag" alias=alias size="large" / %}
-        {% endfor %}
-      </div>
-    </section>
-  {% endif %}
 </div>
