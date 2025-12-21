@@ -8,5 +8,5 @@ This is just the default home page blurb! If you're hosting your own instance of
 
 ## Some useful links
 
-- The [source code](https://github.com/cblanken/tesy-tagboard) for Tesy's Tagboard is available at [https://github.com/cblanken/tesy-tagboard](https://github.com/cblanken/tesy-tagboard). If you encounter any bugs feel free to submit a [bug report](https://github.com/cblanken/tesy-tagboard/issues/new/choose). Thanks!
-- There is a [live demo](https://tagboard.cblanken.dev) at [https://tagboard.cblanken.dev](https://tagboard.cblanken.dev) with some pre-populated data if you'd like to see a sample of what the application looks and feels like.
+- The source code for Tesy's Tagboard is available on [Github](https://github.com/cblanken/tesy-tagboard). If you encounter any bugs feel free to submit a [bug report](https://github.com/cblanken/tesy-tagboard/issues/new/choose). Thanks!
+- There is also a [live demo](https://tagboard.cblanken.dev) with some pre-populated data if you'd like to see a sample of what the application looks and feels like.
