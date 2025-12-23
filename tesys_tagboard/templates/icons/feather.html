@@ -1,6 +1,6 @@
 {% load static custom_filters %}
 
 {% get_static_prefix as STATIC_PREFIX %}
-<svg class="feather {% if fill %}!fill-current{% endif %}">
+<svg class="feather {% if size == "large" %}size-8!{% endif %} {% if fill %}fill-current!{% endif %}">
   <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#{{ icon }}" />
 </svg>

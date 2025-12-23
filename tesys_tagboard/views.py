@@ -82,6 +82,14 @@ def home(request: HttpRequest) -> TemplateResponse:
 
 @require(["GET", "POST"], login=False)
 def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
+    all_posts = Post.objects.order_by("post_date").values("pk", "post_date")
+    previous_post = None
+    next_post = None
+    for i, post in enumerate(all_posts):
+        if post.get("pk") == post_id:
+            previous_post = all_posts[i - 1] if i > 0 else None
+            next_post = all_posts[i + 1] if i < len(all_posts) - 1 else None
+
     posts = Post.objects.filter(pk=post_id).select_related("uploader")
     if request.user.is_authenticated:
         favorites = Favorite.objects.for_user(request.user)
@@ -94,8 +102,11 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
     comments_page = comments_pager.get_page(comments_page_num)
     tags = Tag.objects.for_post(post)
     post_edit_url = reverse("post-edit", args=[post.pk])
+
     context = {
         "post": post,
+        "previous_post": previous_post,
+        "next_post": next_post,
         "tags": tags,
         "comments_pager": comments_pager,
         "comments_page": comments_page,
