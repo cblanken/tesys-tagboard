@@ -125,9 +125,9 @@ make-component name:
 # Load the fixture data from demo.json into the database
 load-demo:
     @echo "Loading demo data..."
-    DJANGO_READ_DOT_ENV_FILE=True uv run python manage.py loaddata demo.json
-    cp -r tesys_tagboard/fixtures/uploads/ tesys_tagboard/media/
-    cp -r tesys_tagboard/fixtures/thumbnails/ tesys_tagboard/media/
+    DJANGO_READ_DOT_ENV_FILE=True just manage loaddata demo.json
+    cp -r tesys_tagboard/fixtures/uploads tesys_tagboard/media/
+    cp -r tesys_tagboard/fixtures/thumbnails tesys_tagboard/media/
 
 # Save the current database into the demo.json fixture
 save-demo:
