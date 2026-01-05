@@ -137,5 +137,5 @@ load-demo:
 # Save the current database into the demo.json fixture
 save-demo:
     @echo "Saving demo fixture..."
-    just manage dumpdata --exclude admin --exclude sessions --indent 2 -o tesys_tagboard/fixtures/demo.json
+    just manage dumpdata --exclude admin --exclude sessions --exclude auth --indent 2 -o tesys_tagboard/fixtures/demo.json
 

@@ -2619,11 +2619,12 @@
     "uploader": 1,
     "post_date": "2025-11-15T02:21:49.601Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      32,
       22,
-      30,
+      32,
       31,
+      30,
       15
     ]
   }
@@ -2636,14 +2637,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T02:30:04.914Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
       22,
       24,
-      28,
+      3,
       26,
       27,
-      15,
-      3
+      28,
+      15
     ]
   }
 },
@@ -2655,10 +2657,11 @@
     "uploader": 1,
     "post_date": "2025-11-15T02:36:06.041Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      16,
-      5,
       34,
+      5,
+      16,
       18,
       29,
       15
@@ -2673,12 +2676,13 @@
     "uploader": 1,
     "post_date": "2025-11-15T02:37:17.670Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      16,
-      4,
       35,
-      18,
       17,
+      4,
+      16,
+      18,
       15
     ]
   }
@@ -2691,16 +2695,17 @@
     "uploader": 1,
     "post_date": "2025-11-15T02:43:44.149Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      38,
-      5,
-      37,
       22,
-      21,
-      1,
-      39,
       24,
-      36
+      39,
+      5,
+      1,
+      21,
+      36,
+      37,
+      38
     ]
   }
 },
@@ -2712,11 +2717,12 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:00:36.983Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      41,
+      44,
       40,
-      43,
-      44
+      41,
+      43
     ]
   }
 },
@@ -2728,14 +2734,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:08:42.885Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
-      45,
-      48,
       44,
+      48,
+      45,
+      46,
       47,
       49,
-      15,
-      46
+      15
     ]
   }
 },
@@ -2747,15 +2754,16 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:17:11.074Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      51,
-      5,
-      54,
-      50,
       34,
+      5,
+      39,
       2,
       53,
-      39,
+      54,
+      50,
+      51,
       52,
       15
     ]
@@ -2769,11 +2777,12 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:22:17.753Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
+      1,
       48,
       56,
-      1,
       15
     ]
   }
@@ -2786,12 +2795,13 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:25:15.458Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      58,
       44,
       24,
-      15,
-      57
+      58,
+      57,
+      15
     ]
   }
 },
@@ -2803,14 +2813,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:30:07.115Z",
     "rating_level": 0,
+    "locked_comments": false,
     "tags": [
+      34,
       5,
       19,
-      59,
-      34,
-      2,
       1,
-      31
+      2,
+      31,
+      59
     ]
   }
 },
@@ -2822,15 +2833,16 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:35:22.504Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      63,
-      32,
-      61,
       34,
       62,
+      32,
       60,
-      15,
-      3
+      3,
+      63,
+      61,
+      15
     ]
   }
 },
@@ -2842,13 +2854,14 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:40:47.118Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      64,
-      68,
+      44,
       65,
+      64,
       66,
       67,
-      44,
+      68,
       15
     ]
   }
@@ -2861,14 +2874,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:44:44.374Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      71,
-      72,
-      58,
       44,
+      58,
+      72,
+      73,
       70,
       69,
-      73
+      71
     ]
   }
 },
@@ -2880,16 +2894,17 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:47:57.052Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      74,
-      65,
       44,
-      62,
       24,
-      60,
+      62,
       17,
-      15,
-      33
+      60,
+      65,
+      74,
+      33,
+      15
     ]
   }
 },
@@ -2901,14 +2916,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T03:51:15.750Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      77,
       44,
+      17,
       75,
       78,
-      17,
-      15,
-      76
+      76,
+      77,
+      15
     ]
   }
 },
@@ -2920,12 +2936,13 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:06:45.370Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
+      44,
+      17,
       32,
       65,
-      44,
       80,
-      17,
       15
     ]
   }
@@ -2938,11 +2955,12 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:09:23.487Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
+      44,
       5,
       65,
       79,
-      44,
       15
     ]
   }
@@ -2955,11 +2973,12 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:15:56.399Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
+      84,
       82,
       83,
-      84,
       15
     ]
   }
@@ -2972,13 +2991,14 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:18:30.912Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
-      88,
+      39,
       4,
       87,
+      88,
       86,
-      39,
       15
     ]
   }
@@ -2991,13 +3011,14 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:21:25.499Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
-      89,
-      88,
+      39,
       4,
       2,
-      39,
+      88,
+      89,
       90,
       15
     ]
@@ -3011,12 +3032,13 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:28:38.743Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
-      91,
-      84,
-      81,
       17,
+      81,
+      84,
+      91,
       15
     ]
   }
@@ -3029,16 +3051,17 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:32:08.221Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
       55,
-      93,
+      1,
+      95,
+      3,
       87,
       92,
-      1,
-      15,
+      93,
       94,
-      95,
-      3
+      15
     ]
   }
 },
@@ -3050,14 +3073,15 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:50:00.586Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      63,
-      59,
-      20,
       34,
-      97,
       62,
+      63,
       96,
+      59,
+      97,
+      20,
       15
     ]
   }
@@ -3070,20 +3094,21 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:54:41.124Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
+      34,
+      24,
+      62,
+      60,
       16,
       19,
-      100,
-      74,
-      34,
+      101,
       73,
-      62,
-      24,
-      60,
-      99,
+      74,
       96,
-      15,
-      101
+      99,
+      100,
+      15
     ]
   }
 },
@@ -3095,16 +3120,17 @@
     "uploader": 1,
     "post_date": "2025-11-15T04:57:40.239Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      103,
-      19,
-      32,
-      102,
-      104,
       22,
+      32,
       62,
-      15,
-      101
+      19,
+      101,
+      104,
+      102,
+      103,
+      15
     ]
   }
 },
@@ -3116,13 +3142,14 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:06:23.228Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      108,
-      106,
-      107,
       109,
       39,
-      95
+      95,
+      106,
+      107,
+      108
     ]
   }
 },
@@ -3134,12 +3161,13 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:16:31.205Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      106,
-      110,
       109,
-      15,
-      111
+      110,
+      106,
+      111,
+      15
     ]
   }
 },
@@ -3151,14 +3179,15 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:23:21.028Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
+      109,
       5,
       113,
       116,
-      115,
       118,
       114,
-      109,
+      115,
       15
     ]
   }
@@ -3171,14 +3200,15 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:30:10.563Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      32,
-      120,
-      119,
-      4,
       109,
-      81,
       17,
+      32,
+      4,
+      120,
+      81,
+      119,
       15
     ]
   }
@@ -3191,14 +3221,15 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:32:01.795Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      19,
-      121,
-      25,
-      110,
       109,
-      15,
-      33
+      19,
+      110,
+      25,
+      33,
+      121,
+      15
     ]
   }
 },
@@ -3210,13 +3241,14 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:33:49.891Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      108,
+      109,
+      95,
       106,
       107,
-      109,
-      15,
-      95
+      108,
+      15
     ]
   }
 },
@@ -3228,12 +3260,13 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:35:37.257Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      122,
-      72,
-      25,
       109,
       39,
+      25,
+      72,
+      122,
       15
     ]
   }
@@ -3246,12 +3279,13 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:37:02.153Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      123,
-      25,
       109,
-      15,
-      111
+      25,
+      111,
+      123,
+      15
     ]
   }
 },
@@ -3263,18 +3297,19 @@
     "uploader": 4,
     "post_date": "2025-12-10T16:41:52.558Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
+      109,
+      24,
+      62,
+      60,
+      110,
       16,
+      101,
+      107,
       45,
       98,
-      107,
-      110,
-      109,
-      62,
-      24,
-      60,
-      15,
-      101
+      15
     ]
   }
 },
@@ -3286,14 +3321,15 @@
     "uploader": 4,
     "post_date": "2025-12-10T18:05:03.596Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      122,
-      120,
-      4,
-      125,
       109,
-      15,
-      95
+      4,
+      95,
+      120,
+      122,
+      125,
+      15
     ]
   }
 },
@@ -3305,17 +3341,18 @@
     "uploader": 4,
     "post_date": "2025-12-10T18:11:52.249Z",
     "rating_level": 1,
+    "locked_comments": false,
     "tags": [
-      32,
-      113,
-      120,
-      126,
-      110,
       109,
       24,
+      32,
       60,
-      15,
-      111
+      110,
+      120,
+      111,
+      113,
+      126,
+      15
     ]
   }
 },
@@ -3829,7 +3866,7 @@
   "pk": 1,
   "fields": {
     "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$aXd1OHI0dFloYkpXRHhBbktNdk8wUw$9E/WSrhvenhy0qaD/nT2RTQjnzMNszjvxiANDeoQ4s8",
-    "last_login": "2025-12-10T19:10:54.627Z",
+    "last_login": "2026-01-05T04:08:19.594Z",
     "is_superuser": true,
     "username": "admin",
     "email": "tesy-tagboard@example.com",
@@ -3880,7 +3917,7 @@
   "pk": 6,
   "fields": {
     "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$dDdzVDJrRGN2RTVCM1FsamZWbmNOeQ$VpY75V8ovIFdw7+IxmkJ/dlfbLfoni2Z6nsT9CpbOTU",
-    "last_login": "2025-11-25T14:32:17.771Z",
+    "last_login": "2025-11-25T14:32:17Z",
     "is_superuser": false,
     "username": "mod1",
     "email": "mod1@example.com",
@@ -3888,7 +3925,9 @@
     "is_active": true,
     "date_joined": "2025-11-25T14:18:59Z",
     "name": "",
-    "groups": [],
+    "groups": [
+      1
+    ],
     "user_permissions": []
   }
 }
