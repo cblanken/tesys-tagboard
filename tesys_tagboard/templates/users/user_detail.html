@@ -10,13 +10,15 @@
   {% include "heading.html" with text="PROFILE" %}
   <div class="w-full xl:max-w-screen">
     <div class="tabs">
-      <label id="account-tab" class="flex gap-2 items-center text-lg tab">
+      <label id="account-tab" class="flex gap-2 items-center text-lg tab group">
         <input type="radio"
                name="profile_tabs"
                value="account"
                {% if not tab or tab == "account" %}checked{% endif %} />
-        {% include "icons/feather.html" with icon="user" %}
-        Account
+        <div class="flex gap-2 items-center">
+          {% include "icons/feather.html" with icon="user" %}
+          <div class="hidden sm:block group-has-[input:checked]:block">Account</div>
+        </div>
       </label>
       <div class="p-6 rounded-none tab-content lg:bg-base-200">
         <div>
@@ -38,13 +40,15 @@
         {% endif %}
       </div>
       {% if favorites_pager %}
-        <label id="favorites-tab" class="flex gap-2 items-center text-lg tab">
+        <label id="favorites-tab" class="flex gap-2 items-center text-lg tab group">
           <input type="radio"
                  name="profile_tabs"
                  value="favorites"
                  {% if tab == "favorites" %}checked{% endif %} />
-          {% include "icons/feather.html" with icon="heart" %}
-          Favorites
+          <div class="flex gap-2 items-center">
+            {% include "icons/feather.html" with icon="heart" %}
+            <div class="hidden sm:block group-has-[input:checked]:block">Favorites</div>
+          </div>
         </label>
         <div class="rounded-none lg:p-6 tab-content lg:bg-base-200">
           <div class="flex flex-col gap-4">
@@ -58,13 +62,13 @@
           </div>
         </div>
       {% endif %}
-      <label id="collection-tab" class="flex gap-2 items-center text-lg tab">
+      <label id="collection-tab" class="flex gap-2 items-center text-lg tab group">
         <input type="radio"
                name="profile_tabs"
                value="collections"
                {% if tab == "collections" %}checked{% endif %} />
         {% include "icons/feather.html" with icon="list" %}
-        Collections
+        <div class="hidden sm:block group-has-[input:checked]:block">Collections</div>
       </label>
       <div class="p-3 rounded-none lg:p-6 tab-content lg:bg-base-200">
         <div class="flex flex-col gap-8 md:flex-row">

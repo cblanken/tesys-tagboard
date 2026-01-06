@@ -6,7 +6,8 @@
   {% trans "Signup" %}
 {% endblock head_title %}
 {% block content %}
-  {% include "heading.html" with text=_("SIGNUP") %}
+{% include "heading.html" with text=_("SIGNUP") %}
+<div class="m-auto md:max-w-xl xl:max-w-3xl">
   {% setvar link %}
   <a href="{{ login_url }}">
   {% endsetvar %}
@@ -42,4 +43,5 @@
 {% if SOCIALACCOUNT_ENABLED %}
   {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
 {% endif %}
+</div>
 {% endblock content %}

@@ -65,6 +65,7 @@
         class="max-w-screen overflow-x-clip xl:overflow-x-auto min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
     <!-- Form for global search from tag widget popup -->
     <input id="tagSearchForm"
+           class="hidden"
            type="hidden"
            action="{% url "posts" %}"
            method="post" />
