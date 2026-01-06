@@ -3,6 +3,7 @@
 import uuid
 from hashlib import md5
 from io import BytesIO
+from typing import TYPE_CHECKING
 
 import imagehash
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -22,6 +23,9 @@ from .enums import TagCategory
 from .validators import valid_dhash
 from .validators import valid_md5
 from .validators import valid_phash
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class TagQuerySet(models.QuerySet):
@@ -256,6 +260,18 @@ def update_tag_post_counts():
     Tag.objects.bulk_update(tcount_tags, fields=["post_count"])
 
 
+def tags_to_csv(tags: Iterable[Tag]) -> str:
+    return ",".join([tag.pk for tag in tags])
+
+def add_tag_history(tags: TagQuerySet, post: Post, user):
+    old_tags = set(post.tags.order_by("pk"))
+    new_tags = set(tags.all())
+    tag_histories = PostTagHistory.objects.filter(post=post)
+    if old_tags != new_tags or not tag_histories:
+        tag_hist = PostTagHistory(post=post, user=user, tags=tags_to_csv(tags.all()))
+        tag_hist.save()
+
+
 class PostQuerySet(models.QuerySet):
     def annotate_favorites(self, favorites: QuerySet[Favorite]) -> QuerySet[Post]:
         """Adds the `favorited` annotation to a QuerySet of Posts"""
@@ -330,6 +346,29 @@ class Post(models.Model):
     def save(self, **kwargs):
         super().save(**kwargs)
         update_tag_post_counts()
+
+    def save_with_history(self, user, tags: TagQuerySet):
+        """Saves the post with additional handling for tag history"""
+        add_tag_history(tags, self, user)
+        self.save()
+
+
+class PostTagHistory(models.Model):
+    """Model for tracking changes in a Post's tags"""
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    mod_time = models.DateTimeField(
+        auto_now_add=True,
+        db_comment="Timestamp of Post's tags modification (including initial)",
+    )
+    tags = models.CharField(
+        db_comment="Comma-delimited string of tag IDs at the current time",
+        default="",
+    )
+
+    def __str__(self) -> str:
+        return f"<PostTagHistory - id: {self.pk}; post: {self.post}; modified: {self.mod_time};"  # noqa: E501
 
 
 class CollectionQuerySet(models.QuerySet):

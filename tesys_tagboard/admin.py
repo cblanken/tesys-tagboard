@@ -8,6 +8,7 @@ from .models import Favorite
 from .models import Image
 from .models import Media
 from .models import Post
+from .models import PostTagHistory
 from .models import Tag
 from .models import TagAlias
 from .models import Video
@@ -102,6 +103,18 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ["media__orig_name", "media__src_url"]
     autocomplete_fields = ["media"]
     list_filter = ["rating_level", "uploader"]
+
+
+@admin.register(PostTagHistory)
+class PostTagHistoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "tags",
+        "mod_time",
+    ]
+    search_fields = ["user", "tags"]
+    list_filter = ["user"]
 
 
 @admin.register(Collection)

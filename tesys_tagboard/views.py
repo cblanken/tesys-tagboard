@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
 import markdown
+import regex as re
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
@@ -96,7 +98,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
     if request.user.is_authenticated:
         favorites = Favorite.objects.for_user(request.user)
         posts = posts.annotate_favorites(favorites)
-    post = get_object_or_404(posts)
+    post = get_object_or_404(posts.prefetch_related("posttaghistory_set"))
     comments = post.comment_set.order_by("-post_date").select_related("user")
 
     comments_pager = Paginator(comments, 10, 5)
@@ -104,6 +106,29 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
     comments_page = comments_pager.get_page(comments_page_num)
     tags = Tag.objects.for_post(post)
     post_edit_url = reverse("post-edit", args=[post.pk])
+
+    post_tag_history_tag_ids = [
+        re.split(r"\s*,\s*", tags_snapshot.tags)
+        for tags_snapshot in post.posttaghistory_set.order_by("mod_time")
+    ]
+    tag_history_unique_ids = set(chain(*post_tag_history_tag_ids))
+
+    # Collect tag_history tags in a single DB call
+    history_tags_by_id = {
+        tag.pk: tag for tag in Tag.objects.filter(pk__in=tag_history_unique_ids)
+    }
+
+    tag_history = [
+        [history_tags_by_id[int(tag_id)] for tag_id in tag_ids]
+        for tag_ids in post_tag_history_tag_ids
+    ]
+
+    tag_history = post.posttaghistory_set.order_by("-mod_time")
+    for tag_snapshot in tag_history:
+        tag_snapshot.tag_objects = [
+            history_tags_by_id[int(tag_id)]
+            for tag_id in re.split(r"\s*,\s*", tag_snapshot.tags)
+        ]
 
     context = {
         "post": post,
@@ -113,56 +138,53 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
         "comments_pager": comments_pager,
         "comments_page": comments_page,
         "post_edit_url": post_edit_url,
+        "tag_history": tag_history,
     }
     return TemplateResponse(request, "pages/post.html", context)
 
 
 @require(["POST"])
+@permission_required("change_post")
 def edit_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
-    if request.user.has_perm("change", Post):
-        post = get_object_or_404(Post.objects.filter(pk=post_id))
-        data: dict[str, str | list[Any] | None] = {
-            key: request.POST.get(key) for key in request.POST
-        }
-        data["tagset"] = request.POST.getlist("tagset")
+    post = get_object_or_404(Post.objects.filter(pk=post_id))
+    data: dict[str, str | list[Any] | None] = {
+        key: request.POST.get(key) for key in request.POST
+    }
+    data["tagset"] = request.POST.getlist("tagset")
 
-        form = EditPostForm(data)
-        if form.is_valid():
-            if title := form.cleaned_data.get("title"):
-                post.title = title
-                post.save()
-                return HttpResponse(post.title, status=200)
+    form = EditPostForm(data)
+    if form.is_valid():
+        if title := form.cleaned_data.get("title"):
+            post.title = title
+            post.save()
+            return HttpResponse(post.title, status=200)
 
-            if src_url := form.cleaned_data.get("src_url"):
-                post.media.src_url = src_url
-                post.media.save()
-                return HttpResponse(post.media.src_url, status=200)
+        if src_url := form.cleaned_data.get("src_url"):
+            post.media.src_url = src_url
+            post.media.save()
+            return HttpResponse(post.media.src_url, status=200)
 
-            if rating_level := form.cleaned_data.get("rating_level"):
-                post.rating_level = rating_level
-                post.save()
-                return HttpResponse(post.rating_level, status=200)
+        if rating_level := form.cleaned_data.get("rating_level"):
+            post.rating_level = rating_level
+            post.save()
+            return HttpResponse(post.rating_level, status=200)
 
-            if tagset := form.cleaned_data.get("tagset"):
-                tags = Tag.objects.in_tagset(tagset)
-                post.tags.set(tags)
-                post.save()
-                kwargs = {
-                    "size": "small",
-                    "tags": tags,
-                    "add_tag_enabled": True,
-                    "post": post,
-                }
+        if tagset := form.cleaned_data.get("tagset"):
+            tags = Tag.objects.in_tagset(tagset)
+            post.save_with_history(request.user, tags)
+            kwargs = {
+                "size": "small",
+                "tags": tags,
+                "add_tag_enabled": True,
+                "post": post,
+            }
 
-                return AddTagsetComponent.render_to_response(
-                    request=request, kwargs=kwargs
-                )
+            return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
 
-            return HttpResponse(status=200)
-        return HttpResponse(status=422)
-    return HttpResponseForbidden()
+        return HttpResponse(status=200)
+    return HttpResponse(status=422)
 
 
 @require(["DELETE"])
@@ -570,7 +592,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
         rating_level = form.cleaned_data.get("rating_level")
         tags = Tag.objects.in_tagset(tagset)
         post = Post(uploader=request.user, media=media, rating_level=rating_level)
-        post.tags.set(tags)
+        post.save_with_history(post.uploader, tags)
         post.save()
 
     context = {"form": form, "rating_levels": Post.RatingLevel.choices}

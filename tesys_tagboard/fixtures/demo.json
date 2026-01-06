@@ -180,7 +180,7 @@
   "pk": 23,
   "fields": {
     "app_label": "tesys_tagboard",
-    "model": "tag"
+    "model": "posttaghistory"
   }
 },
 {
@@ -188,7 +188,7 @@
   "pk": 24,
   "fields": {
     "app_label": "tesys_tagboard",
-    "model": "tagalias"
+    "model": "tag"
   }
 },
 {
@@ -196,12 +196,20 @@
   "pk": 25,
   "fields": {
     "app_label": "tesys_tagboard",
-    "model": "video"
+    "model": "tagalias"
   }
 },
 {
   "model": "contenttypes.contenttype",
   "pk": 26,
+  "fields": {
+    "app_label": "tesys_tagboard",
+    "model": "video"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 27,
   "fields": {
     "app_label": "users",
     "model": "user"
@@ -209,7 +217,7 @@
 },
 {
   "model": "contenttypes.contenttype",
-  "pk": 27,
+  "pk": 28,
   "fields": {
     "app_label": "debug_toolbar",
     "model": "historyentry"
@@ -2720,8 +2728,8 @@
     "locked_comments": false,
     "tags": [
       44,
-      40,
       41,
+      40,
       43
     ]
   }
@@ -2760,11 +2768,11 @@
       5,
       39,
       2,
+      51,
+      52,
       53,
       54,
       50,
-      51,
-      52,
       15
     ]
   }
@@ -2898,12 +2906,12 @@
     "tags": [
       44,
       24,
-      62,
       17,
+      62,
       60,
       65,
-      74,
       33,
+      74,
       15
     ]
   }
@@ -2996,8 +3004,8 @@
       55,
       39,
       4,
-      87,
       88,
+      87,
       86,
       15
     ]
@@ -3078,10 +3086,10 @@
       34,
       62,
       63,
-      96,
       59,
-      97,
+      96,
       20,
+      97,
       15
     ]
   }
@@ -3106,8 +3114,8 @@
       73,
       74,
       96,
-      99,
       100,
+      99,
       15
     ]
   }
@@ -3354,6 +3362,386 @@
       126,
       15
     ]
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 149,
+  "fields": {
+    "post": 9,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.472Z",
+    "tags": "22, 32, 31, 30, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 150,
+  "fields": {
+    "post": 10,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.528Z",
+    "tags": "22, 24, 3, 26, 27, 28, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 151,
+  "fields": {
+    "post": 11,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.568Z",
+    "tags": "34, 5, 16, 18, 29, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 152,
+  "fields": {
+    "post": 12,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.605Z",
+    "tags": "35, 17, 4, 16, 18, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 153,
+  "fields": {
+    "post": 13,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.672Z",
+    "tags": "22, 24, 39, 5, 1, 21, 36, 37, 38"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 154,
+  "fields": {
+    "post": 14,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.706Z",
+    "tags": "44, 41, 40, 43"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 155,
+  "fields": {
+    "post": 15,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.742Z",
+    "tags": "44, 48, 45, 46, 47, 49, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 156,
+  "fields": {
+    "post": 16,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.777Z",
+    "tags": "34, 5, 39, 2, 51, 52, 53, 54, 50, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 157,
+  "fields": {
+    "post": 17,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.812Z",
+    "tags": "55, 1, 48, 56, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 158,
+  "fields": {
+    "post": 18,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.848Z",
+    "tags": "44, 24, 58, 57, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 159,
+  "fields": {
+    "post": 19,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.883Z",
+    "tags": "34, 5, 19, 1, 2, 31, 59"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 160,
+  "fields": {
+    "post": 20,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.918Z",
+    "tags": "34, 62, 32, 60, 3, 63, 61, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 161,
+  "fields": {
+    "post": 21,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.953Z",
+    "tags": "44, 65, 64, 66, 67, 68, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 162,
+  "fields": {
+    "post": 22,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:21.987Z",
+    "tags": "44, 58, 72, 73, 70, 69, 71"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 163,
+  "fields": {
+    "post": 23,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.026Z",
+    "tags": "44, 24, 17, 62, 60, 65, 33, 74, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 164,
+  "fields": {
+    "post": 24,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.062Z",
+    "tags": "44, 17, 75, 78, 76, 77, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 165,
+  "fields": {
+    "post": 25,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.127Z",
+    "tags": "44, 17, 32, 65, 80, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 166,
+  "fields": {
+    "post": 26,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.165Z",
+    "tags": "44, 5, 65, 79, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 167,
+  "fields": {
+    "post": 27,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.207Z",
+    "tags": "55, 84, 82, 83, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 168,
+  "fields": {
+    "post": 28,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.242Z",
+    "tags": "55, 39, 4, 88, 87, 86, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 169,
+  "fields": {
+    "post": 29,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.277Z",
+    "tags": "55, 39, 4, 2, 88, 89, 90, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 170,
+  "fields": {
+    "post": 30,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.311Z",
+    "tags": "55, 17, 81, 84, 91, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 171,
+  "fields": {
+    "post": 31,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.346Z",
+    "tags": "55, 1, 95, 3, 87, 92, 93, 94, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 172,
+  "fields": {
+    "post": 32,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.381Z",
+    "tags": "34, 62, 63, 59, 96, 20, 97, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 173,
+  "fields": {
+    "post": 33,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.429Z",
+    "tags": "34, 24, 62, 60, 16, 19, 101, 73, 74, 96, 100, 99, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 174,
+  "fields": {
+    "post": 34,
+    "user": 1,
+    "mod_time": "2026-01-06T14:51:22.496Z",
+    "tags": "22, 32, 62, 19, 101, 104, 102, 103, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 175,
+  "fields": {
+    "post": 36,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.532Z",
+    "tags": "109, 39, 95, 106, 107, 108"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 176,
+  "fields": {
+    "post": 37,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.583Z",
+    "tags": "109, 110, 106, 111, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 177,
+  "fields": {
+    "post": 38,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.645Z",
+    "tags": "109, 5, 113, 116, 118, 114, 115, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 178,
+  "fields": {
+    "post": 39,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.680Z",
+    "tags": "109, 17, 32, 4, 120, 81, 119, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 179,
+  "fields": {
+    "post": 40,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.714Z",
+    "tags": "109, 19, 110, 25, 33, 121, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 180,
+  "fields": {
+    "post": 41,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.749Z",
+    "tags": "109, 95, 106, 107, 108, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 181,
+  "fields": {
+    "post": 42,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.783Z",
+    "tags": "109, 39, 25, 72, 122, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 182,
+  "fields": {
+    "post": 43,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.818Z",
+    "tags": "109, 25, 111, 123, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 183,
+  "fields": {
+    "post": 44,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.852Z",
+    "tags": "109, 24, 62, 60, 110, 16, 101, 107, 45, 98, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 184,
+  "fields": {
+    "post": 45,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.887Z",
+    "tags": "109, 4, 95, 120, 122, 125, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 185,
+  "fields": {
+    "post": 46,
+    "user": 4,
+    "mod_time": "2026-01-06T14:51:22.927Z",
+    "tags": "109, 24, 32, 60, 110, 120, 111, 113, 126, 15"
+  }
+},
+{
+  "model": "tesys_tagboard.posttaghistory",
+  "pk": 186,
+  "fields": {
+    "post": 9,
+    "user": 1,
+    "mod_time": "2026-01-06T15:09:33.694Z",
+    "tags": "22, 5, 32, 31, 30, 15"
   }
 },
 {
@@ -3866,7 +4254,7 @@
   "pk": 1,
   "fields": {
     "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$aXd1OHI0dFloYkpXRHhBbktNdk8wUw$9E/WSrhvenhy0qaD/nT2RTQjnzMNszjvxiANDeoQ4s8",
-    "last_login": "2026-01-05T04:08:19.594Z",
+    "last_login": "2026-01-06T14:58:41.843Z",
     "is_superuser": true,
     "username": "admin",
     "email": "tesy-tagboard@example.com",
