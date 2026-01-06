@@ -130,6 +130,8 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
             for tag_id in re.split(r"\s*,\s*", tag_snapshot.tags)
         ]
 
+    media_src_history = post.media.mediasourcehistory_set.order_by("-mod_time")
+
     context = {
         "post": post,
         "previous_post": previous_post,
@@ -139,6 +141,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
         "comments_page": comments_page,
         "post_edit_url": post_edit_url,
         "tag_history": tag_history,
+        "media_src_history": media_src_history,
     }
     return TemplateResponse(request, "pages/post.html", context)
 
@@ -162,8 +165,7 @@ def edit_post(
             return HttpResponse(post.title, status=200)
 
         if src_url := form.cleaned_data.get("src_url"):
-            post.media.src_url = src_url
-            post.media.save()
+            post.media.save_with_src_history(request.user, src_url)
             return HttpResponse(post.media.src_url, status=200)
 
         if rating_level := form.cleaned_data.get("rating_level"):

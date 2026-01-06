@@ -142,6 +142,32 @@ class Media(models.Model):
     def __str__(self) -> str:
         return f"<Media - orig_file: {self.orig_name}, source: {self.src_url[:30]}...>"
 
+    def save_with_src_history(self, user, src_url: str):
+        """Saves the Media with additional handling for source history"""
+        media_src_history = MediaSourceHistory.objects.filter(media=self)
+        if (self.src_url != src_url or not media_src_history) and not src_url.isspace():
+            MediaSourceHistory(media=self, user=user, src_url=src_url).save()
+            self.src_url = src_url
+        self.save()
+
+
+class MediaSourceHistory(models.Model):
+    """Model for tracking changes in a Media's src_url"""
+
+    media = models.ForeignKey(Media, on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    mod_time = models.DateTimeField(
+        auto_now_add=True,
+        db_comment="Timestamp of Media's source URL modification (including initial)",
+    )
+    src_url = models.CharField(
+        db_comment="Comma-delimited string of source URLs at the current time",
+        default="",
+    )
+
+    def __str__(self) -> str:
+        return f"<MediaSourceHistory - medias: {self.media.pk}, mod_time: {self.mod_time}, source: {self.src_url}>"
+
 
 class Image(models.Model):
     """Media linked to static image files"""
@@ -262,6 +288,7 @@ def update_tag_post_counts():
 
 def tags_to_csv(tags: Iterable[Tag]) -> str:
     return ",".join([tag.pk for tag in tags])
+
 
 def add_tag_history(tags: TagQuerySet, post: Post, user):
     old_tags = set(post.tags.order_by("pk"))

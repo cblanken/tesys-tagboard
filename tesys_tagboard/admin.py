@@ -7,6 +7,7 @@ from .models import Comment
 from .models import Favorite
 from .models import Image
 from .models import Media
+from .models import MediaSourceHistory
 from .models import Post
 from .models import PostTagHistory
 from .models import Tag
@@ -53,6 +54,18 @@ class MediaAdmin(admin.ModelAdmin):
         if form:
             form.base_fields["src_url"].required = False
         return form
+
+
+@admin.register(MediaSourceHistory)
+class MediaSourceHistoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "src_url",
+        "mod_time",
+    ]
+    search_fields = ["user", "src_url"]
+    list_filter = ["user"]
 
 
 @admin.register(Image)
