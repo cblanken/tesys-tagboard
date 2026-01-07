@@ -37,6 +37,45 @@
             <a class="btn btn-primary" href="{% url 'mfa_index' %}" role="button">MFA</a>
           </div>
           <!-- End Action buttons -->
+          <div>
+            <h2 class="py-4 upper">Settings</h2>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 bg-base-300 rounded-box tooltip"
+                   data-tip="Posts with the following tags will not appear in searches by default. To show posts with these tags, the tags must be explicitly given as one of the target tags in the search query.">
+                <label>
+                  <div class="text-lg italic opacity-60">Filter Tags</div>
+                  {% component "add_tagset" tags=user.filter_tags.all tagset_name="filter_tags" add_tag_enabled=True post_url="users:edit-settings" post_args=user.username / %}
+                </label>
+              </div>
+              <div class="p-4 bg-base-300 rounded-box tooltip"
+                   data-tip="Posts with the following tags will be blurred by default. Blurred posts can be seen by hovering over their thumbnail with the mouse or navigating to the related post's page.">
+                <label>
+                  <div class="text-lg italic opacity-60">Blur Tags</div>
+                  {% component "add_tagset" tags=user.blur_tags.all tagset_name="blur_tags" add_tag_enabled=True post_url="users:edit-settings" post_args=user.username / %}
+                </label>
+              </div>
+              <div class="p-4 bg-base-300 rounded-box tooltip"
+                   data-tip="Posts with the selected rating (or higher) will be blurred by default. Blurred posts can be seen by hovering over their thumbnail with the mouse or navigating to the related post's page.">
+                <label>
+                  <div class="flex gap-4">
+                    <div class="text-lg italic opacity-60">Blur Rating</div>
+                    <select name="blur_rating_level"
+                            class="font-bold select select-sm text-md w-fit"
+                            hx-post="{% url 'users:edit-settings' request.user %}"
+                            hx-on="change"
+                            hx-swap="none">
+                      {% for rating_level in blur_rating_levels %}
+                        <option value="{{ rating_level.value }}"
+                                {% if rating_level.value == user.blur_rating_level %}selected{% endif %}>
+                          {{ rating_level.name|lower|capfirst }} <span class="font-mono">({{ rating_level.value }})</span>
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
         {% endif %}
       </div>
       {% if favorites_pager %}

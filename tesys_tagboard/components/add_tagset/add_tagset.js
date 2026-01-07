@@ -1,6 +1,7 @@
 (function () { // Self invoking function to avoid variable clashing
   const setup_tagset = (root) => {
     const search_input = root.querySelector("input[type='search']");
+    let tagset_name = root.dataset?.tagsetName;
 
     const get_tagset = () => {
       return root.querySelector(".tagset");
@@ -11,7 +12,7 @@
     }
 
     const get_tagset_ids = (tagset) => {
-      return Array.from(tagset.querySelectorAll("input[name='tagset']")).map((input) => input.value)
+      return Array.from(tagset.querySelectorAll(`input[name='${tagset_name}']`)).map((input) => input.value)
     }
 
     const add_tag_btn = root.querySelector("button.add-tag-btn");
@@ -73,7 +74,7 @@
         let tag_input = document.createElement("input");
         tag_input.setAttribute("id", `tag-${tag_id}`);
         tag_input.setAttribute("type", "hidden");
-        tag_input.setAttribute("name", "tagset");
+        tag_input.setAttribute("name", tagset_name);
         tag_input.setAttribute("value", tag_id);
 
         tag_div.appendChild(tag_input);

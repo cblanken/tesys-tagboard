@@ -115,3 +115,13 @@ class EditCommentForm(forms.Form):
 
     comment_id = forms.IntegerField(required=True)
     text = forms.CharField(widget=forms.Textarea, required=True)
+
+
+class EditUserSettingsForm(forms.Form):
+    """Form for editing User settings"""
+
+    filter_tags = TagsetField(required=False, widget=forms.HiddenInput)
+    blur_tags = TagsetField(required=False, widget=forms.HiddenInput)
+    blur_rating_level = forms.ChoiceField(
+        required=False, choices=Post.RatingLevel.choices
+    )

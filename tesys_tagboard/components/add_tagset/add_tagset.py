@@ -21,12 +21,16 @@ class AddTagsetComponent(Component):
             "add_tag_enabled": bool(add_tag_enabled),
             "tags": kwargs.get("tags"),
             "actions": [Action("remove", "Remove this tag from the tag set", "")],
+            "tagset_name": kwargs.get("tagset_name", "tagset"),
         }
 
         post = kwargs.get("post")
         if post:
             data |= {"post_url": reverse("post-edit", args=[post.pk])}
         elif post_url:
-            data |= {"post_url": reverse(post_url, args=post_args)}
+            if post_args:
+                data |= {"post_url": reverse(post_url, args=[post_args])}
+            else:
+                data |= {"post_url": reverse(post_url)}
 
         return data

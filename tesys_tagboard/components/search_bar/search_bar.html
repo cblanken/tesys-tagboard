@@ -10,7 +10,7 @@
            hx-get='{% url "autocomplete" %}?partial='
            hx-params="partial"
            hx-trigger="input changed delay:500ms, keyup[key=='Enter']"
-           hx-target=".result-container"
+           hx-target="next .result-container"
            hx-on::config-request="event.detail.path += this.value" />
   </label>
   <div class="absolute top-full z-50 mt-1 w-full result-container"></div>

@@ -14,7 +14,7 @@
     <div>({{ tag.post_count }})</div>
     <input id="tag-{{ tag.pk }}"
            type="hidden"
-           name="tagset"
+           name="{{ tagset_name }}"
            value="{{ tag.pk }}" />
   </button>
   {% if actions %}

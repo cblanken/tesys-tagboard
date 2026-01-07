@@ -1,10 +1,11 @@
 {% load component_tags %}
 
-<div class="flex flex-col gap-2 w-full align-start add-tagset-container">
+<div class="flex flex-col gap-2 w-full align-start add-tagset-container"
+     data-tagset-name="{{ tagset_name }}">
   {% if tags|length == 0 %}<div class="ml-2 italic text-md">No tags yet!</div>{% endif %}
   <div class="flex flex-wrap gap-2 items-center tagset">
     {% for tag in tags %}
-      {% component "tag" tag=tag size=size actions=actions / %}
+      {% component "tag" tag=tag size=size actions=actions tagset_name=tagset_name / %}
     {% endfor %}
   </div>
   {% if add_tag_enabled %}
