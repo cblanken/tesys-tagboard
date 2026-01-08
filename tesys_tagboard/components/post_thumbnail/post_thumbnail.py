@@ -10,8 +10,8 @@ class PostThumbnailComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         post = kwargs.get("post")
-        max_tags = kwargs.get("max_tags", 15)
-        tags = kwargs.get("tags", [])
+        max_tags = kwargs.get("max_tags", 16)
+        tags = post.tags.all()[:max_tags]
         collections = kwargs.get("collections")
 
         return {

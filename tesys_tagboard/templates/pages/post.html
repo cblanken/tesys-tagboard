@@ -74,7 +74,7 @@
       {% endif %}
     </div>
     <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
-      {% component "add_tagset" post=post tags=tags size="small" add_tag_enabled=True / %}
+      {% component "add_tagset" post=post tags=tags size="sm" add_tag_enabled=True / %}
     </div>
     {% partialdef comments inline %}
     <div id="comments" class="mt-4 mb-8">
@@ -192,14 +192,14 @@
           <div class="place-self-start italic opacity-60 min-w-20 max-w-50">{{ tag_history.mod_time|naturaltime }}</div>
           <div class="flex flex-wrap gap-1">
             {% for tag in tag_history.tag_objects %}
-              {% component "tag" tag=tag size="small" / %}
+              {% component "tag" tag=tag size="sm" / %}
             {% endfor %}
           </div>
         {% endfor %}
       </div>
     </div>
     <label class="tab group">
-      <input type="radio" name="post_content_pane"/>
+      <input type="radio" name="post_content_pane" />
       <div class="flex gap-1 items-center">
         {% include "icons/feather.html" with icon="link" %}
         <div class="hidden sm:block group-has-[input:checked]:block">Source History</div>

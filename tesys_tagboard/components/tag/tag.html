@@ -1,8 +1,8 @@
 <div class="dropdown tag-container">
   <button tabindex="0"
-          role="button"
+          {% if actions %}role="button"{% endif %}
           type="button"
-          class="{% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn text-tag-content {% if category == "basic" %}bg-tag-basic{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
+          class="{% if size == "xs" %}btn-xs{% elif size == "sm" %}btn-sm{% elif size == "lg" %}btn-lg{% else %}btn-md{% endif %} px-3 py-1 btn text-tag-content {% if category == "basic" %}bg-tag-basic{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
     <div class="inline-flex gap-1 items-center w-fit nowrap">
       {% if alias %}
         {% include "icons/feather.html" with icon="corner-down-right" %}
@@ -20,18 +20,20 @@
   </button>
   {% if actions %}
     <ul tabindex="-1"
-        class="top-full mt-1 rounded-lg first:rounded-t-lg last:rounded-b-lg tag-actions dropdown-content bg-base-300 text-base-content">
+        class="top-full mt-1 rounded-field tag-actions dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
       {% for action in actions %}
-        <li class="relative p-0 w-52 font-bold group menu z-1 hover:bg-accent hover:text-accent-content">
+        <li class="relative p-0 w-full font-bold hover:rounded-none min-w-25 group menu z-1 hover:bg-accent hover:text-accent-content">
           {% if action.name == "search" %}
             <a href='{% url "posts" %}?tag={{ tag.pk }}'
-               class="p-3 w-full h-full link link-hover">{{ action.name }}</a>
+               class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none link link-hover">{{ action.name }}</a>
           {% else %}
             <button type="button"
                     data-action="{{ action.name }}"
-                    class="p-3 w-full h-full">{{ action.name }}</button>
+                    class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none">
+              {{ action.name }}
+            </button>
           {% endif %}
-          <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-40 h-content bg-info text-info-content">
+          <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-30 h-content bg-info text-info-content">
             {{ action.desc }}
           </aside>
         </li>
