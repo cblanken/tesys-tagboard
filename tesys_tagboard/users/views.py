@@ -7,13 +7,13 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
-from tesys_tagboard.components.add_tagset.add_tagset import AddTagsetComponent
 from tesys_tagboard.decorators import require
 from tesys_tagboard.forms import EditUserSettingsForm
 from tesys_tagboard.models import Collection
@@ -34,14 +34,15 @@ class HtmxHttpRequest(HttpRequest):
 
 
 @require(["GET", "POST"], login=False)
-def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
+def user_detail_view(
+    request: HtmxHttpRequest, username: str
+) -> TemplateResponse | HttpResponse:
     user = get_object_or_404(User, username=username)
-
     context = {
         "user": user,
         "tab": request.GET.get("tab"),
     }
-    if request.user == user:
+    if request.user == user and user.is_authenticated:
         # This user's page
         collections = user.collection_set.with_gallery_data()
         favorited_posts = [f.post for f in user.favorite_set.with_gallery_data()]
@@ -56,6 +57,8 @@ def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
             "favorites_page": favorites_page,
             "collections": collections,
             "blur_rating_levels": Post.RatingLevel,
+            "filter_tags": user.filter_tags.all(),
+            "blur_tags": user.blur_tags.all(),
         }
     else:
         # Other users' pages
@@ -64,59 +67,42 @@ def user_detail_view(request: HttpRequest, username: str) -> TemplateResponse:
             "collections": public_collections,
         }
 
+    if request.method == "POST":
+        if user != request.user:
+            return HttpResponseForbidden()
+
+        data: dict[str, str | list[Any] | None] = {
+            key: request.POST.get(key) for key in request.POST
+        }
+        data["filter_tags"] = (
+            request.POST.getlist("filter_tags")
+            if "filter_tags" in request.POST
+            else None
+        )
+        data["blur_tags"] = (
+            request.POST.getlist("blur_tags", None)
+            if "blur_tags" in request.POST
+            else None
+        )
+
+        form = EditUserSettingsForm(data)
+        if form.is_valid():
+            user.blur_rating_level = form.cleaned_data.get("blur_rating_level")
+
+            filter_tagset = form.cleaned_data.get("filter_tags")
+            user.filter_tags.set(Tag.objects.in_tagset(filter_tagset))
+
+            blur_tagset = form.cleaned_data.get("blur_tags")
+            user.blur_tags.set(Tag.objects.in_tagset(blur_tagset))
+
+            user.save()
+
+        if request.htmx:
+            return TemplateResponse(request, "users/user_detail.html#user-settings")
+
+        return redirect(reverse("users:detail", args=[user.username]), context)
+
     return TemplateResponse(request, "users/user_detail.html", context)
-
-
-@require(["POST"])
-def user_edit_settings(
-    request: HtmxHttpRequest, username: str
-) -> TemplateResponse | HttpResponse:
-    user = User.objects.get(username=username)
-
-    if user != request.user:
-        return HttpResponseForbidden()
-
-    data: dict[str, str | list[Any] | None] = {
-        key: request.POST.get(key) for key in request.POST
-    }
-    data["filter_tags"] = request.POST.getlist("filter_tags")
-    data["blur_tags"] = request.POST.getlist("blur_tags")
-
-    form = EditUserSettingsForm(data)
-    if form.is_valid():
-        if blur_rating_level := form.cleaned_data.get("blur_rating_level"):
-            user.blur_rating_level = blur_rating_level
-            user.save()
-            return HttpResponse(user.blur_rating_level, status=200)
-
-        if filter_tagset := form.cleaned_data.get("filter_tags"):
-            tags = Tag.objects.in_tagset(filter_tagset)
-            user.filter_tags.set(tags)
-            user.save()
-            kwargs = {
-                "tags": user.filter_tags.all(),
-                "add_tag_enabled": True,
-                "post_url": "users:edit-settings",
-                "post_args": [user.username],
-            }
-
-            return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
-
-        if blur_tagset := form.cleaned_data.get("blur_tags"):
-            tags = Tag.objects.in_tagset(blur_tagset)
-            user.blur_tags.set(tags)
-            user.save()
-            kwargs = {
-                "tags": user.blur_tags.all(),
-                "add_tag_enabled": True,
-                "post_url": "users:edit-settings",
-                "post_args": [user.username],
-            }
-
-            return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
-
-        return HttpResponse(status=200)
-    return HttpResponse(status=422)
 
 
 class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

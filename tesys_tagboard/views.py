@@ -11,9 +11,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
 from django.http.response import HttpResponseNotAllowed
@@ -39,6 +41,7 @@ from .forms import EditPostForm
 from .forms import PostForm
 from .forms import PostSearchForm
 from .forms import TagsetForm
+from .forms import tagset_to_array
 from .models import Collection
 from .models import Comment
 from .models import Favorite
@@ -49,6 +52,7 @@ from .models import Tag
 from .models import TagAlias
 from .search import PostSearch
 from .search import tag_autocomplete
+from .validators import valid_tagset
 
 if TYPE_CHECKING:
     from django.core.files.uploadedfile import UploadedFile
@@ -149,6 +153,36 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
         "media_src_history": media_src_history,
     }
     return TemplateResponse(request, "pages/post.html", context)
+
+
+@require(["POST"])
+def confirm_tagset(request: HtmxHttpRequest):
+    if request.htmx:
+        form = TagsetForm(request.POST)
+        if form.is_valid():
+            size = form.cleaned_data.get("size")
+            tagset_name = form.cleaned_data.get("tagset_name")
+            if isinstance(tagset_name, str):
+                tagset = tagset_to_array(request.POST.getlist(tagset_name, None))
+
+                # Confirm tagset for target tagset_name exists and is valid
+                try:
+                    if tagset and valid_tagset(tagset):
+                        tags = Tag.objects.in_tagset(tagset)
+                        kwargs = {
+                            "size": size,
+                            "tags": tags,
+                            "tagset_name": tagset_name,
+                            "add_tag_enabled": True,
+                        }
+                        return AddTagsetComponent.render_to_response(
+                            request=request, kwargs=kwargs
+                        )
+                except ValidationError:
+                    return HttpResponseBadRequest("Invalid tags provided")
+            return HttpResponseBadRequest("Invalid tagset name")
+
+    return HttpResponseBadRequest("Invalid request")
 
 
 @require(["POST"])

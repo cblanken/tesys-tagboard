@@ -1,6 +1,7 @@
 <div class="dropdown tag-container">
   <button tabindex="0"
           role="button"
+          type="button"
           class="{% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn text-tag-content {% if category == "basic" %}bg-tag-basic{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
     <div class="inline-flex gap-1 items-center w-fit nowrap">
       {% if alias %}

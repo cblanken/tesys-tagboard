@@ -9,6 +9,7 @@ from .models import Image
 from .models import Post
 from .models import Tag
 from .models import TagAlias
+from .validators import valid_tagset
 
 
 class UploadImage(forms.ModelForm):
@@ -48,24 +49,24 @@ class CreateCollectionForm(forms.ModelForm):
         fields = ["name", "desc", "public", "user"]
 
 
+def tagset_to_array(value) -> set[int] | None:
+    if value is None:
+        return None
+    try:
+        return {int(x) for x in value if len(x) > 0}
+    except ValueError as e:
+        msg = "A tagset may only contain integers"
+        raise ValidationError(msg) from e
+
+
 class TagsetField(forms.Field):
     """A Field representing a set of Tag IDs"""
 
-    def to_python(self, value) -> set[int]:
-        if value is None:
-            return set()
-        try:
-            return {int(x) for x in value if len(x) > 0}
-        except ValueError as e:
-            msg = "A tagset may only contain integers"
-            raise ValidationError(msg) from e
+    def to_python(self, value) -> set[int] | None:
+        return tagset_to_array(value)
 
     def validate(self, value):
-        for tag_id in value:
-            if tag_id <= 0:
-                msg = "A tagset may only contain positive integers"
-                raise ValidationError(msg)
-        return value
+        return valid_tagset(value)
 
 
 class PostSearchForm(forms.Form):
@@ -91,7 +92,9 @@ class PostForm(forms.Form):
 
 
 class TagsetForm(forms.Form):
+    size = forms.CharField(required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
+    tagset_name = forms.CharField(required=True)
 
 
 class EditPostForm(forms.Form):
@@ -120,8 +123,6 @@ class EditCommentForm(forms.Form):
 class EditUserSettingsForm(forms.Form):
     """Form for editing User settings"""
 
-    filter_tags = TagsetField(required=False, widget=forms.HiddenInput)
-    blur_tags = TagsetField(required=False, widget=forms.HiddenInput)
-    blur_rating_level = forms.ChoiceField(
-        required=False, choices=Post.RatingLevel.choices
-    )
+    filter_tags = TagsetField(widget=forms.HiddenInput)
+    blur_tags = TagsetField(widget=forms.HiddenInput)
+    blur_rating_level = forms.ChoiceField(choices=Post.RatingLevel.choices)

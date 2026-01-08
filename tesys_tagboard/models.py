@@ -38,7 +38,9 @@ class TagQuerySet(models.QuerySet):
     def for_post(self, post: Post):
         return self.filter(post=post)
 
-    def in_tagset(self, tagset: list[int]):
+    def in_tagset(self, tagset: list[int] | None):
+        if not tagset:
+            return []
         return self.filter(pk__in=tagset)
 
 
@@ -331,16 +333,19 @@ class PostQuerySet(models.QuerySet):
         posts = self.select_related("media", "media__image").prefetch_related("tags")
 
         if user.is_authenticated:
-            post_blur_tag_overlap = Tag.objects.filter(post=OuterRef("pk")).intersection(
-                user.blur_tags.all()
-            )
-            posts.annotate(
+            post_blur_tag_overlap = Tag.objects.filter(
+                post=OuterRef("pk")
+            ).intersection(user.blur_tags.all())
+            posts = posts.annotate(
                 blur_level=Q(rating_level__gte=user.blur_rating_level),
                 blur_tag=Subquery(
                     post_blur_tag_overlap.values("pk"), output_field=BooleanField()
                 ),
             )
-
+        else:
+            posts.annotate(
+                blur_level=Q(rating_level__gte=Post.RatingLevel.EXPLICIT),
+            )
         return posts
 
     def has_tags(self, tags: QuerySet[Tag]):
@@ -372,7 +377,7 @@ class Post(models.Model):
     title = models.TextField(default="", max_length=1000)
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     post_date = models.DateTimeField(default=now, editable=False)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     media = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
     rating_level = models.PositiveSmallIntegerField(
         default=RatingLevel.UNRATED, choices=RatingLevel.choices

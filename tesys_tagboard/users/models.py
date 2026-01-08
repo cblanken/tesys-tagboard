@@ -26,8 +26,10 @@ class User(AbstractUser):
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
-    filter_tags = models.ManyToManyField(Tag, related_name="filter_tags_users")
-    blur_tags = models.ManyToManyField(Tag, related_name="blur_tags_users")
+    filter_tags = models.ManyToManyField(
+        Tag, related_name="filter_tags_users", blank=True
+    )
+    blur_tags = models.ManyToManyField(Tag, related_name="blur_tags_users", blank=True)
     blur_rating_level = models.PositiveSmallIntegerField(
         default=Post.RatingLevel.EXPLICIT,
         choices=Post.RatingLevel.choices,

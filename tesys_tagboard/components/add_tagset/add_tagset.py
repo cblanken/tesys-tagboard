@@ -32,5 +32,7 @@ class AddTagsetComponent(Component):
                 data |= {"post_url": reverse(post_url, args=[post_args])}
             else:
                 data |= {"post_url": reverse(post_url)}
+        else:
+            data |= {"post_url": reverse("confirm-tagset")}
 
         return data

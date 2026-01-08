@@ -27,6 +27,7 @@ urlpatterns = [
     path("posts/comments/edit/", views.edit_comment, name="post-edit-comment"),
     path("posts/comments/delete/", views.delete_comment, name="post-delete-comment"),
     path("tags/", views.tags, name="tags"),
+    path("tags/confirm/", views.confirm_tagset, name="confirm-tagset"),
     path("tags/create/", views.create_tag, name="create-tag"),
     path("tags/create-alias/", views.create_tag_alias, name="create-tag-alias"),
     path("tags/autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
