@@ -114,7 +114,9 @@
     </label>
     <div class="p-3 rounded-none lg:p-6 tab-content lg:bg-base-200">
       <div class="flex flex-col gap-8 md:flex-row">
-        <div class="grow-0">{% component "create_collection" / %}</div>
+        {% if user == request.user %}
+          <div class="grow-0">{% component "create_collection" / %}</div>
+        {% endif %}
         {% partialdef collection-gallery inline %}
         <div id="user-collection-gallery"
              class="grid grid-cols-1 gap-4 w-full xl:grid-cols-2">
