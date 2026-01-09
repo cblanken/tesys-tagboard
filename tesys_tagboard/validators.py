@@ -2,12 +2,13 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-valid_md5 = validators.RegexValidator(r"^[0-9A-Z]{32}$")
-valid_phash = validators.RegexValidator(r"^[0-9a-z]{16}$")
-valid_dhash = validators.RegexValidator(r"^[0-9a-z]{16}$")
+validate_md5 = validators.RegexValidator(r"^[0-9A-Z]{32}$")
+validate_phash = validators.RegexValidator(r"^[0-9a-z]{16}$")
+validate_dhash = validators.RegexValidator(r"^[0-9a-z]{16}$")
+validate_tag_name = validators.RegexValidator(r"^[0-9a-zA-Z:-_]+$")
 
 
-def valid_tagset(value):
+def validate_tagset(value):
     if value is None:
         return None
 

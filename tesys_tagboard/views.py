@@ -52,7 +52,7 @@ from .models import Tag
 from .models import TagAlias
 from .search import PostSearch
 from .search import tag_autocomplete
-from .validators import valid_tagset
+from .validators import validate_tagset
 
 if TYPE_CHECKING:
     from django.core.files.uploadedfile import UploadedFile
@@ -167,7 +167,7 @@ def confirm_tagset(request: HtmxHttpRequest):
 
                 # Confirm tagset for target tagset_name exists and is valid
                 try:
-                    if tagset and valid_tagset(tagset):
+                    if tagset and validate_tagset(tagset):
                         tags = Tag.objects.in_tagset(tagset)
                         kwargs = {
                             "size": size,
@@ -298,16 +298,27 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     return TemplateResponse(request, "pages/posts.html", context)
 
 
-@require(["GET"], login=False)
-def tags(request: HtmxHttpRequest) -> TemplateResponse:
+@require(["GET", "POST"], login=False)
+def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     categories = TagCategory.__members__.values()
-    tag_query = request.GET.get("q", "")
-    tags_by_cat = {
-        cat: Tag.objects.filter(category=cat.value.shortcode, name__icontains=tag_query)
-        for cat in categories
-    }
 
-    aliases = TagAlias.objects.filter(name__icontains=tag_query).select_related("tag")
+    try:
+        tag_query = request.GET.get("q", "")
+        tags_by_cat = {
+            cat: Tag.objects.filter(
+                category=cat.value.shortcode, name__icontains=tag_query
+            )
+            for cat in categories
+        }
+
+        alias_query = request.GET.get("aliases", "")
+        aliases = (
+            TagAlias.objects.filter(name__icontains=alias_query)
+            .select_related("tag")
+            .order_by("tag__category")
+        )
+    except ValidationError:
+        return HttpResponseBadRequest("Invalid tag name or alias provided")
 
     context = {
         "tags": Tag.objects.order_by("name"),
@@ -318,7 +329,11 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse:
     }
 
     if request.htmx:
-        return TemplateResponse(request, "tags/tags_by_category.html", context)
+        if request.GET.get("q") is not None:
+            return TemplateResponse(request, "pages/tags.html#tag-categories", context)
+        if request.GET.get("aliases") is not None:
+            return TemplateResponse(request, "pages/tags.html#aliases", context)
+        return HttpResponseBadRequest("No search queries provided")
 
     return TemplateResponse(request, "pages/tags.html", context)
 

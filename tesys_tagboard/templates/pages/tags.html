@@ -8,7 +8,13 @@
 {% block content %}
   <main class="pb-24 m-auto max-w-[2400px]">
     {% include "heading.html" with text="TAGS" %}
-    <label class="flex relative items-center self-center mb-4 w-full lg:min-w-100">
+    {% if request.user.is_authenticated %}
+      <div class="flex flex-col gap-8 items-center lg:flex-row lg:items-start">
+        {% component "create_tag" categories=categories / %}
+        {% component "create_tag_alias" / %}
+      </div>
+    {% endif %}
+    <label class="flex relative items-center self-center mt-12 w-full lg:min-w-100">
       <div class="absolute left-3 z-5">{% include "icons/feather.html" with icon="filter" %}</div>
       <input type="search"
              class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-9 input grow f-full"
@@ -22,27 +28,44 @@
              hx-boost="true"
              hx-preserve="true" />
     </label>
-    {% if request.user.is_authenticated %}
-      <div class="flex flex-col gap-8 items-center lg:flex-row lg:items-start">
-        {% component "create_tag" categories=categories / %}
-        {% component "create_tag_alias" / %}
-      </div>
-    {% endif %}
-    <div class="mt-8">
+    <div class="mt-4 lg:mt-8">
+      {% partialdef tag-categories inline %}
       {% include "tags/tags_by_category.html" %}
-      {% if aliases %}
-        <section class="mt-16">
-          <h2 class="mb-10 text-5xl tracking-wider divider divider-primary">ALIASES</h2>
-          <div class="flex flex-wrap gap-2">
-            {% for alias in aliases %}
-              {% component "tag" alias=alias / %}
-            {% endfor %}
+    {% endpartialdef tag-categories %}
+    <section class="mt-16">
+      <h2 class="mb-10 text-5xl tracking-wider divider divider-primary">ALIASES</h2>
+      <label class="flex relative items-center self-center mt-4 mb-2 w-full lg:min-w-100">
+        <div class="absolute left-3 z-5">{% include "icons/feather.html" with icon="filter" %}</div>
+        <input type="search"
+               class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-9 input grow f-full"
+               placeholder="Filter tags aliases..."
+               name="aliases"
+               value="{{ request.GET.aliases }}"
+               hx-get="?aliases={{ request.GET.aliases }}"
+               hx-trigger="input changed delay:500ms, keyup[key=='Enter'], search"
+               hx-target="#aliases-container"
+               hx-swap="outerHTML"
+               hx-boost="true"
+               hx-preserve="true" />
+      </label>
+      {% partialdef aliases inline %}
+      <div id="aliases-container" class="flex flex-wrap gap-2">
+        {% if aliases %}
+          {% for alias in aliases %}
+            {% component "tag" alias=alias / %}
+          {% endfor %}
+        {% else %}
+          <div class="text-xl italic opacity-60">
+            No tag aliases
+            {% if request.GET.aliases %}matching that query{% endif %}
           </div>
-        </section>
-      {% endif %}
-      {% if tags|length == 0 %}
-        <div class="py-8 w-full text-4xl italic text-center opacity-75">No tags yet!</div>
-      {% endif %}
-    </div>
-  </main>
+        {% endif %}
+      </div>
+    {% endpartialdef aliases %}
+  </section>
+  {% if tags|length == 0 %}
+    <div class="py-8 w-full text-4xl italic text-center opacity-75">No tags yet!</div>
+  {% endif %}
+</div>
+</main>
 {% endblock content %}

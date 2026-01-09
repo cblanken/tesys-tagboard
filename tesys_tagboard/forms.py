@@ -9,7 +9,7 @@ from .models import Image
 from .models import Post
 from .models import Tag
 from .models import TagAlias
-from .validators import valid_tagset
+from .validators import validate_tagset
 
 
 class UploadImage(forms.ModelForm):
@@ -66,7 +66,7 @@ class TagsetField(forms.Field):
         return tagset_to_array(value)
 
     def validate(self, value):
-        return valid_tagset(value)
+        return validate_tagset(value)
 
 
 class PostSearchForm(forms.Form):
