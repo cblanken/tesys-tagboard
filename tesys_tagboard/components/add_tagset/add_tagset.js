@@ -67,7 +67,7 @@
       } else {
         const tag_name = autocomplete_item.dataset['name'];
         const tag_div = document.createElement("div");
-        tag_div.classList.add("p-3", "py-1", "border-2", "border-dashed", "rounded-md", "opacity-60");
+        tag_div.classList.add("p-3", "py-1", "border-2", "border-dashed", "rounded-field", "opacity-60");
         tag_div.textContent = `+ ${tag_name}`;
         tag_div.setAttribute("data-new", true);
 

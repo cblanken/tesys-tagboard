@@ -19,7 +19,7 @@
     <form action="{% url 'upload' %}"
           method="post"
           enctype="multipart/form-data"
-          class="flex flex-col gap-4 p-8 w-full rounded-lg lg:w-1/2 bg-base-300 sm:min-w-[450px] lg:max-w-[800px]">
+          class="flex flex-col gap-4 p-8 w-full rounded-box lg:w-1/2 bg-base-300 sm:min-w-[450px] lg:max-w-[800px]">
       {% csrf_token %}
       {{ form.non_field_errors }}
       <fieldset class="fieldset">

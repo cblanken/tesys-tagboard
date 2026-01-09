@@ -155,11 +155,11 @@
       </div>
     </label>
     <div class="p-2 tab-content bg-base-200 border-base-300">
-      <figure class="mb-2 rounded-md">
-        <img class="xl:m-none rounded-t-md {% if not post.title %}rounded-b-md{% endif %} max-h-[80svh]"
+      <figure class="mb-2 rounded-box">
+        <img class="xl:m-none rounded-t-box {% if not post.title %}rounded-b-box{% endif %} max-h-[80svh]"
              src="{{ post.media.image.file.url }}"
              alt="{{ post.title }}" />
-        {% if post.title %}<figcaption class="p-2 italic rounded-lg opacity-70">{{ post.title }}</figcaption>{% endif %}
+        {% if post.title %}<figcaption class="p-2 italic opacity-70">{{ post.title }}</figcaption>{% endif %}
       </figure>
       <div class="flex flex-wrap gap-2 justify-end items-center w-fit">
         {% if request.user.is_authenticated %}
