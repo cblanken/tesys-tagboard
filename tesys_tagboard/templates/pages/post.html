@@ -156,9 +156,15 @@
     </label>
     <div class="p-2 tab-content bg-base-200 border-base-300">
       <figure class="mb-2 rounded-box">
-        <img class="xl:m-none rounded-t-box {% if not post.title %}rounded-b-box{% endif %} max-h-[80svh]"
-             src="{{ post.media.image.file.url }}"
-             alt="{{ post.title }}" />
+        <div class="relative w-fit">
+          <img class="rounded-box max-h-[80svh] xl:m-none"
+               src="{{ post.media.image.file.url }}"
+               alt="{{ post.title }}" />
+          <button class="absolute right-2 bottom-2 p-1 border-none hover:scale-110 rounded-field bg-neutral/40 text-neutral-content hover:bg-neutral"
+                  onclick="post_full_screen.showModal()">
+            {% include "icons/feather.html" with icon="maximize" size="large" %}
+          </button>
+        </div>
         {% if post.title %}<figcaption class="p-2 italic opacity-70">{{ post.title }}</figcaption>{% endif %}
       </figure>
       <div class="flex flex-wrap gap-2 justify-end items-center w-fit">
@@ -222,4 +228,15 @@
   </div>
 </section>
 </main>
+<dialog id="post_full_screen"
+        class="w-screen h-screen modal bg-neutral/75 sm:modal-middle">
+  <img class="overflow-auto max-w-svw max-h-svh"
+       src="{{ post.media.image.file.url }}"
+       alt="{{ post.title }}" />
+  <div class="absolute right-2 bottom-2 lg:right-4 lg:bottom-4 modal-action">
+    <form method="dialog">
+      <button class="btn btn-primary lg:btn-lg">Close</button>
+    </form>
+  </div>
+</dialog>
 {% endblock content %}
