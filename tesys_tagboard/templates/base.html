@@ -98,5 +98,12 @@
     {% endblock modal %}
     {% block inline_javascript %}
     {% endblock inline_javascript %}
+    <a id="back-to-top-btn"
+       href="#top"
+       class="hidden fixed bottom-2 left-2 z-50 rounded-full border-2 lg:hidden btn btn-xl btn-secondary bg-secondary/90 btn-square">
+      {% include "icons/feather.html" with icon="arrow-up" %}
+    </a>
+    <div id="bottom-of-screen-threshold"
+         class="absolute top-0 w-full h-[250dvh] -z-1"></div>
   </body>
 </html>
