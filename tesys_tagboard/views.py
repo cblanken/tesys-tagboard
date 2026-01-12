@@ -9,7 +9,6 @@ import regex as re
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -37,7 +36,6 @@ from .forms import CreateCollectionForm
 from .forms import CreateTagAliasForm
 from .forms import CreateTagForm
 from .forms import EditCommentForm
-from .forms import EditPostForm
 from .forms import PostForm
 from .forms import PostSearchForm
 from .forms import TagsetForm
@@ -55,6 +53,7 @@ from .search import tag_autocomplete
 from .validators import validate_tagset
 
 if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
     from django.core.files.uploadedfile import UploadedFile
     from django.db.models import QuerySet
     from django_htmx.middleware import HtmxDetails
@@ -93,8 +92,9 @@ def home(request: HttpRequest) -> TemplateResponse:
     return TemplateResponse(request, "pages/home.html", context)
 
 
-@require(["GET", "POST"], login=False)
-def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
+@require(["GET"], login=False)
+def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpResponse:
+    # GET request
     all_posts = Post.objects.order_by("post_date").values("pk", "post_date")
     previous_post = None
     next_post = None
@@ -114,7 +114,6 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
     comments_page_num = request.GET.get("page", 1)
     comments_page = comments_pager.get_page(comments_page_num)
     tags = Tag.objects.for_post(post)
-    post_edit_url = reverse("post-edit", args=[post.pk])
 
     post_tag_history_tag_ids = [
         re.split(r"\s*,\s*", tags_snapshot.tags)
@@ -148,84 +147,48 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse:
         "tags": tags,
         "comments_pager": comments_pager,
         "comments_page": comments_page,
-        "post_edit_url": post_edit_url,
         "tag_history": tag_history,
         "media_src_history": media_src_history,
     }
+
     return TemplateResponse(request, "pages/post.html", context)
 
 
-@require(["POST"])
-def confirm_tagset(request: HtmxHttpRequest):
-    if request.htmx:
-        form = TagsetForm(request.POST)
-        if form.is_valid():
-            size = form.cleaned_data.get("size")
-            tagset_name = form.cleaned_data.get("tagset_name")
-            if isinstance(tagset_name, str):
-                tagset = tagset_to_array(request.POST.getlist(tagset_name, None))
-
-                # Confirm tagset for target tagset_name exists and is valid
-                try:
-                    if tagset and validate_tagset(tagset):
-                        tags = Tag.objects.in_tagset(tagset)
-                        kwargs = {
-                            "size": size,
-                            "tags": tags,
-                            "tagset_name": tagset_name,
-                            "add_tag_enabled": True,
-                        }
-                        return AddTagsetComponent.render_to_response(
-                            request=request, kwargs=kwargs
-                        )
-                except ValidationError:
-                    return HttpResponseBadRequest("Invalid tags provided")
-            return HttpResponseBadRequest("Invalid tagset name")
-
-    return HttpResponseBadRequest("Invalid request")
-
-
-@require(["POST"])
-@permission_required("change_post")
+@require(["POST"], login=True)
 def edit_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
+    user: User | AnonymousUser = request.user
     post = get_object_or_404(Post.objects.filter(pk=post_id))
+    if not (user.is_authenticated or user.has_perm("edit", post)):
+        return HttpResponseForbidden(
+            f'The user "{user.get_username()}" is not allowed to edit this post'
+        )
+
     data: dict[str, str | list[Any] | None] = {
         key: request.POST.get(key) for key in request.POST
     }
     data["tagset"] = request.POST.getlist("tagset")
 
-    form = EditPostForm(data)
-    if form.is_valid():
-        if title := form.cleaned_data.get("title"):
-            post.title = title
-            post.save()
-            return HttpResponse(post.title, status=200)
+    form = PostForm(data)
+    if not form.is_valid():
+        return HttpResponseBadRequest("Invalid form data")
 
-        if src_url := form.cleaned_data.get("src_url"):
-            post.media.save_with_src_history(request.user, src_url)
-            return HttpResponse(post.media.src_url, status=200)
+    if title := form.cleaned_data.get("title"):
+        post.title = title
 
-        if rating_level := form.cleaned_data.get("rating_level"):
-            post.rating_level = rating_level
-            post.save()
-            return HttpResponse(post.rating_level, status=200)
+    if src_url := form.cleaned_data.get("src_url"):
+        post.media.save_with_src_history(request.user, src_url)
 
-        if tagset := form.cleaned_data.get("tagset"):
-            tags = Tag.objects.in_tagset(tagset)
-            post.save_with_history(request.user, tags)
-            kwargs = {
-                "size": "small",
-                "tags": tags,
-                "add_tag_enabled": True,
-                "post": post,
-            }
+    if rating_level := form.cleaned_data.get("rating_level"):
+        post.rating_level = rating_level
 
-            return AddTagsetComponent.render_to_response(request=request, kwargs=kwargs)
+    if tagset := form.cleaned_data.get("tagset"):
+        tags = Tag.objects.in_tagset(tagset)
+        post.save_with_tag_history(request.user, tags)
 
-        return HttpResponse(status=200)
-    return HttpResponse(status=422)
+    post.save()
+    return redirect(reverse("post", args=[post.pk]))
 
 
 @require(["DELETE"])
@@ -239,6 +202,35 @@ def delete_post(
 
     except Post.DoesNotExist:
         return HttpResponseNotFound("That post doesn't exist")
+
+
+@require(["POST"])
+def confirm_tagset(request: HtmxHttpRequest):
+    if request.htmx:
+        form = TagsetForm(request.POST)
+        if form.is_valid():
+            size = form.cleaned_data.get("size")
+            tagset_name = form.cleaned_data.get("tagset_name")
+            tagset = tagset_to_array(request.POST.getlist(tagset_name, None))
+
+            # Confirm tagset for target tagset_name exists and is valid
+            try:
+                validate_tagset(tagset)
+                if tagset:
+                    tags = Tag.objects.in_tagset(tagset)
+                    kwargs = {
+                        "size": size,
+                        "tags": tags,
+                        "tagset_name": tagset_name,
+                        "add_tag_enabled": True,
+                    }
+                    return AddTagsetComponent.render_to_response(
+                        request=request, kwargs=kwargs
+                    )
+            except ValidationError:
+                return HttpResponseBadRequest("Invalid tags provided")
+
+    return HttpResponseBadRequest("Invalid request")
 
 
 @require(["POST"])
@@ -653,7 +645,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             rating_level = form.cleaned_data.get("rating_level")
             tags = Tag.objects.in_tagset(tagset)
             post = Post(uploader=request.user, media=media, rating_level=rating_level)
-            post.save_with_history(post.uploader, tags)
+            post.save_with_tag_history(post.uploader, tags)
             post.save()
 
         context = {"form": form, "rating_levels": Post.RatingLevel.choices}

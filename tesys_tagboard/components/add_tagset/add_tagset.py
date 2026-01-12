@@ -13,7 +13,6 @@ class AddTagsetComponent(Component):
     def get_template_data(self, args, kwargs, slots, context):
         size: str = kwargs.get("size")
         post_url: str = kwargs.get("post_url")
-        post_args: list = kwargs.get("post_args")
         add_tag_enabled: bool = kwargs.get("add_tag_enabled")
 
         data = {
@@ -24,14 +23,8 @@ class AddTagsetComponent(Component):
             "tagset_name": kwargs.get("tagset_name", "tagset"),
         }
 
-        post = kwargs.get("post")
-        if post:
-            data |= {"post_url": reverse("post-edit", args=[post.pk])}
-        elif post_url:
-            if post_args:
-                data |= {"post_url": reverse(post_url, args=[post_args])}
-            else:
-                data |= {"post_url": reverse(post_url)}
+        if post_url:
+            data |= {"post_url": post_url}
         else:
             data |= {"post_url": reverse("confirm-tagset")}
 

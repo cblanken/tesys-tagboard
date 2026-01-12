@@ -295,7 +295,7 @@ def update_tag_post_counts():
 
 
 def tags_to_csv(tags: Iterable[Tag]) -> str:
-    return ",".join([tag.pk for tag in tags])
+    return ",".join([str(tag.pk) for tag in tags])
 
 
 def add_tag_history(tags: TagQuerySet, post: Post, user):
@@ -398,9 +398,10 @@ class Post(models.Model):
         super().save(**kwargs)
         update_tag_post_counts()
 
-    def save_with_history(self, user, tags: TagQuerySet):
+    def save_with_tag_history(self, user, tags: TagQuerySet):
         """Saves the post with additional handling for tag history"""
         add_tag_history(tags, self, user)
+        self.tags.set(tags)
         self.save()
 
 

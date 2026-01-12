@@ -1,9 +1,9 @@
 (function () { // Self invoking function to avoid variable clashing
   const setup_edit_field = (form) => {
-    const field_display = form.querySelector(".field-display");
+    const field_display = form.querySelector(".field-display > span, .field-display > a");
     const field_text_input = form.querySelector("input[type='text']");
     const edit_btn = form.querySelector("label.edit-btn");
-    const field_submit_btn = form.querySelector("button[type='submit']");
+    const field_confirm_btn = form.querySelector("button[type='button']");
 
     // Set cursor to last position
     field_text_input.setSelectionRange(field_text_input.textContent.length-1, field_text_input.textContent.length-1);
@@ -17,7 +17,7 @@
         edit_cancel_btn.classList.remove("hidden")
 
         field_text_input.classList.remove("hidden");
-        field_submit_btn.classList.remove("hidden");
+        field_confirm_btn.classList.remove("hidden");
         field_display.classList.add("hidden");
         field_text_input.focus();
       } else {
@@ -25,7 +25,7 @@
         edit_edit_btn.classList.remove("hidden")
 
         field_text_input.classList.add("hidden");
-        field_submit_btn.classList.add("hidden");
+        field_confirm_btn.classList.add("hidden");
         field_display.classList.remove("hidden");
       }
     }
@@ -43,11 +43,26 @@
       checkbox.dispatchEvent(new Event("change"));
     });
 
-    field_submit_btn.addEventListener("htmx:afterRequest", e => {
-      if (e.detail.target = field_display) {
-        toggle_edit_field(false);
+    field_confirm_btn.addEventListener("click", e => {
+      field_display.textContent = field_text_input.value;
+      if (field_display.nodeName === "a") {
+        field_display.href = field_text_input.value;
+      }
+      toggle_edit_field(false);
+      form.dispatchEvent(new Event("confirmed-change", { bubbles: true }))
+    });
+
+    // Only passthrough tagset change event when confirmed
+    form.addEventListener("change", e => {
+      if (e.target === form) {
+        // root.dispatchEvent(new Event("confirmed-change", { bubbles: true }))
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
       }
     });
+
+
   };
 
   const setup = (forms) => {

@@ -1,5 +1,6 @@
 (function () { // Self invoking function to avoid variable clashing
   const setup_tagset = (root) => {
+
     const search_input = root.querySelector("input[type='search']");
     let tagset_name = root.dataset?.tagsetName;
 
@@ -20,6 +21,8 @@
     const confirm_tag_btn = root.querySelector("button.confirm-tag-btn");
     const search_bar = root.querySelector(".search-container");
     const search_bar_input = search_bar.querySelector("input[type='search']");
+
+
     const show_tag_search = () => {
       add_tag_btn.classList.add("hidden");
       search_bar.classList.remove("hidden");
@@ -51,8 +54,15 @@
       delete_uncommitted_tags();
     });
 
+    // Only passthrough tagset change event when confirmed
+    root.addEventListener("change", e => {
+      if (e.target === root) {
+        root.dispatchEvent(new Event("confirmed-change", { bubbles: true }))
+      }
+    });
     confirm_tag_btn.addEventListener("click", e => {
       hide_tag_search();
+      root.dispatchEvent(new Event("change"))
     });
 
     const add_tag_to_set_handler = (e) => {
@@ -84,14 +94,6 @@
       search_input.value = "";
       search_input.focus();
     }
-
-
-    root.addEventListener("tagAction", e => {
-      // Update tags when a tag is removed
-      if (e.detail.action == "remove") {
-        htmx.trigger(confirm_tag_btn, "click");
-      };
-    });
 
     htmx.on(root.querySelector(".result-container"), "htmx:afterSettle", (e) => {
       let search_results = get_search_results();

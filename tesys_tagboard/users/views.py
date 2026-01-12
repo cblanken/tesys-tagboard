@@ -5,6 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -96,6 +97,8 @@ def user_detail_view(
             user.blur_tags.set(Tag.objects.in_tagset(blur_tagset))
 
             user.save()
+        else:
+            return HttpResponseBadRequest("Invalid form data")
 
         if request.htmx:
             return TemplateResponse(request, "users/user_detail.html#user-settings")

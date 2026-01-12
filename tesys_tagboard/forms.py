@@ -10,6 +10,7 @@ from .models import Post
 from .models import Tag
 from .models import TagAlias
 from .validators import validate_tagset
+from .validators import validate_tagset_name
 
 
 class UploadImage(forms.ModelForm):
@@ -53,20 +54,18 @@ def tagset_to_array(value) -> set[int] | None:
     if value is None:
         return None
     try:
-        return {int(x) for x in value if len(x) > 0}
+        return {int(x) for x in value}
     except ValueError as e:
         msg = "A tagset may only contain integers"
         raise ValidationError(msg) from e
 
 
 class TagsetField(forms.Field):
+    default_validators = [validate_tagset]
     """A Field representing a set of Tag IDs"""
 
     def to_python(self, value) -> set[int] | None:
         return tagset_to_array(value)
-
-    def validate(self, value):
-        return validate_tagset(value)
 
 
 class PostSearchForm(forms.Form):
@@ -79,26 +78,17 @@ class PostSearchForm(forms.Form):
     funcset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
-class PostForm(forms.Form):
-    """Form for media posts
-    src_url = a URL linking to the source of the media
-    file = a file object representing the Media
-    tags: an array of tag IDs"""
-
-    src_url = forms.URLField(label=_("Source"), required=False, assume_scheme="https")
-    file = forms.FileField(label="File", required=True)
-    rating_level = forms.ChoiceField(choices=Post.RatingLevel.choices, required=False)
-    tagset = TagsetField(required=False, widget=forms.HiddenInput)
-
-
 class TagsetForm(forms.Form):
     size = forms.CharField(required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
-    tagset_name = forms.CharField(required=True)
+    tagset_name = forms.CharField(required=True, validators=[validate_tagset_name])
 
 
-class EditPostForm(forms.Form):
-    """Form for editing Post metadata"""
+class PostForm(forms.Form):
+    """Form for Posts
+    src_url = a URL linking to the source of the media
+    file = a file object representing the Media
+    tags: an array of tag IDs"""
 
     title = forms.CharField(max_length=200, label=_("Title"), required=False)
     src_url = forms.URLField(label=_("Source"), required=False, assume_scheme="https")
@@ -123,6 +113,6 @@ class EditCommentForm(forms.Form):
 class EditUserSettingsForm(forms.Form):
     """Form for editing User settings"""
 
-    filter_tags = TagsetField(widget=forms.HiddenInput)
-    blur_tags = TagsetField(widget=forms.HiddenInput)
+    filter_tags = TagsetField(required=False, widget=forms.HiddenInput)
+    blur_tags = TagsetField(required=False, widget=forms.HiddenInput)
     blur_rating_level = forms.ChoiceField(choices=Post.RatingLevel.choices)

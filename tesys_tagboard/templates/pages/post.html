@@ -28,55 +28,62 @@
         </div>
       {% endpartialdef next-prev-nav %}
     </div>
-    <div class="flex gap-2 items-center">
-      <span class="font-bold">Title:</span>
-      {% if request.user.is_authenticated %}
-        {% if post.title %}
-          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url text=post.title / %}
+    <form id="edit-post-form"
+          method="post"
+          action="{% url "post-edit" post_id=post.pk %}">
+      {% csrf_token %}
+      <div class="flex gap-2 items-center">
+        <span class="font-bold">Title:</span>
+        {% if request.user.is_authenticated %}
+          {% if post.title %}
+            {% component "text_field_edit_toggle" input_name="title" text=post.title / %}
+          {% else %}
+            {% component "text_field_edit_toggle" input_name="title" empty_text="No title" / %}
+          {% endif %}
         {% else %}
-          {% component "text_field_edit_toggle" input_name="title" edit_url=post_edit_url empty_text="No title" / %}
+          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.title|default:"No title" }}</div>
         {% endif %}
-      {% else %}
-        <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.title|default:"No title" }}</div>
-      {% endif %}
-    </div>
-    <div class="flex gap-1 items-center min-w-72">
-      <span class="font-bold">Uploaded by</span>
-      {% include "nav/user_link.html" with user=post.uploader %}
-    </div>
-    <div>
-      <span class="font-bold">Posted on</span> {{ post.post_date }}
-    </div>
-    <div>
-      <span class="font-bold">Rating:</span>
-      <select name="rating_level"
-              class="font-bold select select-sm text-md w-fit"
-              hx-post="{{ post_edit_url }}"
-              hx-on="change"
-              hx-swap="none">
-        {% for rating_level in post.RatingLevel %}
-          <option value="{{ rating_level.value }}"
-                  {% if rating_level.value == post.rating_level %}selected{% endif %}>
-            {{ rating_level.name|lower|capfirst }} <span class="font-mono">({{ rating_level.value }})</span>
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="flex gap-2 items-center">
-      <span class="self-start font-bold">Source:</span>
-      {% if request.user.is_authenticated %}
-        {% if post.media.src_url %}
-          {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+      </div>
+      <div class="flex gap-1 items-center min-w-72">
+        <span class="font-bold">Uploaded by</span>
+        {% include "nav/user_link.html" with user=post.uploader %}
+      </div>
+      <div>
+        <span class="font-bold">Posted on</span> {{ post.post_date }}
+      </div>
+      <div id="post-rating-field">
+        <span class="font-bold">Rating:</span>
+        <select onchange=""
+                name="rating_level"
+                class="font-bold select select-sm text-md w-fit">
+          {% for rating_level in post.RatingLevel %}
+            <option value="{{ rating_level.value }}"
+                    {% if rating_level.value == post.rating_level %}selected{% endif %}>
+              {{ rating_level.name|lower|capfirst }} <span class="font-mono">({{ rating_level.value }})</span>
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex gap-2 items-center">
+        <span class="self-start font-bold">Source:</span>
+        {% if request.user.is_authenticated %}
+          {% if post.media.src_url %}
+            {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+          {% else %}
+            {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
+          {% endif %}
         {% else %}
-          {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
+          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.media.src_url|default:"Unknown" }}</div>
         {% endif %}
-      {% else %}
-        <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.media.src_url|default:"Unknown" }}</div>
-      {% endif %}
-    </div>
-    <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
-      {% component "add_tagset" post=post tags=tags size="sm" add_tag_enabled=True / %}
-    </div>
+      </div>
+      <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
+        {% component "add_tagset" post=post tags=tags size="sm" add_tag_enabled=True / %}
+      </div>
+      <button disabled
+              id="save-post-btn"
+              type="submit"
+              class="w-full btn btn-secondary min-w-30">Save</button>
+    </form>
     {% partialdef comments inline %}
     <div id="comments" class="mt-4 mb-8">
       {% partialdef add-comments inline %}
