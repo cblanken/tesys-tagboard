@@ -4,7 +4,6 @@ import uuid
 from hashlib import md5
 from io import BytesIO
 from typing import TYPE_CHECKING
-from typing import Protocol
 
 import imagehash
 import regex as re
@@ -35,18 +34,8 @@ from .validators import validate_phash
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from collections.abc import Sequence
-    from typing import Any
 
     from users.models import User
-
-django_model_type: Any = type(models.Model)
-protocol_type: Any = type(Protocol)
-
-
-class ModelProtocolMeta(django_model_type, protocol_type):
-    """
-    This technique allows us to use Protocol with Django models without metaclass conflict
-    """
 
 
 class TagQuerySet(models.QuerySet):
@@ -147,213 +136,6 @@ def unique_filename(instance, filename: str) -> str:
     return f"{new_name}"
 
 
-class MediaFile(Protocol):
-    """A Protocol for describing requirements of all MediaFile models such as
-    Audio, Image, and Video"""
-
-    meta: models.OneToOneField
-    file: models.FileField
-    md5: models.CharField
-
-    def category(self) -> MediaCategory: ...
-
-
-class MediaFileModel(MediaFile, metaclass=ModelProtocolMeta): ...
-
-
-class Media(models.Model):
-    """Media file metadata"""
-
-    media_choices = (
-        (x.name, x.value.desc) for x in SupportedMediaTypes.__members__.values()
-    )
-
-    orig_name = models.TextField()
-    type = models.CharField(max_length=20, choices=media_choices)
-    upload_date = models.DateTimeField(default=now, editable=False)
-    edit_date = models.DateTimeField(auto_now=True)
-    src_url = models.URLField(max_length=255, blank=True, default="")
-
-    class Meta:
-        verbose_name_plural = "media"
-
-    def __str__(self) -> str:
-        return f"<Media - orig_file: {self.orig_name}, source: {self.src_url[:30]}...>"
-
-    def category(self) -> MediaCategory | None:
-        if hasattr(self, "audio"):
-            return MediaCategory.AUDIO
-        if hasattr(self, "image"):
-            return MediaCategory.IMAGE
-        if hasattr(self, "video"):
-            return MediaCategory.VIDEO
-        return None
-
-    def file(self) -> MediaFileModel | None:
-        match self.category():
-            case MediaCategory.AUDIO:
-                return self.audio
-            case MediaCategory.IMAGE:
-                return self.image
-            case MediaCategory.VIDEO:
-                return self.video
-        return None
-
-    def save_with_src_history(self, user, src_url: str):
-        """Saves the Media with additional handling for source history"""
-        media_src_history = MediaSourceHistory.objects.filter(media=self)
-        if (self.src_url != src_url or not media_src_history) and not src_url.isspace():
-            MediaSourceHistory(media=self, user=user, src_url=src_url).save()
-            self.src_url = src_url
-        self.save()
-
-
-class MediaSourceHistory(models.Model):
-    """Model for tracking changes in a Media's src_url"""
-
-    media = models.ForeignKey(Media, on_delete=models.CASCADE)
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    mod_time = models.DateTimeField(
-        auto_now_add=True,
-        db_comment="Timestamp of Media's source URL modification (including initial)",
-    )
-    src_url = models.CharField(
-        db_comment="Comma-delimited string of source URLs at the current time",
-        default="",
-    )
-
-    def __str__(self) -> str:
-        return f"<MediaSourceHistory - medias: {self.media.pk}, mod_time: {self.mod_time}, source: {self.src_url}>"
-
-
-class Image(models.Model, MediaFileModel):
-    """Media linked to static image files"""
-
-    meta = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
-    file = models.ImageField(
-        upload_to=media_upload_path,
-        unique=True,
-        width_field="width",
-        height_field="height",
-    )
-    width: models.PositiveIntegerField = models.PositiveIntegerField(default=0)
-    height: models.PositiveIntegerField = models.PositiveIntegerField(default=0)
-    thumbnail = models.ImageField(
-        upload_to=media_thumbnail_upload_path,
-        width_field="width",
-        height_field="height",
-        null=True,
-    )
-    thumbnail_width: models.PositiveIntegerField = models.PositiveIntegerField(
-        default=0
-    )
-    thumbnail_height: models.PositiveIntegerField = models.PositiveIntegerField(
-        default=0
-    )
-
-    """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
-
-    """Perceptual (DCT) hash"""
-    phash: models.CharField = models.CharField(validators=[validate_phash])
-
-    """Difference hash"""
-    dhash: models.CharField = models.CharField(validators=[validate_dhash])
-
-    # TODO: add duplicate detection
-    # See https://github.com/JohannesBuchner/imagehash/issues/127 for
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
-        self.phash = str(imagehash.phash(PIL_Image.open(self.file)))
-        self.dhash = str(imagehash.dhash(PIL_Image.open(self.file)))
-
-    def __str__(self) -> str:
-        return f"<Image - meta: {self.meta}, file: {self.file}>"
-
-    def save(self, *args, **kwargs):
-        image_file = PIL_Image.open(self.file)
-
-        if image_file.mode not in ("L", "RGB"):
-            image = image_file.convert("RGB")
-            image_file = PIL_Image.open(image.tobytes())
-
-        # Set thumbnail size
-        thumb_size = kwargs.get("thumb_size", (400, 400))
-        image_file.thumbnail(thumb_size)
-
-        # Save thumbnail to memory
-        handle = BytesIO()
-        image_file.save(handle, "png")
-        handle.seek(0)
-
-        thumbnail_name = f"{self.file.name}.png"
-        suf = SimpleUploadedFile(
-            thumbnail_name, handle.read(), content_type="image/png"
-        )
-
-        self.thumbnail.save(f"{suf.name}.png", suf, save=False)
-        self.thumbnail_width, self.thumbnail_height = image_file.size
-
-        super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        self.meta.delete()
-        return super().delete(*args, **kwargs)
-
-    def category(self):
-        return MediaCategory.IMAGE
-
-
-class Video(models.Model, MediaFileModel):
-    """Media linked to static video files"""
-
-    meta = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
-    file = models.FileField(upload_to=media_upload_path, unique=True)
-
-    """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
-
-    def __str__(self) -> str:
-        return f"<Video - meta: {self.meta}, file: {self.file}>"
-
-    def delete(self, *args, **kwargs):
-        self.meta.delete()
-        return super().delete(*args, **kwargs)
-
-    def category(self):
-        return MediaCategory.VIDEO
-
-
-class Audio(models.Model, MediaFileModel):
-    """Media linked to static audio files"""
-
-    meta = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
-    file = models.FileField(upload_to=media_upload_path, unique=True)
-
-    """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
-
-    def __str__(self) -> str:
-        return f"<Audio - meta: {self.meta}, file: {self.file}>"
-
-    def delete(self, *args, **kwargs):
-        self.meta.delete()
-        return super().delete(*args, **kwargs)
-
-    def category(self):
-        return MediaCategory.AUDIO
-
-
 def update_tag_post_counts():
     tcounts = (
         Tag.post_set.through.objects.values("tag")
@@ -419,7 +201,7 @@ class PostQuerySet(models.QuerySet):
 
     def with_gallery_data(self, user: User):
         """Return PostQuerySet including prefetched data such as media, and tags"""
-        posts = self.select_related("media", "media__image").prefetch_related("tags")
+        posts = self.prefetch_related("tags").select_related("image")
 
         if user.is_authenticated:
             post_blur_tag_overlap = Tag.objects.filter(
@@ -451,14 +233,21 @@ class Post(models.Model):
 
     title = models.TextField(default="", max_length=1000)
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    upload_date = models.DateTimeField(default=now, editable=False)
     post_date = models.DateTimeField(default=now, editable=False)
+    edit_date = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    media = models.OneToOneField(Media, on_delete=models.CASCADE, primary_key=True)
     rating_level = models.PositiveSmallIntegerField(
         default=RatingLevel.UNRATED,
         choices=RatingLevel.choices(),
     )
+    src_url = models.URLField(max_length=255, blank=True, default="")
     locked_comments = models.BooleanField(default=False, blank=True)
+
+    media_choices = (
+        (x.name, x.value.desc) for x in SupportedMediaTypes.__members__.values()
+    )
+    type = models.CharField(max_length=20, choices=media_choices)
 
     objects = PostQuerySet.as_manager()
 
@@ -474,15 +263,186 @@ class Post(models.Model):
         super().save(**kwargs)
         update_tag_post_counts()
 
-    def delete(self, *args, **kwargs):
-        self.media.delete()
-        return super().delete(*args, **kwargs)
-
     def save_with_tag_history(self, user, tags: TagQuerySet):
         """Saves the post with additional handling for tag history"""
         add_tag_history(tags, self, user)
         self.tags.set(tags)
         self.save()
+
+    def save_with_src_history(self, user, src_url: str):
+        """Saves the Media with additional handling for source history"""
+        source_hist = SourceHistory.objects.filter(media=self)
+        if (self.src_url != src_url or not source_hist) and not src_url.isspace():
+            SourceHistory(media=self, user=user, src_url=src_url).save()
+            self.src_url = src_url
+        self.save()
+
+    def category(self) -> MediaCategory | None:
+        if hasattr(self, "audio"):
+            return MediaCategory.AUDIO
+        if hasattr(self, "image"):
+            return MediaCategory.IMAGE
+        if hasattr(self, "video"):
+            return MediaCategory.VIDEO
+        return None
+
+    def file(self):
+        match self.category():
+            case MediaCategory.AUDIO:
+                return self.audio
+            case MediaCategory.IMAGE:
+                return self.image
+            case MediaCategory.VIDEO:
+                return self.video
+        return None
+
+
+class Image(models.Model):
+    """Media linked to static image files"""
+
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    orig_name = models.TextField(default="")
+    file = models.ImageField(
+        upload_to=media_upload_path,
+        unique=True,
+        width_field="width",
+        height_field="height",
+    )
+    width: models.PositiveIntegerField = models.PositiveIntegerField(default=0)
+    height: models.PositiveIntegerField = models.PositiveIntegerField(default=0)
+    thumbnail = models.ImageField(
+        upload_to=media_thumbnail_upload_path,
+        width_field="width",
+        height_field="height",
+        null=True,
+    )
+    thumbnail_width: models.PositiveIntegerField = models.PositiveIntegerField(
+        default=0
+    )
+    thumbnail_height: models.PositiveIntegerField = models.PositiveIntegerField(
+        default=0
+    )
+
+    """MD5 hash"""
+    md5 = models.CharField(validators=[validate_md5])
+
+    """Perceptual (DCT) hash"""
+    phash: models.CharField = models.CharField(validators=[validate_phash])
+
+    """Difference hash"""
+    dhash: models.CharField = models.CharField(validators=[validate_dhash])
+
+    # TODO: add duplicate detection
+    # See https://github.com/JohannesBuchner/imagehash/issues/127 for
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
+        self.phash = str(imagehash.phash(PIL_Image.open(self.file)))
+        self.dhash = str(imagehash.dhash(PIL_Image.open(self.file)))
+
+    def __str__(self) -> str:
+        return (
+            f"<Image - file: {self.file}, width: {self.width}, height: {self.height}>"
+        )
+
+    def save(self, *args, **kwargs):
+        image_file = PIL_Image.open(self.file)
+
+        if image_file.mode not in ("L", "RGB"):
+            image = image_file.convert("RGB")
+            image_file = PIL_Image.open(image.tobytes())
+
+        # Set thumbnail size
+        thumb_size = kwargs.get("thumb_size", (400, 400))
+        image_file.thumbnail(thumb_size)
+
+        # Save thumbnail to memory
+        handle = BytesIO()
+        image_file.save(handle, "png")
+        handle.seek(0)
+
+        thumbnail_name = f"{self.file.name}.png"
+        suf = SimpleUploadedFile(
+            thumbnail_name, handle.read(), content_type="image/png"
+        )
+
+        self.thumbnail.save(f"{suf.name}.png", suf, save=False)
+        self.thumbnail_width, self.thumbnail_height = image_file.size
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return super().delete(*args, **kwargs)
+
+    def category(self):
+        return MediaCategory.IMAGE
+
+
+class Video(models.Model):
+    """Media linked to static video files"""
+
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    orig_name = models.TextField(default="")
+    file = models.FileField(upload_to=media_upload_path, unique=True)
+
+    """MD5 hash"""
+    md5 = models.CharField(validators=[validate_md5])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
+
+    def __str__(self) -> str:
+        return f"<Video - file: {self.file}>"
+
+    def delete(self, *args, **kwargs):
+        return super().delete(*args, **kwargs)
+
+    def category(self):
+        return MediaCategory.VIDEO
+
+
+class Audio(models.Model):
+    """Media linked to static audio files"""
+
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    orig_name = models.TextField(default="")
+    file = models.FileField(upload_to=media_upload_path, unique=True)
+
+    """MD5 hash"""
+    md5 = models.CharField(validators=[validate_md5])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
+
+    def __str__(self) -> str:
+        return f"<Audio - file: {self.file}>"
+
+    def delete(self, *args, **kwargs):
+        return super().delete(*args, **kwargs)
+
+    def category(self):
+        return MediaCategory.AUDIO
+
+
+class SourceHistory(models.Model):
+    """Model for tracking changes in a Media's src_url"""
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    mod_time = models.DateTimeField(
+        auto_now_add=True,
+        db_comment="Timestamp of Media's source URL modification (including initial)",
+    )
+    src_url = models.CharField(
+        db_comment="Comma-delimited string of source URLs at the current time",
+        default="",
+    )
+
+    def __str__(self) -> str:
+        return f"<MediaSourceHistory - post: {self.post}, mod_time: {self.mod_time}, source: {self.src_url}>"
 
 
 class PostTagHistory(models.Model):
@@ -582,7 +542,7 @@ class FavoriteQuerySet(models.QuerySet):
 
     def with_gallery_data(self):
         return self.select_related(
-            "post", "post__media", "post__media__image"
+            "post", "post", "post__image"
         ).prefetch_related("post__tags")
 
 

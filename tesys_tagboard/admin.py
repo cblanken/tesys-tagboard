@@ -6,10 +6,9 @@ from .models import Collection
 from .models import Comment
 from .models import Favorite
 from .models import Image
-from .models import Media
-from .models import MediaSourceHistory
 from .models import Post
 from .models import PostTagHistory
+from .models import SourceHistory
 from .models import Tag
 from .models import TagAlias
 from .models import Video
@@ -43,21 +42,8 @@ class ArtistAdmin(admin.ModelAdmin):
     ordering = ["user"]
 
 
-@admin.register(Media)
-class MediaAdmin(admin.ModelAdmin):
-    list_display = ["orig_name", "type", "src_url", "upload_date", "edit_date"]
-    search_fields = ["orig_name", "type"]
-    list_filter = ["type"]
-
-    def get_form(self, request, obj=None, *args, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if form:
-            form.base_fields["src_url"].required = False
-        return form
-
-
-@admin.register(MediaSourceHistory)
-class MediaSourceHistoryAdmin(admin.ModelAdmin):
+@admin.register(SourceHistory)
+class SourceHistoryAdmin(admin.ModelAdmin):
     list_display = [
         "pk",
         "user",
@@ -72,27 +58,27 @@ class MediaSourceHistoryAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = [
         "file",
-        "meta__id",
-        "meta__orig_name",
-        "meta__type",
+        "orig_name",
+        "post__id",
+        "post__type",
         "md5",
         "phash",
         "dhash",
     ]
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "meta__orig_name", "meta__src_url"]
+    autocomplete_fields = ["post"]
+    search_fields = ["post__type", "post__orig_name", "post__src_url"]
 
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "meta__orig_name", "meta__src_url"]
+    autocomplete_fields = ["post"]
+    search_fields = ["post__type", "post__orig_name", "post__src_url"]
 
 
 @admin.register(Audio)
 class AudioAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "meta__orig_name", "meta__src_url"]
+    autocomplete_fields = ["post"]
+    search_fields = ["post__type", "post__orig_name", "post__src_url"]
 
 
 @admin.register(Comment)
@@ -110,11 +96,10 @@ class PostAdmin(admin.ModelAdmin):
         "uploader",
         "post_date",
         "rating_level",
-        "media__orig_name",
-        "media__src_url",
+        "src_url",
     ]
-    search_fields = ["media__orig_name", "media__src_url"]
-    autocomplete_fields = ["media"]
+    search_fields = ["src_url", "uploader__username"]
+    autocomplete_fields = ["uploader"]
     list_filter = ["rating_level", "uploader"]
 
 

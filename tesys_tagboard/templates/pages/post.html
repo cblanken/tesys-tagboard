@@ -67,13 +67,13 @@
       <div class="flex gap-2 items-center">
         <span class="self-start font-bold">Source:</span>
         {% if request.user.is_authenticated %}
-          {% if post.media.src_url %}
-            {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.media.src_url / %}
+          {% if post.src_url %}
+            {% component "text_field_edit_toggle" is_link=True input_name="src_url" edit_url=post_edit_url text=post.src_url / %}
           {% else %}
             {% component "text_field_edit_toggle" input_name="src_url" edit_url=post_edit_url empty_text="Unknown" / %}
           {% endif %}
         {% else %}
-          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.media.src_url|default:"Unknown" }}</div>
+          <div class="{% if not post.title %}italic opacity-75{% endif %}">{{ post.src_url|default:"Unknown" }}</div>
         {% endif %}
       </div>
       <div class="flex flex-wrap gap-1 mt-4 post-tags shrink">
@@ -166,7 +166,7 @@
       <figure class="mb-2 rounded-box">
         <div class="relative w-fit">
           <img class="rounded-box max-h-[80svh] xl:m-none"
-               src="{{ post.media.image.file.url }}"
+               src="{{ post.image.file.url }}"
                alt="{{ post.title }}" />
           <button class="absolute right-2 bottom-2 p-1 border-none hover:scale-110 rounded-field bg-neutral/40 text-neutral-content hover:bg-neutral"
                   onclick="post_full_screen.showModal()">
@@ -220,9 +220,9 @@
       </div>
     </label>
     <div class="p-6 tab-content bg-base-100 border-base-300">
-      {% if media_src_history %}
+      {% if source_history %}
         <div class="grid gap-4 lg:grid-cols-[minmax(50px,_1fr)_minmax(100px,_5fr)]">
-          {% for src_history in media_src_history %}
+          {% for src_history in source_history %}
             {% if src_history.src_url.strip %}
               <div class="place-self-start italic opacity-60 min-w-20 max-w-50">{{ src_history.mod_time|naturaltime }}</div>
               <a class="link" target="_blank" href="{{ src_history.src_url }}">{{ src_history.src_url }}</a>
@@ -240,7 +240,7 @@
         closedby="any"
         class="overflow-auto p-2 sm:p-4 lg:p-6 w-dvw h-dvh modal bg-neutral/75 modal-middle">
   <img class="max-h-full object-fit"
-       src="{{ post.media.image.file.url }}"
+       src="{{ post.image.file.url }}"
        alt="{{ post.title }}" />
   <div class="fixed right-2 bottom-2 lg:right-4 lg:bottom-4 modal-action">
     <form method="dialog">

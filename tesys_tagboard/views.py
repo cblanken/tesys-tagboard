@@ -48,8 +48,6 @@ from .models import Collection
 from .models import Comment
 from .models import Favorite
 from .models import Image
-from .models import Media
-from .models import MediaFileModel
 from .models import Post
 from .models import Tag
 from .models import TagAlias
@@ -148,7 +146,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
             for tag_id in csv_to_tag_ids(tag_snapshot.tags)
         ]
 
-    media_src_history = post.media.mediasourcehistory_set.order_by("-mod_time")
+    source_history = post.sourcehistory_set.order_by("-mod_time")
 
     context = {
         "post": post,
@@ -159,7 +157,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
         "comments_pager": comments_pager,
         "comments_page": comments_page,
         "tag_history": tag_history,
-        "media_src_history": media_src_history,
+        "source_history": source_history,
     }
 
     return TemplateResponse(request, "pages/post.html", context)
@@ -189,7 +187,7 @@ def edit_post(
         post.title = title
 
     if src_url := form.cleaned_data.get("src_url"):
-        post.media.save_with_src_history(request.user, src_url)
+        post.save_with_src_history(request.user, src_url)
 
     if rating_level := form.cleaned_data.get("rating_level"):
         post.rating_level = rating_level
@@ -259,6 +257,7 @@ def toggle_comment_lock(
 
     except Post.DoesNotExist:
         return HttpResponseNotFound("That post doesn't exist")
+
 
 @require(["GET", "POST"], login=False)
 def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
@@ -592,10 +591,8 @@ def tag_search_autocomplete(
     return HttpResponseNotAllowed(["GET"])
 
 
-def find_duplicate_media_file(
-    media_file: MediaFileModel,
-) -> MediaFileModel | None:
-    media_file_model: type[MediaFileModel] | None = None
+def find_duplicate_media_file(media_file):
+    media_file_model = None
     match media_file.category():
         case MediaCategory.AUDIO:
             media_file_model = Audio
@@ -610,9 +607,7 @@ def find_duplicate_media_file(
     return None
 
 
-def handle_media_upload(
-    file: UploadedFile | None, src_url: str | None
-) -> tuple[MediaFileModel | None, MediaFileModel]:
+def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple:
     """Detects media type and creates a new Media derivative"""
 
     if file is None:
@@ -630,17 +625,14 @@ def handle_media_upload(
         msg = "File missing content type"
         raise ValidationError(msg)
     if smt := SupportedMediaTypes.find(file.content_type):
-        media = Media(orig_name=file.name, type=smt.name, src_url=src_url)
-        media.save()
-
-        media_file: MediaFileModel
+        media_file = None
         match smt.value.category:
             case MediaCategory.AUDIO:
-                media_file = Audio(file=file, meta=media)
+                media_file = Audio(file=file)
             case MediaCategory.IMAGE:
-                media_file = Image(file=file, meta=media)
+                media_file = Image(file=file)
             case MediaCategory.VIDEO:
-                media_file = Video(file=file, meta=media)
+                media_file = Video(file=file)
 
         duplicate_file = find_duplicate_media_file(media_file)
         return (duplicate_file, media_file)
@@ -689,9 +681,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
                 messages.add_message(request, messages.INFO, msg)
                 return TemplateResponse(request, "pages/upload.html", context=context)
             else:
-                if duplicate is None:
-                    media_file.save()
-                else:
+                if duplicate:
                     post_url = reverse("post", args=[duplicate.meta.post.pk])
                     msg = mark_safe(  # noqa: S308
                         f"The uploaded file was a duplicate of an existing post which can be found <a href='{post_url}'>here</a>"
@@ -707,11 +697,11 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             if rating_level not in list(RatingLevel):
                 rating_level = RatingLevel.UNRATED
             tags = Tag.objects.in_tagset(tagset)
-            post = Post(
-                uploader=request.user, media=media_file.meta, rating_level=rating_level
-            )
-            post.save_with_tag_history(post.uploader, tags)
+            post = Post(uploader=request.user, rating_level=rating_level)
             post.save()
+            media_file.post = post
+            media_file.save()
+            post.save_with_tag_history(post.uploader, tags)
             msg = mark_safe(
                 f"Your post was create successfully, Check it out <a href='{reverse('post', args=[post.pk])}'>here</a>"
             )

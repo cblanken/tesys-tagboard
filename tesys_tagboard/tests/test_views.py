@@ -6,7 +6,6 @@ from django.urls import reverse
 
 
 class TestHomeView(TestCase):
-    fixtures = ["demo.json"]
     def setUp(self):
         # Setup run before every test method.
         pass

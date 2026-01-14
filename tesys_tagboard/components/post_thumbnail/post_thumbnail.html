@@ -7,7 +7,7 @@
      href="{% url "post" post_id=post.pk %}"></a>
   <img class="{% if post.blur_level or post.blur_tag %}blur-md group-hover/post:blur-none{% endif %} object-cover w-full h-full rounded-box invisible"
        loading="lazy"
-       {% if post.media.image.thumbnail %} src="{{ post.media.image.thumbnail.url }}" width="{{ post.media.image.thumbnail.width }}" height="{{ post.media.image.thumbnail.height }}" {% else %} src="{% static "images/default_thumbnail.png" %}" width="400px" height="400px" {% endif %}
+       {% if post.image.thumbnail %} src="{{ post.image.thumbnail.url }}" width="{{ post.image.thumbnail.width }}" height="{{ post.image.thumbnail.height }}" {% else %} src="{% static "images/default_thumbnail.png" %}" width="400px" height="400px" {% endif %}
        alt="image" />
   <div class="hidden absolute top-0 flex-col justify-between p-0 w-full h-full rounded-box post-thumbnail-hover group-hover/post:flex">
     <section class="flex z-10 gap-1 self-end p-2">

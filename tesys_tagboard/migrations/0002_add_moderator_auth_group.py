@@ -15,7 +15,6 @@ def define_moderator_group(apps, schema_editor):
         "add_collection",
         "add_comment",
         "add_image",
-        "add_media",
         "add_post",
         "add_tag",
         "add_tagalias",
@@ -24,7 +23,6 @@ def define_moderator_group(apps, schema_editor):
         "change_audio",
         "change_collection",
         "change_image",
-        "change_media",
         "change_post",
         "change_tag",
         "change_tagalias",
@@ -33,7 +31,6 @@ def define_moderator_group(apps, schema_editor):
         "delete_audio",
         "delete_collection",
         "delete_image",
-        "delete_media",
         "delete_post",
         "delete_tag",
         "delete_tagalias",
@@ -44,7 +41,6 @@ def define_moderator_group(apps, schema_editor):
         "view_comment",
         "view_group",
         "view_image",
-        "view_media",
         "view_post",
         "view_tag",
         "view_tagalias",
@@ -60,7 +56,7 @@ def define_moderator_group(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tesys_tagboard', '0027_alter_post_options'),
+        ('tesys_tagboard', '0001_initial'),
     ]
 
     operations = [
