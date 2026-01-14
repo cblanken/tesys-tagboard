@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libpq-dev \
   curl \
   gettext \
+  postgresql \
   wait-for-it
 
 # Install Tailwind dependencies
