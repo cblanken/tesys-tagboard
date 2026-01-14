@@ -56,6 +56,9 @@ class TagQuerySet(models.QuerySet):
     def in_tagset(self, tagset: list[int] | None):
         return self.filter(pk__in=tagset)
 
+    def as_list(self) -> list[int]:
+        return [t.pk for t in self]
+
 
 class Tag(models.Model):
     """Tags for Media objects"""
