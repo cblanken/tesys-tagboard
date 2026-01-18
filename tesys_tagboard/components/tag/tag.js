@@ -24,9 +24,8 @@
           const tag_id = btn.datset?.tag_id;
 
           if (action == "remove") {
-            if (!window.confirm("Are you sure you want to remove this tag?")) {
-              return
-            }
+            let form = htmx.closest(htmx.find('form'), 'form');
+            form.dispatchEvent(new Event("confirmed-change"))
           }
           btn.dispatchEvent(tagAction(action, tag_id));
         });

@@ -279,9 +279,9 @@ class Post(models.Model):
 
     def save_with_src_history(self, user, src_url: str):
         """Saves the Media with additional handling for source history"""
-        source_hist = SourceHistory.objects.filter(media=self)
+        source_hist = SourceHistory.objects.filter(post=self)
         if (self.src_url != src_url or not source_hist) and not src_url.isspace():
-            SourceHistory(media=self, user=user, src_url=src_url).save()
+            SourceHistory(post=self, user=user, src_url=src_url).save()
             self.src_url = src_url
         self.save()
 
@@ -433,7 +433,7 @@ class Audio(models.Model):
 
 
 class SourceHistory(models.Model):
-    """Model for tracking changes in a Media's src_url"""
+    """Model for tracking changes in a Post's src_url"""
 
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
