@@ -205,16 +205,20 @@
       </div>
     </label>
     <div class="p-6 tab-content bg-base-100 border-base-300">
-      <div class="grid gap-4 lg:grid-cols-[minmax(50px,_1fr)_minmax(100px,_5fr)]">
-        {% for tag_history in tag_history %}
-          <div class="place-self-start italic opacity-60 min-w-20 max-w-50">{{ tag_history.mod_time|naturaltime }}</div>
-          <div class="flex flex-wrap gap-1">
-            {% for tag in tag_history.tag_objects %}
-              {% component "tag" tag=tag size="sm" / %}
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </div>
+      {% if tag_history %}
+        <div class="grid gap-4 lg:grid-cols-[minmax(50px,_1fr)_minmax(100px,_5fr)]">
+          {% for history in tag_history %}
+            <div class="place-self-start text-placeholder min-w-20 max-w-50">{{ history.mod_time|naturaltime }}</div>
+            <div class="flex flex-wrap gap-1">
+              {% for tag in history.tag_objects %}
+                {% component "tag" tag=tag size="sm" / %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-placeholder">This post hasn't had any tag changes yet!</div>
+      {% endif %}
     </div>
     <label class="tab group">
       <input type="radio" name="post_content_pane" />
@@ -234,7 +238,7 @@
           {% endfor %}
         </div>
       {% else %}
-        <div class="w-full italic opacity-60">This post has no known sources.</div>
+        <div class="text-placeholder">This post hasn't had any source changes yet.</div>
       {% endif %}
     </div>
   </div>

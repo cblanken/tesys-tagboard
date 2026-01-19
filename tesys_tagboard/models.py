@@ -177,7 +177,7 @@ def csv_to_tag_ids(tags_csv: str) -> Sequence[int]:
         return tag_ids
 
 
-def add_tag_history(tags: TagQuerySet, post: Post, user):
+def add_tag_history(tags: QuerySet[Tag], post: Post, user):
     old_tags = set(post.tags.order_by("pk"))
     new_tags = set(tags.all())
     tag_histories = PostTagHistory.objects.filter(post=post)

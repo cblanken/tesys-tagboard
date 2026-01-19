@@ -28,6 +28,7 @@ from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
 from tesys_tagboard.models import Video
+from tesys_tagboard.models import add_tag_history
 from tesys_tagboard.models import update_tag_post_counts
 from tesys_tagboard.users.models import User
 
@@ -232,7 +233,7 @@ def create_random_post_collections(
     print(f"Added {len(created_collection_posts)} posts to collections.")
 
 
-def create_random_posts(  # noqa: C901, PLR0915
+def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     media_files: Iterable[Path], user_select_max=100, max_posts=1000
 ):
     tag_options = list(Tag.objects.all())
@@ -325,6 +326,12 @@ def create_random_posts(  # noqa: C901, PLR0915
         progress.add_task(description="Adding tags to posts...", total=None)
         Post.tags.through.objects.bulk_create(post_tags)
     print("Tags added to posts.")
+
+    for post in track(created_posts, description="Updating posts' tag histories..."):
+        add_tag_history(post.tags.all(), post, post.uploader)
+
+    for post in track(created_posts, description="Updating posts' source histories..."):
+        post.save_with_src_history(post.uploader, post.src_url)
 
     with Progress(
         SpinnerColumn(),
