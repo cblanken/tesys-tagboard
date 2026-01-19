@@ -14,9 +14,9 @@
       <div>{{ comment.post_date|naturaltime }}</div>
     </div>
   </div>
-  <div class="comment-container relative max-h-45 overflow-y-hidden md:bg-i md:overflow-y-auto md:bg-clip-border md:bg-none md:text-base-content to-none bg-clip-text bg-linear-to-b text-transparent from-base-content from-65% to-transparent to-100%">
+  <div class="comment-body relative max-h-45 overflow-y-hidden sm:bg-i sm:overflow-y-auto sm:bg-clip-border sm:bg-none sm:text-base-content to-none bg-clip-text bg-linear-to-b text-transparent from-base-content from-65% to-transparent to-100% pb-6">
     <button class="absolute right-1 bottom-1 invisible text-sm show-more-btn btn btn-xs btn-info">Show more</button>
-    <div class="px-1 my-2 w-full min-h-10 comment-body">
+    <div class="px-1 my-2 w-full min-h-10">
       <div class="comment-text">{{ comment.text }}</div>
       <form class="hidden comment-edit-form">
         <input type="hidden" name="comment_id" value="{{ comment.pk }}" />

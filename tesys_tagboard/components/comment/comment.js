@@ -23,9 +23,33 @@
       }
     }
 
+    // Show more/less comment text
     const show_more_btn = comment.querySelector(".show-more-btn")
-    if (comment_body.scrollHeight !== comment_body.clientHeight) {
-      show_more_btn.classList.remove("invisible")
+    let showing_full_comment = false;
+    const show_more_classes = ["min-h-fit", "bg-none"];
+    const show_less_classes = ["bg-clip-text", "text-transparent"];
+    function toggleShowMoreLess() {
+      if (showing_full_comment) {
+        comment_body.classList.add(...show_less_classes);
+        comment_body.classList.remove(...show_more_classes);
+        show_more_btn.textContent = "Show more";
+      } else {
+        comment_body.classList.add(...show_more_classes);
+        comment_body.classList.remove(...show_less_classes);
+        show_more_btn.textContent = "Show less";
+      }
+      showing_full_comment = !showing_full_comment;
+    }
+    show_more_btn.addEventListener("click", e => {
+      toggleShowMoreLess(showing_full_comment)
+    });
+    let sm_media_width = window.getComputedStyle(comment).getPropertyValue('--breakpoint-sm');
+    let sm_media_query = window.matchMedia(`(min-width: ${sm_media_width})`)
+    if (!sm_media_query.matches && comment_body.scrollHeight !== comment_body.clientHeight) {
+      show_more_btn.classList.remove("invisible");
+    } else if (!sm_media_query.matches) {
+      comment_body.classList.add(...show_more_classes);
+      comment_body.classList.remove(...show_less_classes);
     }
 
     if (comment_edit_mode_form) {
