@@ -84,6 +84,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_htmx",
     "django_components",
+    "django_minify_html",
     "tailwind",
 ]
 
@@ -155,6 +156,8 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     # HTMX
     "django_htmx.middleware.HtmxMiddleware",
+    # HTML minification
+    "django_minify_html.middleware.MinifyHtmlMiddleware",
 ]
 
 # STATIC
