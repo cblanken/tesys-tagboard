@@ -254,6 +254,37 @@
         <div class="text-placeholder">This post hasn't had any source changes yet.</div>
       {% endif %}
     </div>
+    <label class="tab group">
+      <input type="radio" name="post_content_pane" />
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="link-2" %}
+        <div class="hidden sm:block group-has-[input:checked]:block">Linked Posts</div>
+      </div>
+    </label>
+    <div class="p-6 tab-content bg-base-100 border-base-300">
+      <div class="flex flex-col gap-4 lg:gap-6">
+        {% if post.parent %}
+          <div>
+            <h2>Parent post</h2>
+            {% component "post_thumbnail" post=post.parent / %}
+          </div>
+        {% else %}
+          <div class="text-placeholder">This post doesn't have any linked parent posts.</div>
+        {% endif %}
+        {% if child_posts %}
+          <div>
+            <h2>Child posts</h2>
+            <div class="flex flex-wrap gap-3">
+              {% for child in child_posts %}
+                {% component "post_thumbnail" post=child / %}
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class="text-placeholder">This post doesn't have any linked children posts.</div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </section>
 </main>

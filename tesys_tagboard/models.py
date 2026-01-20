@@ -257,6 +257,7 @@ class Post(models.Model):
         (x.name, x.value.desc) for x in SupportedMediaTypes.__members__.values()
     )
     type = models.CharField(max_length=20, choices=media_choices)
+    parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
 
     objects = PostQuerySet.as_manager()
 

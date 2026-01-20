@@ -159,6 +159,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
         "comments_page": comments_page,
         "tag_history": tag_history,
         "source_history": source_history,
+        "child_posts": Post.objects.filter(parent=post).with_gallery_data(request.user),
     }
 
     return TemplateResponse(request, "pages/post.html", context)

@@ -5,9 +5,11 @@ from random import choices
 from random import randint
 from random import sample
 from typing import TYPE_CHECKING
+from typing import Annotated
 
 import magic
 import regex as re
+import typer
 from django.core.files.uploadedfile import UploadedFile
 from django_typer.management import Typer
 from PIL import UnidentifiedImageError
@@ -37,7 +39,6 @@ if TYPE_CHECKING:
 
     from django.db.models import QuerySet
 
-app = Typer()
 
 DEFAULT_USERNAMES = ["user1", "user2", "user3", "mod1", "mod2", "mod3"]
 
@@ -82,15 +83,54 @@ TAG_NAME_BASES = [
 TAG_CATEGORY_SHORTCODES = [tc.value.shortcode for tc in TagCategory]
 
 
+app = Typer()
+
+
 @app.command()
-def main():
+def main(  # noqa: PLR0913
+    media_dir: Annotated[str, typer.Argument()],
+    max_tags: Annotated[
+        int,
+        typer.Option(
+            "--max-tags", "-t", help="The maximum number of tags to randomly generate."
+        ),
+    ] = 500,
+    max_users: Annotated[
+        int,
+        typer.Option(
+            "--max-users",
+            "-u",
+            help="The maximum number of users to randomly generate.",
+        ),
+    ] = 200,
+    max_posts: Annotated[
+        int,
+        typer.Option(
+            "--max-posts",
+            "-p",
+            help="The maximum number of posts to randomly generate.",
+        ),
+    ] = 500,
+    max_collections: Annotated[
+        int,
+        typer.Option(
+            "--max-collections",
+            "-c",
+            help="The maximum number of collections to randomly generate.",
+        ),
+    ] = 50,
+    max__posts_per_collection: Annotated[
+        int,
+        typer.Option(
+            help="The maximum number of posts to link to any single collection"
+        ),
+    ] = 50,
+):
     """
-    A generator command to create demo data for Tesy's Tagboard
-    Media such as Audios, Images, and Videos must be loaded from disk. The provided
-    path will be searched recursively for any supported files and create posts from
-    them. All other data such as Tags, Comments, Collections, and Users will be
-    generated randomly with options to adjust the thresholds for the randomization
-    and the total number of each item to generate.
+    A command to create demo data for testing the app. Media files must be loaded from
+    disk. The provided `media_dir` will be searched recursively for any supported files
+    and create posts from them. All other data such as Tags, Comments, Collections, and
+    Users will be generated randomly with options to adjust the thresholds.
     """
     default_users = [User(username=name) for name in DEFAULT_USERNAMES]
     User.objects.bulk_create(default_users, ignore_conflicts=True)
@@ -105,16 +145,17 @@ def main():
         TagAlias.objects.all().delete()
         Post.objects.all().delete()
         User.objects.exclude(pk__in=(u.pk for u in default_users)).delete()
+        Collection.objects.all().delete()
     print("Old data deleted.")
 
-    create_random_users(200)
+    create_random_users(max_users)
 
-    create_random_tags(500)
+    create_random_tags(max_tags)
 
     create_random_tag_aliases(Tag.objects.all())
 
-    media_files = get_media_files_from_disk(Path("twi-images/"))
-    create_random_posts(media_files, user_select_max=50, max_posts=500)
+    media_files = get_media_files_from_disk(Path(media_dir))
+    create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
 
     create_random_post_collections(Post.objects.all(), max_collections=50)
 
@@ -275,7 +316,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
                 )
 
                 comment_texts = [
-                    " ".join(choices(CONTENT_SENTENCES, k=randint(0, 10)))
+                    " ".join(choices(CONTENT_SENTENCES, k=randint(1, 10)))
                     for _ in range(randint(0, 10))
                 ]
 
@@ -357,6 +398,14 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         progress.add_task(description="Updating tag post counts", total=None)
         update_tag_post_counts()
     print("Tag post counts updated.")
+
+    for post in track(
+        created_posts, description="Adding parent and child post links..."
+    ):
+        for child_post in choices(created_posts, k=randint(0, 5)):
+            child_post.parent = post
+            child_post.save()
+    print("Parent and child post links added.")
 
     for obj in track(
         media_objects,
