@@ -192,23 +192,13 @@ def create_random_post_collections(
     collection_posts = []
     user_options = list(User.objects.all())
     post_options = list(posts)
-    for i in range(max_collections):
+    for _ in range(max_collections):
         collection = Collection(
-            id=i,
             user=choice(user_options),
             name=" ".join(choices(CONTENT_WORDS, k=randint(2, 8))),
             desc=" ".join(choices(CONTENT_WORDS, k=randint(4, 15))),
         )
         collections.append(collection)
-        random_post_ids = [
-            s.pk for s in sample(post_options, k=randint(0, max_posts_per_collection))
-        ]
-        collection_posts.extend(
-            [
-                Collection.posts.through(collection_id=collection.pk, post_id=post_id)
-                for post_id in random_post_ids
-            ]
-        )
 
     with Progress(
         SpinnerColumn(),
@@ -216,9 +206,8 @@ def create_random_post_collections(
         transient=True,
     ) as progress:
         progress.add_task(description="Creating collections...", total=None)
-        created_collections = Collection.objects.bulk_create(
-            collections, ignore_conflicts=True
-        )
+        created_collections = Collection.objects.bulk_create(collections)
+
     print(f"Created {len(created_collections)} collections.")
 
     with Progress(
@@ -227,6 +216,24 @@ def create_random_post_collections(
         transient=True,
     ) as progress:
         progress.add_task(description="Linking collections to posts...", total=None)
+
+        def get_random_post_ids():
+            return [
+                s.pk
+                for s in sample(post_options, k=randint(0, max_posts_per_collection))
+            ]
+
+        collection_posts = []
+        for collection in created_collections:
+            collection_posts.extend(
+                [
+                    Collection.posts.through(
+                        collection_id=collection.pk, post_id=post_id
+                    )
+                    for post_id in get_random_post_ids()
+                ]
+            )
+
         created_collection_posts = Collection.posts.through.objects.bulk_create(
             collection_posts
         )
@@ -315,7 +322,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         transient=True,
     ) as progress:
         progress.add_task(description="Creating posts...", total=None)
-        created_posts = Post.objects.bulk_create(posts, ignore_conflicts=True)
+        created_posts = Post.objects.bulk_create(posts)
     print(f"Created {len(created_posts)} posts.")
 
     with Progress(
