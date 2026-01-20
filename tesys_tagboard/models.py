@@ -209,7 +209,7 @@ class PostQuerySet(models.QuerySet):
 
     def with_gallery_data(self, user: User):
         """Return PostQuerySet including prefetched data such as media, and tags"""
-        posts = self.prefetch_related("tags").select_related("image")
+        posts = self.prefetch_related("tags", "collection_set").select_related("image")
 
         if user.is_authenticated:
             post_blur_tag_overlap = Tag.objects.filter(
@@ -221,6 +221,7 @@ class PostQuerySet(models.QuerySet):
                     post_blur_tag_overlap.values("pk"), output_field=BooleanField()
                 ),
             )
+
         else:
             posts.annotate(
                 blur_level=Q(rating_level__gte=RatingLevel.EXPLICIT),

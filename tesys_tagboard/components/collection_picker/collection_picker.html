@@ -9,9 +9,9 @@
       <div>Add to collection</div>
     </div>
   </button>
-  {% if collections %}
-    <ul tabindex="-1"
-        class="top-full mt-1 rounded-field dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+  <ul tabindex="-1"
+      class="top-full mt-1 rounded-field dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+    {% if collections %}
       {% for collection in collections %}
         <div hx-on="click"
              hx-swap="innerHTML"
@@ -26,6 +26,8 @@
           {% endif %}
         </div>
       {% endfor %}
-    </ul>
-  {% endif %}
+    {% else %}
+      {% include "collections/picker_item.html" with text="You don't have any collections yet!" %}
+    {% endif %}
+  </ul>
 </div>

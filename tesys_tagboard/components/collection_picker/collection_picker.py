@@ -9,8 +9,5 @@ class CollectionPickerComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         post = kwargs.get("post")
-        collections = kwargs.get(
-            "collections",
-            self.request.user.collection_set.prefetch_related("posts"),
-        )
+        collections = kwargs.get("collections")
         return {"collections": collections, "post": post}
