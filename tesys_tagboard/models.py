@@ -1,12 +1,12 @@
 """Models for Tesys's Tagboard"""
 
+import re
 import uuid
 from hashlib import md5
 from io import BytesIO
 from typing import TYPE_CHECKING
 
 import imagehash
-import regex as re
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.db.models import BooleanField

@@ -1,3 +1,4 @@
+import re
 from itertools import islice
 from pathlib import Path
 from random import choice
@@ -8,7 +9,6 @@ from typing import TYPE_CHECKING
 from typing import Annotated
 
 import magic
-import regex as re
 import typer
 from django.core.files.uploadedfile import UploadedFile
 from django_typer.management import Typer
