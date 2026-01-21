@@ -288,31 +288,26 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     users = User.objects.all()
     uploaders = choices(users, k=user_select_max)
     posts = []
-    post_tags = []
     comments = []
     media_objects = []
-    media_files_enumeration = list(enumerate(list(media_files)[:max_posts]))
-    for i, file in track(
-        media_files_enumeration,
+    media_files_list = list(media_files)
+
+    media_files_sample = sample(
+        media_files_list, k=min(len(media_files_list), max_posts)
+    )
+    for file in track(
+        media_files_sample,
         description="Creating posts from media files...",
     ):
         m = magic.from_file(file, mime=True)
         if smt := SupportedMediaTypes.find(m):
             if media_type := SupportedMediaTypes.find(smt.value.get_template()):
                 post = Post(
-                    id=i,
                     title=" ".join(choices(CONTENT_WORDS, k=randint(1, 10))),
-                    uploader=uploaders[i % user_select_max],
+                    uploader=choice(uploaders),
                     rating_level=choice(RatingLevel.choices())[0],
                     src_url=choice(CONTENT_WORDS) + ".example.com",
                     type=media_type.name,
-                )
-                random_tag_ids = [s.pk for s in sample(tag_options, k=randint(0, 20))]
-                post_tags.extend(
-                    [
-                        Post.tags.through(post_id=post.pk, tag_id=tag_id)
-                        for tag_id in random_tag_ids
-                    ]
                 )
 
                 comment_texts = [
@@ -372,6 +367,20 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         transient=True,
     ) as progress:
         progress.add_task(description="Adding tags to posts...", total=None)
+
+        post_tags = []
+
+        def get_random_tag_ids():
+            return [s.pk for s in sample(tag_options, k=randint(0, 25))]
+
+        for post in created_posts:
+            post_tags.extend(
+                [
+                    Post.tags.through(post_id=post.pk, tag_id=tag_id)
+                    for tag_id in get_random_tag_ids()
+                ]
+            )
+
         Post.tags.through.objects.bulk_create(post_tags)
     print("Tags added to posts.")
 
