@@ -304,8 +304,8 @@ REDIS_SSL = REDIS_URL.startswith("rediss://")
 
 # PROFILING
 # ------------------------------------------------------------------------------
-SILKY_PYTHON_PROFILER = env.bool("SILKY_PYTHON_PROFILER", True)
-SILKY_PYTHON_PROFILER_BINARY = env.bool("SILKY_PYTHON_PROFILER_BINARY", True)
+SILKY_PYTHON_PROFILER = env.bool("DJANGO_SILKY_PYTHON_PROFILER", True)
+SILKY_PYTHON_PROFILER_BINARY = env.bool("DJANGO_SILKY_PYTHON_PROFILER_BINARY", True)
 
 # django-allauth
 # ------------------------------------------------------------------------------
@@ -325,13 +325,13 @@ SOCIALACCOUNT_ADAPTER = "tesys_tagboard.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "tesys_tagboard.users.forms.UserSocialSignupForm"}
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ENABLED = env.bool("TT_SOCIAL_LOGIN_ENABLED", default=True)
+SOCIALACCOUNT_ENABLED = env.bool("DJANGO_SOCIAL_LOGIN_ENABLED", default=True)
 SOCIALACCOUNT_PROVIDERS = {
     "discord": {
         "APP": {
-            "client_id": env.str("TT_DISCORD_CLIENT_ID", default=""),
-            "secret": env.str("TT_DISCORD_CLIENT_SECRET", default=""),
-            "key": env.str("TT_DISCORD_PUBLIC_KEY", default=""),
+            "client_id": env.str("DJANGO_DISCORD_CLIENT_ID", default=""),
+            "secret": env.str("DJANGO_DISCORD_CLIENT_SECRET", default=""),
+            "key": env.str("DJANGO_DISCORD_PUBLIC_KEY", default=""),
         }
     }
 }
@@ -369,7 +369,7 @@ THEMES = [
 ]
 
 HOMEPAGE_LINKS = env.list(
-    "TT_HOMEPAGE_LINKS",
+    "DJANGO_HOMEPAGE_LINKS",
     default=[
         ("Home", "/"),
         ("Posts", "/posts"),

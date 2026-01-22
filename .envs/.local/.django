@@ -3,6 +3,10 @@
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 DATABASE_URL=postgres://enCYnUAOivjTThocHtrIXHtotxrMebzi:80QVoSIr2GC2HR28VyrYXRQ2CmJ2nFk26fPu4sOCxcvV2oS45GckjZVDx8N7BeOD@tesys_tagboard_local_postgres:5432/tesys_tagboard
+
+# Django
+# ------------------------------------------------------------------------------
+DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_DEBUG=True
 DJANGO_ADMIN_URL="admin/"
-DEBUG=True
-SILKY_PYTHON_PROFILER=True
+DJANGO_SILKY_PYTHON_PROFILER=True
