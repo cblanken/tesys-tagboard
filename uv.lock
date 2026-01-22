@@ -1419,6 +1419,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/4a/64/68900809282759f5c573f17873c65287348cd2a8c8dff3e81377b7b6829e/psycopg_c-3.2.11.tar.gz", hash = "sha256:b3104bcbd62e34cfc736bbdaa4cdcb7e9bfc9a4c0a1f0992cac0f68ea941a450", size = 608046, upload-time = "2025-10-18T22:48:29.646Z" }
 
 [[package]]
+name = "psycopg2"
+version = "2.9.11"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/89/8d/9d12bc8677c24dad342ec777529bce705b3e785fa05d85122b5502b9ab55/psycopg2-2.9.11.tar.gz", hash = "sha256:964d31caf728e217c697ff77ea69c2ba0865fa41ec20bb00f0977e62fdcc52e3", size = 379598, upload-time = "2025-10-10T11:14:46.075Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/08/737aa39c78d705a7ce58248d00eeba0e9fc36be488f9b672b88736fbb1f7/psycopg2-2.9.11-cp314-cp314-win_amd64.whl", hash = "sha256:f10a48acba5fe6e312b891f290b4d2ca595fc9a06850fe53320beac353575578", size = 2803738, upload-time = "2025-10-10T11:10:23.196Z" },
+]
+
+[[package]]
 name = "ptyprocess"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2036,6 +2045,7 @@ dependencies = [
     { name = "more-itertools" },
     { name = "pillow" },
     { name = "psycopg", extra = ["c"] },
+    { name = "psycopg2" },
     { name = "python-magic" },
     { name = "python-slugify" },
     { name = "redis" },
@@ -2104,6 +2114,7 @@ requires-dist = [
     { name = "more-itertools", specifier = ">=10.8.0" },
     { name = "pillow", specifier = "==12.0.0" },
     { name = "psycopg", extras = ["c"], specifier = "==3.2.11" },
+    { name = "psycopg2", specifier = ">=2.9.11" },
     { name = "python-magic", specifier = ">=0.4.27" },
     { name = "python-slugify", specifier = "==8.0.4" },
     { name = "redis", specifier = "==6.4.0" },

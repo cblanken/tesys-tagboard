@@ -4,7 +4,9 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include
 from django.urls import path
+from django.urls import re_path
 from django.views import defaults as default_views
+from django.views.static import serve
 
 from tesys_tagboard import views
 from tesys_tagboard.api import api
@@ -65,14 +67,14 @@ urlpatterns = [
     # Django components
     path("", include("django_components.urls")),
 ]
-if settings.DEBUG:
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
-    urlpatterns += staticfiles_urlpatterns()
 
 # API URLS
 urlpatterns += [path("api/", api.urls)]
 
 if settings.DEBUG:
+    # Static file serving when using Gunicorn + Uvicorn for local web socket development
+    urlpatterns += staticfiles_urlpatterns()
+
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns = [
@@ -102,8 +104,22 @@ if settings.DEBUG:
             path("__debug__/", include(debug_toolbar.urls)),
             *urlpatterns,
         ]
+
+if settings.SILKY_PYTHON_PROFILER:
     if "silk" in settings.INSTALLED_APPS:
         urlpatterns = [
             path("silk/", include("silk.urls", namespace="silk")),
             *urlpatterns,
         ]
+
+# Serve media files locally when not in PRODUCTION mode and DEBUG is disabled
+if not settings.PRODUCTION and not settings.DEBUG:
+    urlpatterns += [
+        re_path(
+            r"^media/(?P<path>.*)$",
+            serve,
+            {
+                "document_root": settings.MEDIA_ROOT,
+            },
+        ),
+    ]
