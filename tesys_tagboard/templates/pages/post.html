@@ -291,13 +291,35 @@
 <dialog id="post_full_screen"
         closedby="any"
         class="overflow-auto p-2 sm:p-4 lg:p-6 w-dvw h-dvh modal bg-neutral/75 modal-middle">
-  <img class="max-h-full object-fit"
+  <img class="max-h-svh max-w-svw object-fit"
        src="{{ post.image.file.url }}"
        alt="{{ post.title }}" />
   <div class="fixed right-2 bottom-2 lg:right-4 lg:bottom-4 modal-action">
     <form method="dialog">
       <button class="btn btn-primary lg:btn-lg">Close</button>
     </form>
+  </div>
+  <div class="flex fixed bottom-2 left-2 flex-wrap-reverse gap-4 items-center md:flex-nowrap h-fit max-w-1/2">
+    <button id="zoom-toggle" class="flex gap-2 items-center btn btn-secondary">
+      <div>Zoom</div>
+      {% include "icons/feather.html" with icon="zoom-in" %}
+    </button>
+    <div id="zoom-slider-container"
+         class="flex hidden gap-2 items-center m-auto">
+      <button id="media-zoom-out" class="text-secondary">
+        {% include "icons/feather.html" with icon="zoom-out" size="large" %}
+      </button>
+      <input id="media-zoom"
+             type="range"
+             min="10"
+             max="300"
+             value="100"
+             step="10"
+             class="range range-lg range-secondary min-w-20 [--range-bg:var(--color-neutral)] lg:min-w-45" />
+      <button id="media-zoom-in" class="text-secondary">
+        {% include "icons/feather.html" with icon="zoom-in" size="large" %}
+      </button>
+    </div>
   </div>
 </dialog>
 {% endblock content %}
