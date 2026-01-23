@@ -1,7 +1,7 @@
 (function () { // Self invoking function to avoid variable clashing
   const setup_edit_field = (form) => {
     const field_display = form.querySelector(".field-display > span, .field-display > a");
-    const field_text_input = form.querySelector("input[type='text']");
+    const field_text_input = form.querySelector("input.hidden");
     const edit_btn = form.querySelector("label.edit-btn");
     const field_confirm_btn = form.querySelector("button[type='button']");
 
