@@ -1,14 +1,10 @@
-from typing import TYPE_CHECKING
-
 import pytest
 
 from tesys_tagboard.enums import TagCategory
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
+from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
-
-if TYPE_CHECKING:
-    from tesys_tagboard.users.models import User
 
 
 @pytest.fixture(autouse=True)
@@ -24,6 +20,17 @@ def user(db) -> User:
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():
+        User.objects.bulk_create(
+            [
+                User(username="user1", password="user1user1"),  # noqa: S106
+                User(username="user2", password="user2user2"),  # noqa: S106
+                User(username="user3", password="user3user3"),  # noqa: S106
+                User(username="mod1", password="mod1mod1"),  # noqa: S106
+                User(username="mod2", password="mod2mod2"),  # noqa: S106
+                User(username="mod3", password="mod3mod3"),  # noqa: S106
+            ]
+        )
+
         Tag.objects.bulk_create(
             [
                 Tag(name="alabaster", category=TagCategory.BASIC.value.shortcode),
