@@ -7,6 +7,12 @@ from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
 
 
+# Set faker testing seed for consistent randomized fake data
+@pytest.fixture(autouse=True, scope="session")
+def faker_seed():
+    return 12345
+
+
 @pytest.fixture(autouse=True)
 def _media_storage(settings, tmpdir) -> None:
     settings.MEDIA_ROOT = tmpdir.strpath

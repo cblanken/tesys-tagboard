@@ -7,8 +7,12 @@ from pytest_django.asserts import assertTemplateUsed
 
 from tesys_tagboard.enums import TagCategory
 from tesys_tagboard.models import Tag
+from tesys_tagboard.models import TagAlias
 from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
+
+from .factories import TagAliasFactory
+from .factories import TagFactory
 
 
 @pytest.mark.django_db
@@ -139,6 +143,72 @@ class TestCreateTagView:
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
+
+
+@pytest.mark.django_db(transaction=True)
+class TestCreateTagAliasView:
+    url = reverse("create-tag-alias")
+
+    def test_create_basic_tag_alias_without_perm(self, client):
+        """A user without the add_tagalias permission should not
+        be able to create a tag"""
+        user = UserFactory.create()
+        client.force_login(user)
+        alias_name = "test_alias_1"
+        data = {"name": alias_name, "tag": TagFactory.build()}
+        client.post(self.url, data)
+
+        with pytest.raises(Tag.DoesNotExist):
+            Tag.objects.get(name=alias_name)
+
+    def test_create_basic_tag_alias_with_perm(self, client):
+        """A user with the add_tagalias permission should be able to create a
+        tag alias"""
+        user = UserFactory()
+        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
+        user.user_permissions.add(add_tag_alias_perm)
+        user.save()
+        client.force_login(user)
+
+        alias_name = "test_alias_1"
+        tag = TagFactory.create()
+        data = {"name": alias_name, "tag": str(tag.pk)}
+        client.post(self.url, data)
+
+        alias = TagAlias.objects.get(name=alias_name)
+        assert alias.name == alias_name
+        assert alias.tag == tag
+
+    def test_cannot_create_tag_alias_with_dup_name(self, client):
+        """TagAliases must have a unique name"""
+        user = UserFactory()
+        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
+        user.user_permissions.add(add_tag_alias_perm)
+        user.save()
+        client.force_login(user)
+
+        duped_alias = TagAliasFactory.create()
+        data = {"name": duped_alias.name, "tag": duped_alias.tag.pk}
+        client.post(self.url, data)
+
+        assert TagAlias.objects.filter(name=duped_alias.name).count() == 1
+
+    def test_tag_alias_create_cannot_edit_alias(self, client):
+        """The create-tagalias endpoint should not be able to edit an existing alias"""
+        user = UserFactory()
+        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
+        user.user_permissions.add(add_tag_alias_perm)
+        user.save()
+        client.force_login(user)
+
+        existing_alias = TagAliasFactory.create()
+        before_alias = TagAlias.objects.get(name=existing_alias.name)
+        other_tag = TagFactory.create()
+        data = {"name": existing_alias.name, "tag": other_tag.pk}
+        client.post(self.url, data)
+
+        after_alias = TagAlias.objects.get(name=existing_alias.name)
+        assert before_alias.tag == after_alias.tag
 
 
 @pytest.mark.django_db

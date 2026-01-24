@@ -342,6 +342,9 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
         create_tag_form = CreateTagForm(request.POST)
         if create_tag_form.is_valid():
             create_tag_form.save()
+        else:
+            msg = "The tag inputs were invalid."
+            messages.add_message(request, messages.WARNING, msg)
     else:
         msg = f"You ({user.username}) don't have permission to create tags."
         messages.add_message(request, messages.WARNING, msg)
@@ -351,9 +354,19 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
 @require(["POST"])
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    form = CreateTagAliasForm(request.POST)
-    if form.is_valid():
-        form.save()
+    user = request.user
+    if user.has_perm("tesys_tagboard.add_tagalias"):
+        form = CreateTagAliasForm(request.POST)
+        if form.is_valid():
+            form.save()
+            msg = f"The tag alias, {form.cleaned_data.get('name')}, was created!"
+            messages.add_message(request, messages.WARNING, msg)
+        else:
+            msg = "The tag alias inputs were invalid."
+            messages.add_message(request, messages.WARNING, msg)
+    else:
+        msg = f"You ({user.username}) don't have permission to create tag aliases."
+        messages.add_message(request, messages.WARNING, msg)
 
     return redirect(reverse("tags"))
 

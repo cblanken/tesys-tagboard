@@ -12,7 +12,7 @@ class RatingLevel(IntEnum):
     Default: UNRATED
 
     These levels are ordered such that SAFE < UNRATED < QUESTIONABLE < EXPLICIT
-    This enabled a simple integer comparison to be made on the RatingLevel value
+    This enables a simple integer comparison to be made on the RatingLevel value
     to show only the desired posts
     """
 
