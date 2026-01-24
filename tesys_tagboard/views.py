@@ -337,9 +337,14 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
 @require(["POST"])
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    create_tag_form = CreateTagForm(request.POST)
-    if create_tag_form.is_valid():
-        create_tag_form.save()
+    user = request.user
+    if user.has_perm("tesys_tagboard.add_tag"):
+        create_tag_form = CreateTagForm(request.POST)
+        if create_tag_form.is_valid():
+            create_tag_form.save()
+    else:
+        msg = f"You ({user.username}) don't have permission to create tags."
+        messages.add_message(request, messages.WARNING, msg)
 
     return redirect(reverse("tags"))
 

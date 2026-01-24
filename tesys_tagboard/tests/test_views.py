@@ -1,10 +1,14 @@
 from http import HTTPStatus
 
 import pytest
+from django.contrib.auth.models import Permission
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
+from tesys_tagboard.enums import TagCategory
+from tesys_tagboard.models import Tag
 from tesys_tagboard.users.models import User
+from tesys_tagboard.users.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
@@ -31,6 +35,110 @@ class TestTagsView:
     def test_max_query_count(self, client, django_assert_max_num_queries):
         with django_assert_max_num_queries(30):
             client.get(self.url)
+
+
+@pytest.mark.django_db(transaction=True)
+class TestCreateTagView:
+    url = reverse("create-tag")
+
+    def test_create_basic_tag_without_perm(self, client):
+        """An user without the add_tag permission should not
+        be able to create a tag"""
+        user = UserFactory()
+        client.force_login(user)
+        tag_name = "test_tag_1"
+        data = {
+            "name": tag_name,
+            "category": TagCategory.BASIC.value.shortcode,
+            "rating_level": "0",
+        }
+        client.post(self.url, data)
+
+        with pytest.raises(Tag.DoesNotExist):
+            Tag.objects.get(name=tag_name)
+
+    def test_create_basic_tag_with_perm(self, client):
+        """The user must have the add_tag permission to create tags"""
+        user = UserFactory()
+        add_tag_perm = Permission.objects.get(codename="add_tag")
+        user.user_permissions.add(add_tag_perm)
+        client.force_login(user)
+
+        tag_count = Tag.objects.all().count()
+        tag_name = "test_tag"
+        data = {
+            "name": tag_name,
+            "category": TagCategory.BASIC.value.shortcode,
+            "rating_level": "0",
+        }
+
+        response = client.post(self.url, data)
+        assert response.status_code == HTTPStatus.FOUND
+        tag = Tag.objects.get(name=tag_name)
+        assert tag.name == tag_name
+        assert tag.category == TagCategory.BASIC.value.shortcode
+        assert tag.rating_level == 0
+        new_count = Tag.objects.all().count()
+        assert new_count == tag_count + 1
+
+    def test_create_basic_tag_defaults(self, client):
+        """Tags created without a category should be assigned
+        the BASIC category and rating_level of 0 by default"""
+        user = UserFactory()
+        add_tag_perm = Permission.objects.get(codename="add_tag")
+        user.user_permissions.add(add_tag_perm)
+        client.force_login(user)
+
+        tag_name = "test_tag"
+        data = {"name": tag_name}
+
+        client.post(self.url, data)
+        tag = Tag.objects.get(name=tag_name)
+        assert tag.name == tag_name
+        assert tag.category == TagCategory.BASIC.value.shortcode
+        assert tag.rating_level == 0
+
+    def test_create_tag_with_invalid_category(self, client):
+        """A tag should not be created with an invalid category value"""
+        user = UserFactory()
+        add_tag_perm = Permission.objects.get(codename="add_tag")
+        user.user_permissions.add(add_tag_perm)
+        client.force_login(user)
+
+        tag_name = "test_tag"
+        data = {"name": tag_name, "category": "ZZ"}
+        client.post(self.url, data)
+
+        with pytest.raises(Tag.DoesNotExist):
+            Tag.objects.get(name=tag_name)
+
+    def test_create_tag_with_too_large_rating_level(self, client):
+        """A tag should not be created with an invalid category value"""
+        user = UserFactory()
+        add_tag_perm = Permission.objects.get(codename="add_tag")
+        user.user_permissions.add(add_tag_perm)
+        client.force_login(user)
+
+        tag_name = "test_tag"
+        data = {"name": tag_name, "rating_level": "999999"}
+        client.post(self.url, data)
+
+        with pytest.raises(Tag.DoesNotExist):
+            Tag.objects.get(name=tag_name)
+
+    def test_create_tag_with_negative_rating_level(self, client):
+        """A tag should not be created with an invalid category value"""
+        user = UserFactory()
+        add_tag_perm = Permission.objects.get(codename="add_tag")
+        user.user_permissions.add(add_tag_perm)
+        client.force_login(user)
+
+        tag_name = "test_tag"
+        data = {"name": tag_name, "rating_level": "-1"}
+        client.post(self.url, data)
+
+        with pytest.raises(Tag.DoesNotExist):
+            Tag.objects.get(name=tag_name)
 
 
 @pytest.mark.django_db
