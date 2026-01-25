@@ -172,12 +172,22 @@
       <input type="radio" name="post_content_pane" checked="checked" />
       <div class="flex gap-1 items-center">
         {% include "icons/feather.html" with icon="image" %}
-        <div class="hidden md:block group-has-[input:checked]:block">Image</div>
+        <div class="hidden md:block group-has-[input:checked]:block">
+          {% if post.image %}
+            Image
+          {% elif post.audio %}
+            Audio
+          {% elif post.video %}
+            Video
+          {% else %}
+            No Media
+          {% endif %}
+        </div>
       </div>
     </label>
     <div class="p-2 tab-content bg-base-200 border-base-300">
       {% if post.image.file.url %}
-        <figure class="mb-2 rounded-box">
+        <figure class="rounded-box">
           <div class="relative w-fit">
             <img class="rounded-box max-h-[80svh] xl:m-none"
                  src="{{ post.image.file.url }}"
@@ -189,10 +199,22 @@
           </div>
           {% if post.title %}<figcaption class="p-2 italic opacity-70">{{ post.title }}</figcaption>{% endif %}
         </figure>
+      {% elif post.audio.file.url %}
+        <figure class="flex gap-4 items-center my-4 rounded-box">
+          <audio controls src="{{ post.audio.file.url }}" alt="{{ post.title }}"></audio>
+          <a class="btn btn-info" href="{{ post.audio.file.url }}" target="_blank">
+            {% include "icons/feather.html" with icon='download' %}
+          Download</a>
+        </figure>
+      {% elif post.video.file.url %}
+        <video controls alt="{{ post.title }}" class="rounded-box">
+          <source src="{{ post.video.file.url }}" />
+          <a href="{{ post.video.file.url }}">{{ post.video.file.url }}</a>
+        </video>
       {% else %}
         <div class="my-3 text-placeholder">The media file for this post is missing</div>
       {% endif %}
-      <div class="flex flex-wrap gap-2 justify-end items-center w-fit">
+      <div class="flex flex-wrap gap-2 justify-end items-center mt-2 w-fit">
         {% if request.user.is_authenticated %}
           {% component "favorite_toggle" post=post / %}
           {% component "collection_picker" post=post / %}

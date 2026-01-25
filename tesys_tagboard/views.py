@@ -712,15 +712,25 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             if rating_level not in list(RatingLevel):
                 rating_level = RatingLevel.UNRATED
             tags = Tag.objects.in_tagset(tagset)
-            post = Post(uploader=request.user, rating_level=rating_level)
-            post.save()
-            media_file.post = post
-            media_file.save()
-            post.save_with_tag_history(post.uploader, tags)
-            msg = mark_safe(  # noqa: S308
-                f"Your post was create successfully, Check it out <a href='{reverse('post', args=[post.pk])}'>here</a>"  # noqa: E501
-            )
-            messages.add_message(request, messages.INFO, msg)
+            if media_type := SupportedMediaTypes.find(
+                media_file.file.file.content_type
+            ):
+                post = Post(
+                    uploader=request.user,
+                    rating_level=rating_level,
+                    type=media_type.value.get_template(),
+                )
+                post.save()
+                media_file.post = post
+                media_file.save()
+                post.save_with_tag_history(post.uploader, tags)
+                msg = mark_safe(  # noqa: S308
+                    f"Your post was create successfully, Check it out <a href='{reverse('post', args=[post.pk])}'>here</a>"  # noqa: E501
+                )
+                messages.add_message(request, messages.INFO, msg)
+            else:
+                msg = "The filetype of the uploaded file is not supported."
+                messages.add_message(request, messages.ERROR, msg)
 
     return TemplateResponse(request, "pages/upload.html", context=context)
 
