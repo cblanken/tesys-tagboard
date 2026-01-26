@@ -395,6 +395,36 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
+    def test_create_webm_video_post(self, client):
+        user = UserFactory()
+        add_post_perm = Permission.objects.get(codename="add_post")
+        user.user_permissions.add(add_post_perm)
+        client.force_login(user)
+
+        video_file = get_uploaded_test_media_file("1s", "webm", cat=MediaCategory.VIDEO)
+        data = {"file": video_file}
+
+        before_posts = Post.objects.all().count()
+        client.post(self.url, data)
+        after_posts = Post.objects.all().count()
+
+        assert after_posts == before_posts + 1
+
+    def test_create_mpeg_video_post(self, client):
+        user = UserFactory()
+        add_post_perm = Permission.objects.get(codename="add_post")
+        user.user_permissions.add(add_post_perm)
+        client.force_login(user)
+
+        video_file = get_uploaded_test_media_file("1s", "mpg", cat=MediaCategory.VIDEO)
+        data = {"file": video_file}
+
+        before_posts = Post.objects.all().count()
+        client.post(self.url, data)
+        after_posts = Post.objects.all().count()
+
+        assert after_posts == before_posts + 1
+
 
 @pytest.mark.django_db
 class TestCollectionsView:
