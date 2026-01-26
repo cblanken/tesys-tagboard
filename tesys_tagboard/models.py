@@ -7,6 +7,7 @@ from io import BytesIO
 from typing import TYPE_CHECKING
 
 import imagehash
+from django.contrib.postgres.indexes import HashIndex
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.db.models import BooleanField
@@ -85,6 +86,9 @@ class Tag(models.Model):
             models.UniqueConstraint(
                 fields=["name", "category"], name="unique_tag_name_cat"
             ),
+        ]
+        indexes = [
+            models.Index("category", name="tag_category_idx"),
         ]
 
     def __str__(self) -> str:
@@ -370,6 +374,13 @@ class Image(models.Model):
     # TODO: add duplicate detection
     # See https://github.com/JohannesBuchner/imagehash/issues/127 for
 
+    class Meta:
+        indexes = [
+            HashIndex("md5", name="image_md5_idx"),
+            HashIndex("phash", name="image_phash_idx"),
+            HashIndex("dhash", name="image_dhash_idx"),
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
@@ -421,6 +432,11 @@ class Video(models.Model):
     """MD5 hash"""
     md5 = models.CharField(validators=[validate_md5])
 
+    class Meta:
+        indexes = [
+            HashIndex("md5", name="video_md5_idx"),
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.md5 = md5(self.file.open().read()).hexdigest()  # noqa: S324
@@ -444,6 +460,11 @@ class Audio(models.Model):
 
     """MD5 hash"""
     md5 = models.CharField(validators=[validate_md5])
+
+    class Meta:
+        indexes = [
+            HashIndex("md5", name="audio_md5_idx"),
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
