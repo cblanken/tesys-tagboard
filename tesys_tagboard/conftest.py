@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import Permission
 
 from tesys_tagboard.enums import TagCategory
 from tesys_tagboard.models import Tag
@@ -21,6 +22,23 @@ def _media_storage(settings, tmpdir) -> None:
 @pytest.fixture
 def user(db) -> User:
     return UserFactory()
+
+
+@pytest.fixture
+def user_with_add_post(db) -> User:
+    return UserFactory().with_permissions([Permission.objects.get(codename="add_post")])
+
+
+@pytest.fixture
+def user_with_add_tag(db) -> User:
+    return UserFactory().with_permissions([Permission.objects.get(codename="add_tag")])
+
+
+@pytest.fixture
+def user_with_add_tagalias(db) -> User:
+    return UserFactory().with_permissions(
+        [Permission.objects.get(codename="add_tagalias")]
+    )
 
 
 @pytest.fixture(scope="session")

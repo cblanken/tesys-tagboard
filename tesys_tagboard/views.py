@@ -677,28 +677,27 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
                     form.files.get("file"), form.cleaned_data.get("src_url")
                 )
 
-                if not form.cleaned_data.get("rating_level"):
-                    form.cleaned_data["rating_level"] = RatingLevel.UNRATED.value
             except ValidationError:
                 msg = "Failed to validate uploaded media file"
                 messages.add_message(request, messages.INFO, msg)
                 return TemplateResponse(request, "pages/upload.html", context=context)
             else:
                 if duplicate:
-                    post_url = reverse("post", args=[duplicate.meta.post.pk])
+                    post_url = reverse("post", args=[duplicate.post.pk])
                     msg = mark_safe(  # noqa: S308
                         f"The uploaded file was a duplicate of an existing post which can be found <a href='{post_url}'>here</a>"  # noqa: E501
                     )
-                    media_file.delete()
                     messages.add_message(request, messages.WARNING, msg)
                     return TemplateResponse(
                         request, "pages/upload.html", context=context
                     )
 
             tagset = form.cleaned_data.get("tagset")
-            rating_level = form.cleaned_data.get("rating_level")
-            if rating_level not in list(RatingLevel):
-                rating_level = RatingLevel.UNRATED
+            try:
+                rating_level = int(form.cleaned_data.get("rating_level"))
+            except ValueError:
+                rating_level = RatingLevel.UNRATED.value
+            src_url = form.cleaned_data.get("src_url")
             tags = Tag.objects.in_tagset(tagset)
             if media_type := SupportedMediaTypes.find(
                 media_file.file.file.content_type
@@ -706,6 +705,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
                 post = Post(
                     uploader=request.user,
                     rating_level=rating_level,
+                    src_url=src_url,
                     type=media_type.value.get_template(),
                 )
                 post.save()

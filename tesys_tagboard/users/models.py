@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Permission
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -44,3 +45,8 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+
+    def with_permissions(self, perms: list[Permission]) -> User:
+        self.user_permissions.add(*perms)
+        self.save()
+        return self

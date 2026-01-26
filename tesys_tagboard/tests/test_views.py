@@ -3,13 +3,13 @@ from mimetypes import types_map
 from pathlib import Path
 
 import pytest
-from django.contrib.auth.models import Permission
 from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
 from tesys_tagboard.enums import MediaCategory
+from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import TagCategory
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
@@ -67,12 +67,9 @@ class TestCreateTagView:
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
 
-    def test_create_basic_tag_with_perm(self, client):
+    def test_create_basic_tag_with_perm(self, client, user_with_add_tag):
         """The user must have the add_tag permission to create tags"""
-        user = UserFactory()
-        add_tag_perm = Permission.objects.get(codename="add_tag")
-        user.user_permissions.add(add_tag_perm)
-        client.force_login(user)
+        client.force_login(user_with_add_tag)
 
         tag_count = Tag.objects.all().count()
         tag_name = "test_tag"
@@ -91,13 +88,10 @@ class TestCreateTagView:
         new_count = Tag.objects.all().count()
         assert new_count == tag_count + 1
 
-    def test_create_basic_tag_defaults(self, client):
+    def test_create_basic_tag_defaults(self, client, user_with_add_tag):
         """Tags created without a category should be assigned
         the BASIC category and rating_level of 0 by default"""
-        user = UserFactory()
-        add_tag_perm = Permission.objects.get(codename="add_tag")
-        user.user_permissions.add(add_tag_perm)
-        client.force_login(user)
+        client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
         data = {"name": tag_name}
@@ -108,12 +102,9 @@ class TestCreateTagView:
         assert tag.category == TagCategory.BASIC.value.shortcode
         assert tag.rating_level == 0
 
-    def test_create_tag_with_invalid_category(self, client):
+    def test_create_tag_with_invalid_category(self, client, user_with_add_tag):
         """A tag should not be created with an invalid category value"""
-        user = UserFactory()
-        add_tag_perm = Permission.objects.get(codename="add_tag")
-        user.user_permissions.add(add_tag_perm)
-        client.force_login(user)
+        client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
         data = {"name": tag_name, "category": "ZZ"}
@@ -122,12 +113,9 @@ class TestCreateTagView:
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
 
-    def test_create_tag_with_too_large_rating_level(self, client):
+    def test_create_tag_with_too_large_rating_level(self, client, user_with_add_tag):
         """A tag should not be created with an invalid category value"""
-        user = UserFactory()
-        add_tag_perm = Permission.objects.get(codename="add_tag")
-        user.user_permissions.add(add_tag_perm)
-        client.force_login(user)
+        client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "999999"}
@@ -136,12 +124,9 @@ class TestCreateTagView:
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
 
-    def test_create_tag_with_negative_rating_level(self, client):
+    def test_create_tag_with_negative_rating_level(self, client, user_with_add_tag):
         """A tag should not be created with an invalid category value"""
-        user = UserFactory()
-        add_tag_perm = Permission.objects.get(codename="add_tag")
-        user.user_permissions.add(add_tag_perm)
-        client.force_login(user)
+        client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "-1"}
@@ -167,14 +152,10 @@ class TestCreateTagAliasView:
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=alias_name)
 
-    def test_create_basic_tag_alias_with_perm(self, client):
+    def test_create_basic_tag_alias_with_perm(self, client, user_with_add_tagalias):
         """A user with the add_tagalias permission should be able to create a
         tag alias"""
-        user = UserFactory()
-        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
-        user.user_permissions.add(add_tag_alias_perm)
-        user.save()
-        client.force_login(user)
+        client.force_login(user_with_add_tagalias)
 
         alias_name = "test_alias_1"
         tag = TagFactory.create()
@@ -185,13 +166,11 @@ class TestCreateTagAliasView:
         assert alias.name == alias_name
         assert alias.tag == tag
 
-    def test_cannot_create_tag_alias_with_dup_name(self, client):
+    def test_cannot_create_tag_alias_with_dup_name(
+        self, client, user_with_add_tagalias
+    ):
         """TagAliases must have a unique name"""
-        user = UserFactory()
-        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
-        user.user_permissions.add(add_tag_alias_perm)
-        user.save()
-        client.force_login(user)
+        client.force_login(user_with_add_tagalias)
 
         duped_alias = TagAliasFactory.create()
         data = {"name": duped_alias.name, "tag": duped_alias.tag.pk}
@@ -199,13 +178,9 @@ class TestCreateTagAliasView:
 
         assert TagAlias.objects.filter(name=duped_alias.name).count() == 1
 
-    def test_tag_alias_create_cannot_edit_alias(self, client):
+    def test_tag_alias_create_cannot_edit_alias(self, client, user_with_add_tagalias):
         """The create-tagalias endpoint should not be able to edit an existing alias"""
-        user = UserFactory()
-        add_tag_alias_perm = Permission.objects.get(codename="add_tagalias")
-        user.user_permissions.add(add_tag_alias_perm)
-        user.save()
-        client.force_login(user)
+        client.force_login(user_with_add_tagalias)
 
         existing_alias = TagAliasFactory.create()
         before_alias = TagAlias.objects.get(name=existing_alias.name)
@@ -277,7 +252,6 @@ class TestUploadView:
     def test_user_without_add_post_perm(self, client):
         """User's without the 'add_post' permission cannot make posts"""
         user = UserFactory()
-        user.save()
         client.force_login(user)
 
         img_file = get_uploaded_test_media_file("1x1", "png")
@@ -289,12 +263,8 @@ class TestUploadView:
 
         assert after_posts == before_posts
 
-    def test_create_png_img_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        user.save()
-        client.force_login(user)
+    def test_create_png_img_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         img_file = get_uploaded_test_media_file("1x1", "png")
         data = {"file": img_file}
@@ -305,11 +275,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_jpg_img_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_jpg_img_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         img_file = get_uploaded_test_media_file("1x1", "jpeg")
         data = {"file": img_file}
@@ -320,11 +287,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_webp_img_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_webp_img_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         img_file = get_uploaded_test_media_file("1x1", "webp")
         data = {"file": img_file}
@@ -335,11 +299,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_tiff_img_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_tiff_img_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         img_file = get_uploaded_test_media_file("1x1", "tif")
         data = {"file": img_file}
@@ -350,11 +311,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_gif_img_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_gif_img_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         img_file = get_uploaded_test_media_file("1x1", "gif")
         data = {"file": img_file}
@@ -365,11 +323,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_mp3_audio_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_mp3_audio_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         audio_file = get_uploaded_test_media_file("1s", "mp3", cat=MediaCategory.AUDIO)
         data = {"file": audio_file}
@@ -380,11 +335,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_wav_audio_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_wav_audio_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         audio_file = get_uploaded_test_media_file("1s", "wav", cat=MediaCategory.AUDIO)
         data = {"file": audio_file}
@@ -395,11 +347,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_webm_video_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_webm_video_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         video_file = get_uploaded_test_media_file("1s", "webm", cat=MediaCategory.VIDEO)
         data = {"file": video_file}
@@ -410,11 +359,8 @@ class TestUploadView:
 
         assert after_posts == before_posts + 1
 
-    def test_create_mpeg_video_post(self, client):
-        user = UserFactory()
-        add_post_perm = Permission.objects.get(codename="add_post")
-        user.user_permissions.add(add_post_perm)
-        client.force_login(user)
+    def test_create_mpeg_video_post(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
 
         video_file = get_uploaded_test_media_file("1s", "mpg", cat=MediaCategory.VIDEO)
         data = {"file": video_file}
@@ -423,6 +369,94 @@ class TestUploadView:
         client.post(self.url, data)
         after_posts = Post.objects.all().count()
 
+        assert after_posts == before_posts + 1
+
+    def test_create_post_with_tags(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        tags = TagFactory.create_batch(10)
+        tag_ids = [tag.pk for tag in tags]
+        data = {"file": img_file, "tagset": tag_ids}
+
+        client.post(self.url, data)
+
+        post = Post.objects.filter(tags__in=tag_ids).distinct().first()
+        assert set(tag_ids) == set(post.tags.values_list("pk", flat=True))
+
+    def test_create_post_with_tags_src_and_rating(self, client, user_with_add_post):
+        """Post should set all provided fields correctly"""
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        tags = TagFactory.create_batch(10)
+        tag_ids = [tag.pk for tag in tags]
+        data = {
+            "file": img_file,
+            "tagset": tag_ids,
+            "src_url": "https://www.example.com",
+            "rating_level": RatingLevel.SAFE.value,
+        }
+
+        client.post(self.url, data)
+
+        post = Post.objects.filter(tags__in=tag_ids).distinct().first()
+        assert set(tag_ids) == set(post.tags.values_list("pk", flat=True))
+        assert post.rating_level == RatingLevel.SAFE.value
+        assert post.src_url == "https://www.example.com"
+
+    def test_create_post_with_invalid_src_url(self, client, user_with_add_post):
+        """Post should not be created when provided with an invalid src url"""
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        tags = TagFactory.create_batch(10)
+        tag_ids = [tag.pk for tag in tags]
+        data = {
+            "file": img_file,
+            "tagset": tag_ids,
+            "src_url": "nope://www.example.com",
+            "rating_level": RatingLevel.SAFE.value,
+        }
+
+        before_posts = Post.objects.all().count()
+        client.post(self.url, data)
+        after_posts = Post.objects.all().count()
+        assert after_posts == before_posts
+
+    def test_create_post_with_invalid_rating_level(self, client, user_with_add_post):
+        """Post should not be created when provided with an invalid rating level"""
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        data = {
+            "file": img_file,
+            "rating_level": 99999,
+        }
+
+        before_posts = Post.objects.all().count()
+        client.post(self.url, data)
+        after_posts = Post.objects.all().count()
+        assert after_posts == before_posts
+
+    def test_create_post_with_invalid_tags(self, client, user_with_add_post):
+        """Post request may include invalid tag IDs, they just won't be included
+        on the new Post"""
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        tags = TagFactory.create_batch(10)
+        tag_ids = [tag.pk for tag in tags]
+        bad_ids = [1111, 2222, 3333, 4444, 5555]
+        tag_ids.extend(bad_ids)
+        data = {
+            "file": img_file,
+            "tagset": tag_ids,
+        }
+
+        before_posts = Post.objects.all().count()
+        client.post(self.url, data)
+        after_posts = Post.objects.all().count()
         assert after_posts == before_posts + 1
 
 
