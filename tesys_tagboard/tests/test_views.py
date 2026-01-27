@@ -3,6 +3,7 @@ from mimetypes import types_map
 from pathlib import Path
 
 import pytest
+from django.contrib.auth.models import Permission
 from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -197,15 +198,21 @@ class TestCreateTagAliasView:
 
 @pytest.mark.django_db
 class TestPostView:
-    def url(self, pk):
+    def view_url(self, pk):
         return reverse("post", args=[pk])
+
+    def edit_url(self, pk):
+        return reverse("post-edit", args=[pk])
 
     def delete_url(self, pk):
         return reverse("post-delete", args=[pk])
 
-    def test_post(self, client):
+    def lock_comments_url(self, pk):
+        return reverse("post-toggle-comment-lock", args=[pk])
+
+    def test_view_post(self, client):
         post = PostFactory.create()
-        url = self.url(post.pk)
+        url = self.view_url(post.pk)
         client.get(url)
 
     def test_delete_post_without_perm(self, client):
@@ -224,6 +231,148 @@ class TestPostView:
         url = self.delete_url(post.pk)
         client.delete(url)
         assert not Post.objects.filter(pk=post.pk).exists()
+
+    def test_edit_post_only_title(self, client, user_with_change_post):
+        post = PostFactory.create()
+        client.force_login(user_with_change_post)
+
+        before_src_url = post.src_url
+        before_rating_level = post.rating_level
+        before_tagset = post.tagset()
+        before_locked_comments = post.locked_comments
+
+        new_title = "new title here"
+        assert post.title != new_title
+        data = {"title": new_title}
+        url = self.edit_url(post.pk)
+        client.post(url, data)
+        post.refresh_from_db()
+        assert post.title == new_title
+        assert post.src_url == before_src_url
+        assert post.tagset() == before_tagset
+        assert post.rating_level == before_rating_level
+        assert post.locked_comments == before_locked_comments
+
+    def test_edit_post_only_rating_level(self, client, user_with_change_post):
+        post = PostFactory.create(rating_level=RatingLevel.SAFE.value)
+        client.force_login(user_with_change_post)
+
+        before_title = post.title
+        before_src_url = post.src_url
+        before_tagset = post.tagset()
+        before_locked_comments = post.locked_comments
+
+        new_rating_level = RatingLevel.EXPLICIT.value
+        assert post.rating_level != new_rating_level
+        data = {"rating_level": new_rating_level}
+        url = self.edit_url(post.pk)
+        client.post(url, data)
+        post.refresh_from_db()
+        assert post.title == before_title
+        assert post.src_url == before_src_url
+        assert post.tagset() == before_tagset
+        assert post.rating_level == new_rating_level
+        assert post.locked_comments == before_locked_comments
+
+    def test_edit_post_only_src_url(self, client, user_with_change_post):
+        post = PostFactory.create(src_url="https://old-url.com")
+        client.force_login(user_with_change_post)
+
+        before_title = post.title
+        before_rating_level = post.rating_level
+        before_tagset = post.tagset()
+        before_locked_comments = post.locked_comments
+
+        new_src_url = "https://new-url.com"
+        assert post.src_url != new_src_url
+        data = {"src_url": new_src_url}
+        url = self.edit_url(post.pk)
+        client.post(url, data)
+        post.refresh_from_db()
+        assert post.title == before_title
+        assert post.src_url == new_src_url
+        assert post.tagset() == before_tagset
+        assert post.rating_level == before_rating_level
+        assert post.locked_comments == before_locked_comments
+
+    def test_edit_post_only_tags(self, client, user_with_change_post):
+        post = PostFactory.create()
+        old_tags = TagFactory.create_batch(10)
+        post.tags.set(old_tags)
+        client.force_login(user_with_change_post)
+
+        before_title = post.title
+        before_rating_level = post.rating_level
+        before_src_url = post.src_url
+        before_locked_comments = post.locked_comments
+
+        new_tags = TagFactory.create_batch(10)
+        new_tagset = {tag.pk for tag in new_tags}
+        assert post.tagset() != new_tagset
+        data = {"tagset": new_tagset}
+        url = self.edit_url(post.pk)
+        client.post(url, data)
+        post.refresh_from_db()
+        assert post.title == before_title
+        assert post.src_url == before_src_url
+        assert post.tagset() == new_tagset
+        assert post.rating_level == before_rating_level
+        assert post.locked_comments == before_locked_comments
+
+    def test_edit_post_all_fields(self, client, user_with_change_post):
+        post = PostFactory.create(
+            title="old title here",
+            src_url="https://www.old-url.com",
+            rating_level=RatingLevel.SAFE.value,
+        )
+        client.force_login(user_with_change_post)
+
+        tags = TagFactory.create_batch(10)
+
+        title = "new title here"
+        src_url = "https://www.new-url-here.com"
+        tag_ids = [tag.pk for tag in tags]
+        rating_level = RatingLevel.EXPLICIT.value
+        data = {
+            "title": title,
+            "src_url": src_url,
+            "tagset": tag_ids,
+            "rating_level": rating_level,
+        }
+        url = self.edit_url(post.pk)
+        client.post(url, data)
+        post.refresh_from_db()
+        assert post.title == title
+        assert post.src_url == src_url
+        assert set(post.tags.values_list("pk", flat=True)) == set(tag_ids)
+        assert post.rating_level == rating_level
+
+    @pytest.mark.parametrize("initial", [True, False])
+    def test_lock_unlock_comments_with_perm(self, client, initial):
+        post = PostFactory.create(locked_comments=initial)
+        user = UserFactory().with_permissions(
+            [
+                Permission.objects.get(codename="change_post"),
+                Permission.objects.get(codename="lock_comments"),
+            ]
+        )
+        client.force_login(user)
+        url = self.lock_comments_url(post.pk)
+
+        client.post(url)
+        post.refresh_from_db()
+        assert post.locked_comments != initial
+
+    @pytest.mark.parametrize("initial", [True, False])
+    def test_lock_unlock_comments_without_perm(self, client, initial):
+        post = PostFactory.create(locked_comments=initial)
+        user = UserFactory()
+        client.force_login(user)
+        url = self.lock_comments_url(post.pk)
+
+        client.post(url)
+        post.refresh_from_db()
+        assert post.locked_comments == initial
 
 
 @pytest.mark.django_db

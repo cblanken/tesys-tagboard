@@ -248,7 +248,7 @@ def confirm_tagset(request: HtmxHttpRequest):
 
 
 @require(["POST"])
-@permission_required("edit_post", "lock_comments")
+@permission_required(["tesys_tagboard.change_post", "tesys_tagboard.lock_comments"])
 def toggle_comment_lock(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:

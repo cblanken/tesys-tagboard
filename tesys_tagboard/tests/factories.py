@@ -1,5 +1,6 @@
-from datetime import datetime
+import datetime
 
+from django.utils import timezone
 from factory import Faker
 from factory import SubFactory
 from factory.django import DjangoModelFactory
@@ -56,14 +57,16 @@ class PostFactory(DjangoModelFactory[Post]):
     title = Faker("text", max_nb_chars=50)
     uploader = SubFactory(UserFactory)
     post_date = Faker(
-        "date_between_dates",
-        date_start=datetime(1999, 1, 1).astimezone(),
-        date_end=datetime(2050, 12, 31).astimezone(),
+        "date_time_between",
+        start_date=timezone.now() - datetime.timedelta(days=365 * 50),
+        end_date=timezone.now() + datetime.timedelta(days=365 * 50),
+        tzinfo=datetime.UTC,
     )
     edit_date = Faker(
-        "date_between_dates",
-        date_start=datetime.now().astimezone(),
-        date_end=datetime(2050, 12, 31).astimezone(),
+        "date_time_between",
+        start_date=timezone.now() - datetime.timedelta(days=365 * 50),
+        end_date=timezone.now() + datetime.timedelta(days=365 * 50),
+        tzinfo=datetime.UTC,
     )
 
     rating_level = Faker("enum", enum_cls=RatingLevel)

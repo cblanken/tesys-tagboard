@@ -48,6 +48,20 @@ def user_with_delete_post(db) -> User:
     )
 
 
+@pytest.fixture
+def user_with_change_post(db) -> User:
+    return UserFactory().with_permissions(
+        [Permission.objects.get(codename="change_post")]
+    )
+
+
+@pytest.fixture
+def user_with_lock_comments(db) -> User:
+    return UserFactory().with_permissions(
+        [Permission.objects.get(codename="lock_comments")]
+    )
+
+
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():

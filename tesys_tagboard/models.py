@@ -316,6 +316,10 @@ class Post(models.Model):
             self.src_url = src_url
         self.save()
 
+    def tagset(self) -> set[int]:
+        """Returns set of tag IDs"""
+        return set(self.tags.all().values_list("pk", flat=True))
+
     def category(self) -> MediaCategory | None:
         if hasattr(self, "audio"):
             return MediaCategory.AUDIO
