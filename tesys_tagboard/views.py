@@ -206,8 +206,11 @@ def edit_post(
 def delete_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
+    user = request.user
+    if not user.has_perm("tesys_tagboard.delete_post"):
+        return HttpResponseForbidden("User not allowed to delete this post")
     try:
-        post = Post.objects.get(pk=post_id, uploader=request.user)
+        post = Post.objects.get(pk=post_id)
         post.delete()
         return redirect(reverse("posts"))
 

@@ -17,8 +17,11 @@ from tesys_tagboard.models import TagAlias
 from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
 
+from .factories import PostFactory
 from .factories import TagAliasFactory
 from .factories import TagFactory
+
+# NOTE: most fixtures are defined in conftest.py
 
 
 @pytest.mark.django_db
@@ -190,6 +193,37 @@ class TestCreateTagAliasView:
 
         after_alias = TagAlias.objects.get(name=existing_alias.name)
         assert before_alias.tag == after_alias.tag
+
+
+@pytest.mark.django_db
+class TestPostView:
+    def url(self, pk):
+        return reverse("post", args=[pk])
+
+    def delete_url(self, pk):
+        return reverse("post-delete", args=[pk])
+
+    def test_post(self, client):
+        post = PostFactory.create()
+        url = self.url(post.pk)
+        client.get(url)
+
+    def test_delete_post_without_perm(self, client):
+        post = PostFactory.create()
+        user = UserFactory()
+        client.force_login(user)
+
+        url = self.delete_url(post.pk)
+        client.delete(url)
+        assert Post.objects.filter(pk=post.pk).exists()
+
+    def test_delete_post_with_perm(self, client, user_with_delete_post):
+        post = PostFactory.create()
+        client.force_login(user_with_delete_post)
+
+        url = self.delete_url(post.pk)
+        client.delete(url)
+        assert not Post.objects.filter(pk=post.pk).exists()
 
 
 @pytest.mark.django_db
