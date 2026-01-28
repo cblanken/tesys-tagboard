@@ -31,12 +31,12 @@
           <a {% if previous_post %}href="{% url "post" post_id=previous_post.pk %}"{% endif %}
              {% if not previous_post %}disabled{% endif %}
              class="flex items-center w-1/2 font-mono btn btn-info shrink">
-            {% include "icons/feather.html" with icon="chevron-left" size="large" %}
+            {% include "icons/feather.html" with icon="chevron-left" size="lg" %}
           </a>
           <a {% if next_post %}href="{% url "post" post_id=next_post.pk %}"{% endif %}
              {% if not next_post %}disabled{% endif %}
              class="flex items-center w-1/2 font-mono btn btn-info shrink">
-            {% include "icons/feather.html" with icon="chevron-right" size="large" %}
+            {% include "icons/feather.html" with icon="chevron-right" size="lg" %}
           </a>
         </div>
       {% endpartialdef next-prev-nav %}
@@ -127,9 +127,9 @@
                  hx-target="#add-comments">
               {% partialdef post-comment-lock inline %}
               {% if post.locked_comments %}
-                {% include "icons/feather.html" with icon="lock" size="large" %}
+                {% include "icons/feather.html" with icon="lock" size="lg" %}
               {% else %}
-                {% include "icons/feather.html" with icon="unlock" size="large" %}
+                {% include "icons/feather.html" with icon="unlock" size="lg" %}
               {% endif %}
             {% endpartialdef post-comment-lock %}
           </div>
@@ -210,7 +210,7 @@
                  alt="{{ post.title }}" />
             <button class="absolute right-2 bottom-2 p-1 border-none hover:scale-110 rounded-field bg-neutral/40 text-neutral-content hover:bg-neutral"
                     onclick="post_full_screen.showModal()">
-              {% include "icons/feather.html" with icon="maximize" size="large" %}
+              {% include "icons/feather.html" with icon="maximize" size="lg" %}
             </button>
           </div>
           {% if post.title %}<figcaption class="p-2 italic opacity-70">{{ post.title }}</figcaption>{% endif %}
@@ -345,7 +345,7 @@
     <div id="zoom-slider-container"
          class="flex hidden gap-2 items-center m-auto">
       <button id="media-zoom-out" class="text-secondary">
-        {% include "icons/feather.html" with icon="zoom-out" size="large" %}
+        {% include "icons/feather.html" with icon="zoom-out" size="lg" %}
       </button>
       <input id="media-zoom"
              type="range"
@@ -355,7 +355,7 @@
              step="10"
              class="range range-lg range-secondary min-w-20 [--range-bg:var(--color-neutral)] lg:min-w-45" />
       <button id="media-zoom-in" class="text-secondary">
-        {% include "icons/feather.html" with icon="zoom-in" size="large" %}
+        {% include "icons/feather.html" with icon="zoom-in" size="lg" %}
       </button>
     </div>
   </div>
