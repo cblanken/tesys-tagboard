@@ -415,6 +415,7 @@ def collection(
 
 
 @require(["POST"])
+@permission_required(["tesys_tagboard.add_collection"])
 def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     create_collection_form = CreateCollectionForm(request.POST)
     if create_collection_form.is_valid():
@@ -426,21 +427,21 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
 
 
 @require(["DELETE"])
+@permission_required(["tesys_tagboard.delete_collection"])
 def delete_collection(
     request: HtmxHttpRequest, collection_id: int
 ) -> TemplateResponse | HttpResponse:
-    if request.htmx:
-        try:
-            collection = Collection.objects.get(user=request.user, pk=collection_id)
-            collection.delete()
-            collections = request.user.collection_set.with_gallery_data()
-            context = {"collections": collections}
+    try:
+        collection = Collection.objects.get(user=request.user, pk=collection_id)
+        collection.delete()
+        collections = request.user.collection_set.with_gallery_data()
+        context = {"collections": collections}
 
-            return TemplateResponse(
-                request, "users/user_detail.html#collection-gallery", context
-            )
-        except Collection.DoesNotExist:
-            return HttpResponseNotFound("That collection doesn't exist")
+        return TemplateResponse(
+            request, "users/user_detail.html#collection-gallery", context
+        )
+    except Collection.DoesNotExist:
+        return HttpResponseNotFound("That collection doesn't exist")
 
     return redirect(reverse("collections"))
 

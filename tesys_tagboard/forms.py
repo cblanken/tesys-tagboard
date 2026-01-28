@@ -55,7 +55,8 @@ class CreateTagAliasForm(forms.ModelForm):
 class CreateCollectionForm(forms.ModelForm):
     user = forms.ModelChoiceField(User.objects.all(), required=False)
     public = forms.BooleanField(required=False, initial=True)
-    desc = forms.CharField(required=False)
+    name = forms.CharField(max_length=200, validators=[MaxLengthValidator(100)])
+    desc = forms.CharField(required=False, validators=[MaxLengthValidator(250)])
 
     class Meta:
         model = Collection

@@ -12,6 +12,7 @@ from pytest_django.asserts import assertTemplateUsed
 from tesys_tagboard.enums import MediaCategory
 from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import TagCategory
+from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
@@ -19,6 +20,7 @@ from tesys_tagboard.models import TagAlias
 from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
 
+from .factories import CollectionFactory
 from .factories import CommentFactory
 from .factories import PostFactory
 from .factories import TagAliasFactory
@@ -800,16 +802,110 @@ class TestUploadView:
 
 @pytest.mark.django_db
 class TestCollectionsView:
-    url = reverse("collections")
+    view_url = reverse("collections")
+    create_url = reverse("create-collection")
+
+    def delete_url(self, collection_id: int):
+        return reverse("delete-collection", args=[collection_id])
 
     def test_collections(self, client):
-        response = client.get(self.url)
+        response = client.get(self.view_url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "pages/collections.html")
 
     def test_max_query_count(self, client, django_assert_max_num_queries):
         with django_assert_max_num_queries(20):
-            client.get(self.url)
+            client.get(self.view_url)
+
+    def test_create_collection_without_perm(self, client):
+        """Users without the add_collection permission may not create
+        new collections"""
+        user = UserFactory()
+        client.force_login(user)
+        name = "collection name here"
+        data = {
+            "name": name,
+            "desc": "description for this collection",
+        }
+        client.post(self.create_url, data)
+        with pytest.raises(Collection.DoesNotExist):
+            Collection.objects.get(name=name)
+
+    def test_create_collection(self, client, user_with_add_collection):
+        """Users with the add_collection permission may create new collections
+        for themselves"""
+        client.force_login(user_with_add_collection)
+        name = "normal collection"
+        data = {
+            "name": name,
+            "desc": "description for this collection",
+        }
+        client.post(self.create_url, data)
+        assert Collection.objects.filter(
+            name=name, user=user_with_add_collection
+        ).exists()
+
+    def test_create_collection_with_too_long_name(
+        self, client, user_with_add_collection
+    ):
+        """Collection names may not be *too* long"""
+        client.force_login(user_with_add_collection)
+        too_long_name = "A" * 101
+        data = {
+            "name": too_long_name,
+            "desc": "description for this collection",
+        }
+        client.post(self.create_url, data)
+        assert not Collection.objects.filter(name=too_long_name).exists()
+
+    def test_create_collection_with_empty_name(self, client, user_with_add_collection):
+        """Collection name may not be empty string"""
+        client.force_login(user_with_add_collection)
+        empty_name = ""
+        data = {
+            "name": empty_name,
+            "desc": "description for this collection",
+        }
+        client.post(self.create_url, data)
+        assert not Collection.objects.filter(name=empty_name).exists()
+
+    def test_create_collection_with_too_long_description(
+        self, client, user_with_add_collection
+    ):
+        """Collection names may not be *too* long"""
+        client.force_login(user_with_add_collection)
+        too_long_desc = "A" * 251
+        data = {
+            "name": "normal collection name",
+            "desc": too_long_desc,
+        }
+        client.post(self.create_url, data)
+        assert not Collection.objects.filter(desc=too_long_desc).exists()
+
+    def test_delete_collection_without_perm(self, client):
+        """Collections may not be deleted without the required permission"""
+        user = UserFactory()
+        client.force_login(user)
+        collection = CollectionFactory.create()
+        client.delete(self.delete_url(collection.pk))
+        assert Collection.objects.filter(pk=collection.pk).exists()
+
+    def test_delete_collection(self, client, user_with_delete_collection):
+        """Users may delete their *own* collections"""
+        client.force_login(user_with_delete_collection)
+        collection = CollectionFactory.create(user=user_with_delete_collection)
+        client.delete(self.delete_url(collection.pk))
+        assert not Collection.objects.filter(pk=collection.pk).exists()
+
+    def test_delete_collection_of_another_user(
+        self, client, user_with_delete_collection
+    ):
+        """Users may not delete collections of other users"""
+        user = UserFactory()
+        client.force_login(user_with_delete_collection)
+        collection = CollectionFactory.create(user=user)
+        client.delete(self.delete_url(collection.pk))
+        assert Collection.objects.filter(pk=collection.pk).exists()
 
 
 @pytest.mark.django_db

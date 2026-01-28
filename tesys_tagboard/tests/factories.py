@@ -1,3 +1,4 @@
+import factory
 from factory import Faker
 from factory import SubFactory
 from factory.django import DjangoModelFactory
@@ -6,6 +7,7 @@ from faker.providers import BaseProvider
 from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import SupportedMediaTypes
 from tesys_tagboard.enums import TagCategory
+from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
@@ -72,3 +74,21 @@ class CommentFactory(DjangoModelFactory[Comment]):
 
     class Meta:
         model = Comment
+
+
+class CollectionFactory(DjangoModelFactory[Collection]):
+    user = SubFactory(UserFactory)
+    name = Faker("text", max_nb_chars=50)
+    desc = Faker("text", max_nb_chars=200)
+
+    class Meta:
+        model = Collection
+
+    @factory.post_generation
+    def posts(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            # Simple build, or nothing to add, do nothing.
+            return
+
+        # Add the iterable of groups using bulk addition
+        self.posts.add(*extracted)
