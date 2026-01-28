@@ -6,6 +6,7 @@ from faker.providers import BaseProvider
 from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import SupportedMediaTypes
 from tesys_tagboard.enums import TagCategory
+from tesys_tagboard.models import Comment
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
@@ -62,3 +63,12 @@ class PostFactory(DjangoModelFactory[Post]):
 
     class Meta:
         model = Post
+
+
+class CommentFactory(DjangoModelFactory[Comment]):
+    text = Faker("text", max_nb_chars=500)
+    post = SubFactory(PostFactory)
+    user = SubFactory(UserFactory)
+
+    class Meta:
+        model = Comment

@@ -19,6 +19,7 @@ from tesys_tagboard.models import TagAlias
 from tesys_tagboard.users.models import User
 from tesys_tagboard.users.tests.factories import UserFactory
 
+from .factories import CommentFactory
 from .factories import PostFactory
 from .factories import TagAliasFactory
 from .factories import TagFactory
@@ -202,6 +203,9 @@ class TestCommenting:
     def add_comment_url(self, pk):
         return reverse("post-add-comment", args=[pk])
 
+    edit_comment_url = reverse("post-edit-comment")
+    delete_comment_url = reverse("post-delete-comment")
+
     def test_add_comment_without_perm(self, client):
         post = PostFactory.create()
         user = UserFactory()
@@ -234,21 +238,117 @@ class TestCommenting:
         post = PostFactory.create()
         client.force_login(user_with_add_comment)
         url = self.add_comment_url(post.pk)
-        text = "A" * 1025
+        text = "A" * 2049
         data = {"text": text}
         client.post(url, data)
         assert not post.comment_set.filter(text=text).exists()
 
     def test_add_empty_comment(self, client, user_with_add_comment):
-        """Empty comments (or only whitespace) are not allowed"""
+        """Empty comments are not allowed"""
         post = PostFactory.create()
         client.force_login(user_with_add_comment)
         url = self.add_comment_url(post.pk)
-        text = "   \n"
+        text = ""
         data = {"text": text}
         client.post(url, data)
         assert Comment.objects.all().count() == 0
         assert not post.comment_set.filter(text=text).exists()
+
+    def test_add_whitespace_comment(self, client, user_with_add_comment):
+        """Empty comments with only whitespace are not allowed"""
+        post = PostFactory.create()
+        client.force_login(user_with_add_comment)
+
+        text = "   \n"
+        data = {"text": text}
+        url = self.add_comment_url(post.pk)
+        client.post(url, data)
+
+        assert Comment.objects.all().count() == 0
+        assert not post.comment_set.filter(text=text).exists()
+
+    def test_edit_comment_without_perm(self, client):
+        """User's without the change_comment permission may not edit comments"""
+        user = UserFactory()
+        post = PostFactory.create()
+        comment = CommentFactory.create(post=post)
+        client.force_login(user)
+
+        text = "testing text"
+        assert text != comment.text
+        data = {"text": text, "comment_id": comment.pk}
+        url = self.edit_comment_url
+        client.post(url, data)
+
+        assert post.comment_set.filter(text=comment.text).exists()
+        assert not post.comment_set.filter(text=text).exists()
+
+    def test_edit_comment_of_another_user(self, client, user_with_change_comment):
+        """User's may not edit other users' comments, even if they have the
+        change_post permission"""
+        post = PostFactory.create()
+        other_user = UserFactory()
+        comment = CommentFactory.create(post=post, user=other_user)
+        client.force_login(user_with_change_comment)
+        url = self.edit_comment_url
+
+        text = "testing text"
+        assert text != comment.text
+        data = {"text": text, "comment_id": comment.pk}
+        client.post(url, data)
+
+        assert post.comment_set.filter(text=comment.text).exists()
+        assert not post.comment_set.filter(text=text).exists()
+
+    def test_edit_comment(self, client, user_with_change_comment):
+        """A User with the change_comment permission may edit their own comments"""
+        post = PostFactory.create()
+        comment = CommentFactory.create(post=post, user=user_with_change_comment)
+        client.force_login(user_with_change_comment)
+
+        url = self.edit_comment_url
+        text = "testing comment text here"
+        data = {"text": text, "comment_id": comment.pk}
+        client.post(url, data)
+        comment.refresh_from_db()
+        assert comment.text == text
+
+    def test_delete_comment_without_perm(self, client):
+        """A User without the delete_comment permission may not delete comments, not
+        even their own comments."""
+        post = PostFactory.create()
+        user = UserFactory()
+        comment = CommentFactory.create(post=post, user=user)
+        client.force_login(user)
+
+        url = self.delete_comment_url
+        data = {"comment_id": comment.pk}
+        client.post(url, data)
+        assert Comment.objects.filter(pk=comment.pk).exists()
+
+    def test_delete_comment_of_another_user(self, client, user_with_delete_comment):
+        """User's may not delete other users' comments, even if they have the
+        delete_comment permission"""
+        post = PostFactory.create()
+        other_user = UserFactory()
+        comment = CommentFactory.create(post=post, user=other_user)
+        client.force_login(user_with_delete_comment)
+
+        url = self.delete_comment_url
+        data = {"comment_id": comment.pk}
+        client.post(url, data)
+        assert Comment.objects.filter(pk=comment.pk).exists()
+
+    def test_delete_comment(self, client, user_with_delete_comment):
+        """A User with the delete_comment permission may delete their own comments"""
+        post = PostFactory.create()
+        comment = CommentFactory.create(post=post, user=user_with_delete_comment)
+        client.force_login(user_with_delete_comment)
+
+        url = self.delete_comment_url
+        data = {"comment_id": comment.pk}
+        client.post(url, data)
+        assert not Comment.objects.filter(pk=comment.pk).exists()
 
 
 @pytest.mark.django_db

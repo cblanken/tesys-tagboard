@@ -69,6 +69,20 @@ def user_with_add_comment(db) -> User:
     )
 
 
+@pytest.fixture
+def user_with_change_comment(db) -> User:
+    return UserFactory().with_permissions(
+        [Permission.objects.get(codename="change_comment")]
+    )
+
+
+@pytest.fixture
+def user_with_delete_comment(db) -> User:
+    return UserFactory().with_permissions(
+        [Permission.objects.get(codename="delete_comment")]
+    )
+
+
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
     with django_db_blocker.unblock():

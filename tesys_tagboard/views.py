@@ -552,19 +552,27 @@ def add_comment(
 
 
 @require(["POST"])
+@permission_required(["tesys_tagboard.change_comment"])
 def edit_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     data = EditCommentForm(request.POST)
     if data.is_valid():
         comment_id = data.cleaned_data.get("comment_id")
-        comment = Comment.objects.get(pk=comment_id, user=request.user)
-        comment.text = data.cleaned_data.get("text")
-        comment.save()
-        kwargs = {"comment": comment}
-        return CommentComponent.render_to_response(request=request, kwargs=kwargs)
+        try:
+            comment = Comment.objects.get(pk=comment_id, user=request.user)
+        except Comment.DoesNotExist:
+            msg = "Only the original poster of a comment may edit it."
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseForbidden(msg)
+        else:
+            comment.text = data.cleaned_data.get("text")
+            comment.save()
+            kwargs = {"comment": comment}
+            return CommentComponent.render_to_response(request=request, kwargs=kwargs)
     return HttpResponse(status=422)
 
 
 @require(["DELETE"])
+@permission_required(["tesys_tagboard.delete_comment"])
 def delete_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     comment_id = request.POST.get("comment_id")
     try:

@@ -114,7 +114,7 @@ class AddCommentForm(forms.Form):
     text = forms.CharField(
         widget=forms.Textarea,
         required=True,
-        max_length=1024,
+        max_length=2048,
         validators=[MaxLengthValidator(2048)],
     )
 
@@ -123,7 +123,12 @@ class EditCommentForm(forms.Form):
     """Form for editing Comments"""
 
     comment_id = forms.IntegerField(required=True)
-    text = forms.CharField(widget=forms.Textarea, required=True)
+    text = forms.CharField(
+        widget=forms.Textarea,
+        required=True,
+        max_length=2048,
+        validators=[MaxLengthValidator(2048)],
+    )
 
 
 class EditUserSettingsForm(forms.Form):
