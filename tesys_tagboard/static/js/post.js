@@ -20,7 +20,7 @@
   const zoom_in_btn = document.querySelector("button#media-zoom-in")
   const zoom_out_btn = document.querySelector("button#media-zoom-out")
 
-  const contain_img_classes = ["max-h-svh", "max-w-svw"];
+  const contain_img_classes = ["max-h-[94svh]", "max-w-[94svw]"];
   const zoom_img_classes = ["max-w-fit"];
   let showing_zoom_slider = false;
   const img_default_scale = parseInt(post_zoom_slider.value);
