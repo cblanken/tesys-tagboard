@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load custom_filters %}
+{% load custom_filters component_tags %}
 
 {% block content %}
   {% partialdef main-link %}
@@ -11,8 +11,11 @@
 {% endpartialdef %}
 <main class="flex flex-col gap-12 m-auto mt-4 lg:flex-row lg:pb-24 min-h-200">
   <section class="flex flex-col gap-4 items-start lg:w-1/2">
-    <h1 id="post-count"
-        class="text-8xl font-bold tracking-widest text-center text-secondary leading-30">{{ post_count }} Posts</h1>
+    <h1 class="flex flex-col gap-2 items-center m-0 w-full text-8xl font-bold tracking-widest text-center text-secondary leading-30"
+        id="post-count">
+      {% component "counter" num=post_count / %}
+      <div>Posts</div>
+    </h1>
     <div class="w-full text-base tracking-wide max-w-200 lg:min-w-150">{{ markdown_html }}</div>
   </section>
   {% if links %}
