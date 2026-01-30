@@ -31,14 +31,14 @@ RUN curl -sl https://deb.nodesource.com/setup_24.x | bash - \
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+    --mount=type=bind,source=uv.lock,target=uv.lock,readwrite \
     uv sync --no-install-project
 
 COPY . ${APP_HOME}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+    --mount=type=bind,source=uv.lock,target=uv.lock,readwrite \
     uv sync
 
 # Build Tailwind styles
