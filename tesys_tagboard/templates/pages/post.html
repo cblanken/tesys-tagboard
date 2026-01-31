@@ -234,7 +234,7 @@
         {% if request.user.is_authenticated %}
           {% component "favorite_toggle" post=post / %}
           {% component "collection_picker" post=post / %}
-          {% if request.user == post.uploader %}
+          {% if perms.tesys_tagboard.delete_post %}
             <form method="delete"
                   action="{% url 'post-delete' post_id=post.pk %}"
                   class="p-0"
