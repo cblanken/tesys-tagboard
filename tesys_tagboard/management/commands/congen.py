@@ -1,4 +1,3 @@
-import re
 from itertools import islice
 from pathlib import Path
 from random import choice
@@ -10,8 +9,11 @@ from typing import Annotated
 
 import magic
 import typer
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import UploadedFile
 from django_typer.management import Typer
+from faker import Faker
 from PIL import UnidentifiedImageError
 from rich.progress import Progress
 from rich.progress import SpinnerColumn
@@ -34,56 +36,30 @@ from tesys_tagboard.models import add_tag_history
 from tesys_tagboard.models import update_tag_post_counts
 from tesys_tagboard.users.models import User
 
+Faker.seed(0)
+fake = Faker()
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from django.db.models import QuerySet
 
 
-DEFAULT_USERNAMES = ["user1", "user2", "user3", "mod1", "mod2", "mod3"]
-
-# Text content for filling titles, comments, etc.
-CONTENT_PARAGRAPHS = [
-    "Having had some time at my disposal when in London, I had visited the British Museum, and made search among the books and maps in the library regarding Transylvania; it had struck me that some foreknowledge of the country could hardly fail to have some importance in dealing with a nobleman of that country. I find that the district he named is in the extreme east of the country, just on the borders of three states, Transylvania, Moldavia and Bukovina, in the midst of the Carpathian mountains; one of the wildest and least known portions of Europe. I was not able to light on any map or work giving the exact locality of the Castle Dracula, as there are no maps of this country as yet to compare with our own Ordnance Survey maps; but I found that Bistritz, the post town named by Count Dracula, is a fairly well-known place. I shall enter here some of my notes, as they may refresh my memory when I talk over my travels with Mina.",  # noqa: E501
-    "In the population of Transylvania there are four distinct nationalities: Saxons in the South, and mixed with them the Wallachs, who are the descendants of the Dacians; Magyars in the West, and Szekelys in the East and North. I am going among the latter, who claim to be descended from Attila and the Huns. This may be so, for when the Magyars conquered the country in the eleventh century they found the Huns settled in it. I read that every known superstition in the world is gathered into the horseshoe of the Carpathians, as if it were the centre of some sort of imaginative whirlpool; if so my stay may be very interesting. (Mem., I must ask the Count all about them.)",  # noqa: E501
-    "I did not sleep well, though my bed was comfortable enough, for I had all sorts of queer dreams. There was a dog howling all night under my window, which may have had something to do with it; or it may have been the paprika, for I had to drink up all the water in my carafe, and was still thirsty. Towards morning I slept and was wakened by the continuous knocking at my door, so I guess I must have been sleeping soundly then. I had for breakfast more paprika, and a sort of porridge of maize flour which they said was “mamaliga,” and egg-plant stuffed with forcemeat, a very excellent dish, which they call “impletata.” (Mem., get recipe for this also.) I had to hurry breakfast, for the train started a little before eight, or rather it ought to have done so, for after rushing to the station at 7:30 I had to sit in the carriage for more than an hour before we began to move. It seems to me that the further east you go the more unpunctual are the trains. What ought they to be in China?",  # noqa: E501
-    "All day long we seemed to dawdle through a country which was full of beauty of every kind. Sometimes we saw little towns or castles on the top of steep hills such as we see in old missals; sometimes we ran by rivers and streams which seemed from the wide stony margin on each side of them to be subject to great floods. It takes a lot of water, and running strong, to sweep the outside edge of a river clear. At every station there were groups of people, sometimes crowds, and in all sorts of attire. Some of them were just like the peasants at home or those I saw coming through France and Germany, with short jackets and round hats and home-made trousers; but others were very picturesque. The women looked pretty, except when you got near them, but they were very clumsy about the waist. They had all full white sleeves of some kind or other, and most of them had big belts with a lot of strips of something fluttering from them like the dresses in a ballet, but of course there were petticoats under them. The strangest figures we saw were the Slovaks, who were more barbarian than the rest, with their big cow-boy hats, great baggy dirty-white trousers, white linen shirts, and enormous heavy leather belts, nearly a foot wide, all studded over with brass nails. They wore high boots, with their trousers tucked into them, and had long black hair and heavy black moustaches. They are very picturesque, but do not look prepossessing. On the stage they would be set down at once as some old Oriental band of brigands. They are, however, I am told, very harmless and rather wanting in natural self-assertion.",  # noqa: E501
-    "It was on the dark side of twilight when we got to Bistritz, which is a very interesting old place. Being practically on the frontier—for the Borgo Pass leads from it into Bukovina—it has had a very stormy existence, and it certainly shows marks of it. Fifty years ago a series of great fires took place, which made terrible havoc on five separate occasions. At the very beginning of the seventeenth century it underwent a siege of three weeks and lost 13,000 people, the casualties of war proper being assisted by famine and disease.",  # noqa: E501
-    "Count Dracula had directed me to go to the Golden Krone Hotel, which I found, to my great delight, to be thoroughly old-fashioned, for of course I wanted to see all I could of the ways of the country. I was evidently expected, for when I got near the door I faced a cheery-looking elderly woman in the usual peasant dress—white undergarment with long double apron, front, and back, of coloured stuff fitting almost too tight for modesty. When I came close she bowed and said, “The Herr Englishman?” “Yes,” I said, “Jonathan Harker.” She smiled, and gave some message to an elderly man in white shirt-sleeves, who had followed her to the door. He went, but immediately returned with a letter",  # noqa: E501
-]
-CONTENT_SENTENCES = [
-    s.strip() + "." for s in re.split(r"[.?]\s", "\n".join(CONTENT_PARAGRAPHS))
-]
-CONTENT_WORDS = list(set(re.findall(r"[a-zA-Z]+", "\n".join(CONTENT_PARAGRAPHS))))
-
-USER_NAME_BASES = [
-    "elif",
-    "gunther",
-    "jade",
-    "lilly",
-    "ricardo",
-    "sandy",
-    "simon",
-    "wendy",
-    "zorian",
-]
-TAG_NAME_BASES = [
-    "red",
-    "blue",
-    "violet",
-    "evergreen",
-    "cobalt",
-    "kobold",
-    "mimic",
-    "bugbear",
-    "vorpal_rat",
-    "hyena",
-    "warthog",
-]
+DEFAULT_USER_USERNAMES = ["user1", "user2", "user3"]
+DEFAULT_MOD_USERNAMES = ["mod1", "mod2", "mod3"]
+DEFAULT_USER_GROUP = Group.objects.get(name="Users")
+DEFAULT_MOD_GROUP = Group.objects.get(name="Moderators")
 TAG_CATEGORY_SHORTCODES = [tc.value.shortcode for tc in TagCategory]
 
-
 app = Typer()
+
+
+def delete_recursively(path: Path):
+    for root, dirs, files in path.walk(top_down=False):
+        for file in files:
+            Path(root / file).unlink()
+        for d in dirs:
+            Path(root / d).rmdir()
 
 
 @app.command()
@@ -132,21 +108,42 @@ def main(  # noqa: PLR0913
     and create posts from them. All other data such as Tags, Comments, Collections, and
     Users will be generated randomly with options to adjust the thresholds.
     """
-    default_users = [User(username=name) for name in DEFAULT_USERNAMES]
-    User.objects.bulk_create(default_users, ignore_conflicts=True)
 
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
-        progress.add_task(description="Deleting old data...", total=None)
+        progress.add_task(description="Deleting old DB data...", total=None)
         Tag.objects.all().delete()
         TagAlias.objects.all().delete()
         Post.objects.all().delete()
-        User.objects.exclude(pk__in=(u.pk for u in default_users)).delete()
+        User.objects.exclude(is_staff=True).delete()
         Collection.objects.all().delete()
+
+        progress.add_task(description="Deleting old media files...", total=None)
+        media_root = Path(settings.MEDIA_ROOT)
+        thumbnails_dir = media_root / "thumbnails"
+        delete_recursively(thumbnails_dir)
+        uploads_dir = media_root / "uploads"
+        delete_recursively(uploads_dir)
+
     print("Old data deleted.")
+
+    # Create default users
+    default_users = User.objects.bulk_create(
+        [User(username=name) for name in DEFAULT_USER_USERNAMES]
+    )
+    default_mods = User.objects.bulk_create(
+        [User(username=name) for name in DEFAULT_MOD_USERNAMES]
+    )
+
+    for user in default_users + default_mods:
+        user.save()
+
+    # Apply default groups to default users
+    DEFAULT_USER_GROUP.user_set.set(default_users + default_mods)
+    DEFAULT_MOD_GROUP.user_set.set(default_mods)
 
     create_random_users(max_users)
 
@@ -154,15 +151,15 @@ def main(  # noqa: PLR0913
 
     create_random_tag_aliases(Tag.objects.all())
 
-    media_files = get_media_files_from_disk(Path(media_dir))
+    media_files = get_media_files_from_disk(Path(media_dir), max_files=max_posts)
     create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
 
     create_random_post_collections(Post.objects.all(), max_collections=50)
 
 
-def create_random_users(n: int = 50, suffix_min: int = 1, suffix_max: int = 99999):
+def create_random_users(n: int = 50):
     """Create `n` randomized Users
-    Note each user's password is the same as their username
+    Note each user's password is the same as their username repeated twice
     """
     n = min(n, 10_000)
 
@@ -172,16 +169,21 @@ def create_random_users(n: int = 50, suffix_min: int = 1, suffix_max: int = 9999
         transient=True,
     ) as progress:
         progress.add_task(description="Creating random users...", total=None)
-        random_user_names = {
-            f"{name}_{randint(suffix_min, suffix_max)}"
-            for name in choices(USER_NAME_BASES, k=n)
-        }
-        users = [User(username=name, password=name) for name in random_user_names]
-        User.objects.bulk_create(users, ignore_conflicts=True)
+        random_user_names = fake.words(
+            n, ext_word_list=[fake.user_name() for _ in range(n * 2)], unique=True
+        )
+        users = [
+            User(username=name, password=name + name) for name in random_user_names
+        ]
+        random_users = User.objects.bulk_create(users)
+        for user in random_users:
+            user.save()
+        DEFAULT_USER_GROUP.user_set.add(*random_users)
+
     print(f"Created {len(users)} users.")
 
 
-def create_random_tags(n: int = 500, suffix_min: int = 1, suffix_max: int = 99999):
+def create_random_tags(n: int = 500):
     """Create `n` randomized Tags"""
     n = min(n, 10_000)
 
@@ -191,10 +193,7 @@ def create_random_tags(n: int = 500, suffix_min: int = 1, suffix_max: int = 9999
         transient=True,
     ) as progress:
         progress.add_task(description="Creating random tags...", total=None)
-        random_tag_names = {
-            f"{name}_{randint(suffix_min, suffix_max)}"
-            for name in choices(TAG_NAME_BASES, k=n)
-        }
+        random_tag_names = fake.words(n, unique=True)
         tags = [
             Tag(name=name, category=choice(TAG_CATEGORY_SHORTCODES))
             for name in random_tag_names
@@ -236,8 +235,8 @@ def create_random_post_collections(
     for _ in range(max_collections):
         collection = Collection(
             user=choice(user_options),
-            name=" ".join(choices(CONTENT_WORDS, k=randint(2, 8))),
-            desc=" ".join(choices(CONTENT_WORDS, k=randint(4, 15))),
+            name=fake.sentence(8),
+            desc=fake.sentence(15),
         )
         collections.append(collection)
 
@@ -303,16 +302,15 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         if smt := SupportedMediaTypes.find(m):
             if media_type := SupportedMediaTypes.find(smt.value.get_template()):
                 post = Post(
-                    title=" ".join(choices(CONTENT_WORDS, k=randint(1, 10))),
+                    title=fake.sentence(10),
                     uploader=choice(uploaders),
                     rating_level=choice(RatingLevel.choices())[0],
-                    src_url=choice(CONTENT_WORDS) + ".example.com",
+                    src_url=fake.word() + ".example.com",
                     type=media_type.name,
                 )
 
                 comment_texts = [
-                    " ".join(choices(CONTENT_SENTENCES, k=randint(1, 10)))
-                    for _ in range(randint(0, 10))
+                    " ".join(fake.sentences(4)) for _ in range(randint(0, 10))
                 ]
 
                 comments.extend(
