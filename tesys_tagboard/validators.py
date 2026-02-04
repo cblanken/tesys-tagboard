@@ -1,18 +1,23 @@
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from .enums import RatingLevel
 from .enums import SupportedMediaTypes
 
-validate_md5 = validators.RegexValidator(r"^[0-9A-Z]{32}$")
-validate_phash = validators.RegexValidator(r"^[0-9a-z]{16}$")
-validate_dhash = validators.RegexValidator(r"^[0-9a-z]{16}$")
-validate_tag_name = validators.RegexValidator(r"^[a-z\d\:-_\s]+$")
-validate_tagset_name = validators.RegexValidator(r"^[a-z\d\-_]+$")
+md5_validator = validators.RegexValidator(r"^[0-9A-Z]{32}$")
+phash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
+dhash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
+tag_name_validator = validators.RegexValidator(r"^[a-z\d\:-_\s]+$")
+tagset_name_validator = validators.RegexValidator(r"^[a-z\d\-_]+$")
+username_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^-?[a-zA-Z_]]\Z"),
+    message=_("Enter a valid username."),
+)
 
 
-def validate_tagset(tag_ids: list):
+def tagset_validator(tag_ids: list):
     msg = _("A tagset may only contain positive integers")
     try:
         for tag_id in tag_ids:
@@ -23,18 +28,18 @@ def validate_tagset(tag_ids: list):
         raise ValidationError(msg) from e
 
 
-def validate_media_file_is_supported(file):
+def media_file_supported_validator(file):
     if not SupportedMediaTypes.find(file.content_type):
         msg = f"File with a content type of {file.content_type} is not supported"
         raise ValidationError(msg)
 
 
-def validate_media_file_type_matches_ext(file):
+def media_file_type_matches_ext_validator(file):
     # TODO
     return
 
 
-def validate_rating_level(value):
+def rating_level_validator(value):
     levels = [x.value for x in RatingLevel]
     if value not in levels:
         msg = f"Rating levels must be one of {levels}"

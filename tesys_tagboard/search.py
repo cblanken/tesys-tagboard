@@ -8,14 +8,14 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models import QuerySet
-from django.utils.regex_helper import _lazy_re_compile
-from django.utils.translation import gettext_lazy as _
 from more_itertools import take
 
 from .enums import TagCategory
 from .models import Post
 from .models import Tag
 from .models import TagAlias
+from .validators import tag_name_validator
+from .validators import username_validator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -63,17 +63,6 @@ def tag_alias_autocomplete(
 class TokenType:
     names: list[str]  # token type allowed name and aliases
     param_validator: validators.RegexValidator | None
-
-
-tag_name_validator = validators.RegexValidator(
-    _lazy_re_compile(r"^-?[a-zA-Z_]]\Z"),
-    message=_("Enter a valid tag."),
-)
-
-username_validator = validators.RegexValidator(
-    _lazy_re_compile(r"^-?[a-zA-Z_]]\Z"),
-    message=_("Enter a valid username."),
-)
 
 
 class TokenCategory(Enum):

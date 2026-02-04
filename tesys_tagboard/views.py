@@ -55,9 +55,9 @@ from .models import Video
 from .models import csv_to_tag_ids
 from .search import PostSearch
 from .search import tag_autocomplete
-from .validators import validate_media_file_is_supported
-from .validators import validate_media_file_type_matches_ext
-from .validators import validate_tagset
+from .validators import media_file_supported_validator
+from .validators import media_file_type_matches_ext_validator
+from .validators import tagset_validator
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import AnonymousUser
@@ -237,7 +237,7 @@ def confirm_tagset(request: HtmxHttpRequest):
 
             # Confirm tagset for target tagset_name exists and is valid
             try:
-                validate_tagset(tagset)
+                tagset_validator(tagset)
                 if tagset:
                     tags = Tag.objects.in_tagset(tagset)
                     kwargs = {
@@ -655,8 +655,8 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
         raise ValidationError(msg)
 
     validators = [
-        validate_media_file_is_supported,
-        validate_media_file_type_matches_ext,
+        media_file_supported_validator,
+        media_file_type_matches_ext_validator,
     ]
     for validator in validators:
         validator(file)
@@ -703,7 +703,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
 
         if tagset := form.cleaned_data.get("tagset"):
             try:
-                validate_tagset(tagset)
+                tagset_validator(tagset)
             except ValidationError:
                 return HttpUnprocessableContent("Invalid form data")
 

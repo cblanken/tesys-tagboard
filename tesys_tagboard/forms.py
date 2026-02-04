@@ -10,9 +10,9 @@ from .enums import RatingLevel
 from .models import Collection
 from .models import Tag
 from .models import TagAlias
-from .validators import validate_rating_level
-from .validators import validate_tagset
-from .validators import validate_tagset_name
+from .validators import rating_level_validator
+from .validators import tagset_name_validator
+from .validators import tagset_validator
 
 
 def tagset_to_array(value) -> set[int] | None:
@@ -26,7 +26,7 @@ def tagset_to_array(value) -> set[int] | None:
 
 
 class TagsetField(forms.Field):
-    default_validators = [validate_tagset]
+    default_validators = [tagset_validator]
     """A Field representing a set of Tag IDs"""
 
     def to_python(self, value) -> set[int] | None:
@@ -70,7 +70,7 @@ class UploadMedia(forms.Form):
         choices=RatingLevel.choices,
         initial=RatingLevel.UNRATED,
         required=False,
-        validators=[validate_rating_level],
+        validators=[rating_level_validator],
     )
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
@@ -88,7 +88,7 @@ class PostSearchForm(forms.Form):
 class TagsetForm(forms.Form):
     size = forms.CharField(required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
-    tagset_name = forms.CharField(required=True, validators=[validate_tagset_name])
+    tagset_name = forms.CharField(required=True, validators=[tagset_name_validator])
 
 
 class PostForm(forms.Form):

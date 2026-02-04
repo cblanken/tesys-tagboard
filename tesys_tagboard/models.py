@@ -29,9 +29,9 @@ from .enums import MediaCategory
 from .enums import RatingLevel
 from .enums import SupportedMediaTypes
 from .enums import TagCategory
-from .validators import validate_dhash
-from .validators import validate_md5
-from .validators import validate_phash
+from .validators import dhash_validator
+from .validators import md5_validator
+from .validators import phash_validator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -367,13 +367,13 @@ class Image(models.Model):
     )
 
     """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
+    md5 = models.CharField(validators=[md5_validator])
 
     """Perceptual (DCT) hash"""
-    phash: models.CharField = models.CharField(validators=[validate_phash])
+    phash: models.CharField = models.CharField(validators=[phash_validator])
 
     """Difference hash"""
-    dhash: models.CharField = models.CharField(validators=[validate_dhash])
+    dhash: models.CharField = models.CharField(validators=[dhash_validator])
 
     # TODO: add duplicate detection
     # See https://github.com/JohannesBuchner/imagehash/issues/127 for
@@ -434,7 +434,7 @@ class Video(models.Model):
     file = models.FileField(upload_to=media_upload_path, unique=True)
 
     """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
+    md5 = models.CharField(validators=[md5_validator])
 
     class Meta:
         indexes = [
@@ -463,7 +463,7 @@ class Audio(models.Model):
     file = models.FileField(upload_to=media_upload_path, unique=True)
 
     """MD5 hash"""
-    md5 = models.CharField(validators=[validate_md5])
+    md5 = models.CharField(validators=[md5_validator])
 
     class Meta:
         indexes = [
