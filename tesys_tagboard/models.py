@@ -7,6 +7,7 @@ from io import BytesIO
 from typing import TYPE_CHECKING
 
 import imagehash
+from colorfield.fields import ColorField
 from django.contrib.postgres.indexes import HashIndex
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
@@ -31,7 +32,6 @@ from .enums import SupportedMediaTypes
 from .validators import dhash_validator
 from .validators import md5_validator
 from .validators import phash_validator
-from .validators import rgb_validator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -68,8 +68,8 @@ class TagCategory(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
-    bg = models.CharField(max_length=7, validators=[rgb_validator], default="")
-    fg = models.CharField(max_length=7, validators=[rgb_validator], default="")
+    bg = ColorField(format="hexa", null=True)
+    fg = ColorField(format="hexa", null=True)
 
     class Meta:
         ordering = ["name"]

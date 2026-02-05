@@ -182,6 +182,7 @@ dependencies = [
     "django-allauth[mfa,socialaccount]==65.12.1",
     "django-anymail[mailgun]==13.1",
     "django-browser-reload>=1.21.0",
+    "django-colorfield>=0.14.0",
     "django-components>=0.143.1",
     "django-cors-headers==4.9.0",
     "django-crispy-forms==2.4",

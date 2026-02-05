@@ -2,7 +2,9 @@
   <button tabindex="0"
           {% if actions %}role="button"{% endif %}
           type="button"
-          class="{% if size == "xs" %}btn-xs{% elif size == "sm" %}btn-sm{% elif size == "lg" %}btn-lg{% else %}btn-md{% endif %} px-3 py-1 btn text-tag-content {% if not category %}bg-tag-default{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
+          style="{% if category.bg %}background: {{ category.bg }};
+                 {% endif %} {% if category.fg %}color: {{ category.fg }};{% endif %}"
+          class="{% if size == "xs" %}btn-xs{% elif size == "sm" %}btn-sm{% elif size == "lg" %}btn-lg{% else %}btn-md{% endif %} px-3 py-1 btn text-tag-content {% if not category.name %}bg-tag-default{% elif category.name == "artist" %} bg-tag-artist {% elif category.name == "copyright" %}bg-tag-copyright{% endif %}">
     <div class="inline-flex gap-1 items-center w-fit nowrap">
       {% if alias %}
         {% include "icons/feather.html" with icon="corner-down-right" %}

@@ -23,7 +23,7 @@ class TagComponent(Component):
         if tag is None and alias is None:
             return {}
         size = kwargs.get("size")
-        category = tag.category.name if tag.category is not None else ""
+        category = tag.category
         extra_actions = kwargs.get("actions", [])
         actions = [
             Action("search", "Search for posts with this tag", ""),

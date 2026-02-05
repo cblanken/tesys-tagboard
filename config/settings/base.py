@@ -88,6 +88,7 @@ THIRD_PARTY_APPS = [
     "django_components",
     "django_minify_html",
     "tailwind",
+    "colorfield",
 ]
 
 if SILKY_PYTHON_PROFILER:

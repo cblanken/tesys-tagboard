@@ -40,6 +40,13 @@ class TagCategoryAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "parent", "bg", "fg"]
     search_fields = ["name", "pk"]
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if form:
+            form.base_fields["bg"].required = False
+            form.base_fields["fg"].required = False
+        return form
+
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
