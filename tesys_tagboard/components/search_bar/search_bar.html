@@ -4,14 +4,17 @@
   <label class="flex relative items-center">
     <div class="absolute left-2 z-5">{% include "icons/feather.html" with icon="search" %}</div>
     <input type="search"
-           name="search-bar"
+           name="q"
+           autocorrect="off"
+           spellcheck="false"
+           autocomplete="off"
            class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
            placeholder="Search tags..."
-           hx-get='{% url "autocomplete" %}?q='
-           hx-params="q"
-           hx-trigger="input changed delay:500ms, keyup[key=='Enter']"
-           hx-target="next .result-container"
-           hx-on::config-request="event.detail.path += this.value" />
+           hx-get='{% url "autocomplete" %}'
+           hx-include="next input[name='partial']"
+           hx-trigger="input delay:500ms, keyup[key=='Enter']"
+           hx-target="next .result-container" />
+    <input type="hidden" name="partial" />
   </label>
   <div class="absolute top-full z-50 mt-1 w-full result-container"></div>
 </div>
