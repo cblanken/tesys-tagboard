@@ -273,12 +273,12 @@ class PostSearch:
     any posts NOT uploaded by the user "pablo".
     """
 
-    def __init__(self, query: str, max_tags: int = 20):
+    def __init__(self, query: str, max_tags: int = 20, max_aliases: int = 20):
         self.query = query
         self.tokens: list[NamedToken] = self.parse_query(query)
         self.max_tags = max_tags
+        self.max_aliases = max_aliases
         self.exclude_tags: QuerySet[Tag] | None = None
-
         self.partial: str = ""
         query_split = re.split(r"\s+", self.query)
         if len(query_split) > 0:
@@ -400,6 +400,7 @@ class PostSearch:
         tag_aliases = tag_alias_autocomplete(
             TagAlias.objects.all(), partial, exclude_alias_names=tag_token_names
         )
+        tag_aliases = take(self.max_aliases, tag_aliases)
 
         autocomplete_items = chain(
             (
@@ -427,12 +428,12 @@ class PostSearch:
 
         if show_filters:
             autocomplete_items = chain(
-                autocomplete_items,
                 (
                     AutocompleteItem(category, category.value.name)
                     for category in TokenCategory.__members__.values()
                     if partial in category.value.name
                 ),
+                autocomplete_items,
             )
 
         return autocomplete_items

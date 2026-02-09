@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass
 from itertools import chain
 from pathlib import Path
@@ -619,12 +618,9 @@ def post_search_autocomplete(
         query = request.GET.get("q", "")
         ps = PostSearch(query)
         partial = request.GET.get("partial")
-        if not partial:
-            try:
-                partial = re.split(r"\s", query)[-1]
-            except IndexError:
-                partial = ""
-        items = ps.autocomplete(exclude_tags=request.user.filter_tags.all())
+        items = ps.autocomplete(
+            partial=partial, exclude_tags=request.user.filter_tags.all()
+        )
 
         context = {"items": items}
         return TemplateResponse(request, "posts/search_autocomplete.html", context)
