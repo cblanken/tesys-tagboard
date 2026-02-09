@@ -1,8 +1,12 @@
 import pytest
+from django.core.exceptions import ValidationError
 
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
 from tesys_tagboard.models import TagCategory
+from tesys_tagboard.search import PostSearch
+from tesys_tagboard.search import TokenArgRelation
+from tesys_tagboard.search import TokenCategory
 from tesys_tagboard.search import tag_alias_autocomplete
 from tesys_tagboard.search import tag_autocomplete
 
@@ -89,40 +93,216 @@ class TestTagAliasAutocomplete:
         assert len(aliases.intersection(exclude_aliases)) == 0
 
 
+class TestTokenCategory:
+    def test_select_no_duplicate_names_or_aliases(self):
+        """The TokenCategory enum should not have any ambigious names or aliases"""
+        # TODO: test category select
+
+
+class TestPostAdvancedSearchQueryParsing:
+    def test_parse_empty_query(self):
+        ps = PostSearch("")
+        assert len(ps.tokens) == 0
+
+    def test_parse_single_tag(self):
+        ps = PostSearch("tag1")
+        assert len(ps.tokens) == 1
+        assert ps.tokens[0].name == "tag1"
+        assert ps.tokens[0].category == TokenCategory.TAG
+        assert not ps.tokens[0].negate
+
+    def test_parse_single_negated_tag(self):
+        ps = PostSearch("-tag1")
+        assert len(ps.tokens) == 1
+        assert ps.tokens[0].name == "tag1"
+        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].negate
+
+    def test_parse_single_tag_with_wildcard(self):
+        ps = PostSearch("tag1*")
+        assert len(ps.tokens) == 1
+        assert ps.tokens[0].name == "tag1*"
+        assert ps.tokens[0].category == TokenCategory.TAG
+        assert not ps.tokens[0].negate
+
+    def test_parse_single_negated_tag_with_wildcard(self):
+        ps = PostSearch("-*negated_tag1")
+        assert len(ps.tokens) == 1
+        assert ps.tokens[0].name == "*negated_tag1"
+        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].negate
+
+    def test_parse_multiple_tags(self):
+        ps = PostSearch("tag1 tag2 tag3")
+        assert len(ps.tokens) == 3
+        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
+        for tok in ps.tokens:
+            assert tok.category == TokenCategory.TAG
+            assert not tok.negate
+
+    def test_parse_multiple_negated_tags(self):
+        ps = PostSearch("-tag1 -tag2 -tag3")
+        assert len(ps.tokens) == 3
+        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
+        for tok in ps.tokens:
+            assert tok.category == TokenCategory.TAG
+            assert tok.negate
+
+    def test_parse_negated_and_non_negated_tags(self):
+        ps = PostSearch("tag1 tag2 -tag3")
+        assert len(ps.tokens) == 3
+        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
+
+        assert ps.tokens[0].category == TokenCategory.TAG
+        assert not ps.tokens[0].negate
+
+        assert ps.tokens[1].category == TokenCategory.TAG
+        assert not ps.tokens[1].negate
+
+        # Last tag is negated
+        assert ps.tokens[2].category == TokenCategory.TAG
+        assert ps.tokens[2].negate
+
+    def test_parse_extra_space_between_tokens(self):
+        ps = PostSearch("tag1\t tag2   -tag3")
+        assert len(ps.tokens) == 3
+        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
+        for tok in ps.tokens:
+            assert tok.category == TokenCategory.TAG
+
+    def test_parse_extra_space_start_and_end(self):
+        ps = PostSearch("    -tag1 tag2 -tag3\t ")
+        assert len(ps.tokens) == 3
+        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
+        for tok in ps.tokens:
+            assert tok.category == TokenCategory.TAG
+
+    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    def test_correctly_identify_tag_categories_by_name(
+        self, token_category: TokenCategory
+    ):
+        if token_category.value.name:
+            ps = PostSearch(f"{token_category.value.name}=100")
+            assert ps.tokens[0].category == token_category
+
+    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    def test_correctly_identify_tag_categories_by_alias(
+        self, token_category: TokenCategory
+    ):
+        for alias in token_category.value.aliases:
+            ps = PostSearch(f"{alias}=100")
+            assert ps.tokens[0].category == token_category
+
+    @pytest.mark.parametrize("arg_relation", list(TokenArgRelation))
+    def test_parse_filter_token_with_multiple_arg_relations(self, arg_relation):
+        arg_relation_char = arg_relation.value
+        query = f"id{arg_relation_char}100{arg_relation_char}200"
+        with pytest.raises(ValidationError):
+            PostSearch(query)
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchAutocomplete:
+    pass
+
+
 @pytest.mark.django_db
 class TestPostAdvancedSearch:
     def test_empty_query(self):
-        # TODO
         pass
 
-    def test_query_only_tags(self):
-        # TODO
+    def test_only_include_tags(self):
         pass
 
-    def test_exclude_tags(self):
-        # TODO
+    def test_include_tag_with_wildcard(self):
         pass
 
-    def test_comment_count(self):
-        # TODO
+    def test_only_exclude_tags(self):
+        pass
+
+    def test_exclude_tag_with_wildcard(self):
+        pass
+
+    def test_include_and_exclude_tags(self):
+        pass
+
+    def test_include_tag_alias(self):
+        pass
+
+    def test_include_tag_alias_with_wildcard(self):
+        pass
+
+    def test_exclude_tag_alias_with_wildcard(self):
         pass
 
     def test_commented_by_user(self):
-        # TODO
         pass
 
-    def test_favorited_once(self):
-        # TODO
+    def test_favorited_equal(self):
         pass
 
-    def test_favorited_more_than_once(self):
-        # TODO
+    def test_favorited_greater_than(self):
+        pass
+
+    def test_favorited_less_than(self):
         pass
 
     def test_favorited_by_user(self):
-        # TODO
         pass
 
     def test_filetype_extension(self):
-        # TODO
+        pass
+
+    def test_mimetype(self):
+        pass
+
+    def test_tag_count_equal(self):
+        pass
+
+    def test_tag_count_greater_than(self):
+        pass
+
+    def test_height_equal(self):
+        pass
+
+    def test_height_greater_than(self):
+        pass
+
+    def test_height_less_than(self):
+        pass
+
+    def test_weight_equal(self):
+        pass
+
+    def test_weight_greater_than(self):
+        pass
+
+    def test_weight_less_than(self):
+        pass
+
+    def test_rating_label_equal(self):
+        pass
+
+    def test_rating_label_greater_than(self):
+        pass
+
+    def test_rating_label_less_than(self):
+        pass
+
+    def test_rating_num_equal(self):
+        pass
+
+    def test_rating_num_greater_than(self):
+        pass
+
+    def test_rating_num_less_than(self):
+        pass
+
+    def test_src_url(self):
+        pass
+
+    def test_src_url_with_wildcard(self):
+        pass
+
+    def test_uploaded_by(self):
         pass
