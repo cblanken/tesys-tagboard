@@ -616,13 +616,18 @@ def post_search_autocomplete(
 ) -> TemplateResponse | HttpResponse:
     if request.method == "GET" and request.htmx:
         query = request.GET.get("q", "")
-        ps = PostSearch(query)
-        partial = request.GET.get("partial")
-        items = ps.autocomplete(
-            partial=partial, exclude_tags=request.user.filter_tags.all()
-        )
+        context = {}
+        try:
+            ps = PostSearch(query)
+        except ValidationError as err:
+            context |= {"error": err.message}
+        else:
+            partial = request.GET.get("partial")
+            items = ps.autocomplete(
+                partial=partial, exclude_tags=request.user.filter_tags.all()
+            )
+            context |= {"items": items}
 
-        context = {"items": items}
         return TemplateResponse(request, "posts/search_autocomplete.html", context)
 
     return HttpResponseNotAllowed(["GET"])

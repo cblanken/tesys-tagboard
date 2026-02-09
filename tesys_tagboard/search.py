@@ -285,7 +285,7 @@ class PostSearch:
             self.partial = query_split[-1]
 
     @staticmethod
-    def parse_query(query: str) -> list[NamedToken]:
+    def parse_query(query: str) -> list[NamedToken]:  # noqa: C901, PLR0912
         """Parses a post search query string into named tokens
 
         Arguments:
@@ -308,7 +308,11 @@ class PostSearch:
             # Parse named tokens and simple tags
             token_name, *rest = filter_split_pattern.split(token, maxsplit=1)
 
-            negate: bool = token_name[0] == "-"
+            try:
+                negate: bool = token_name[0] == "-"
+            except IndexError:
+                negate = False
+
             if negate:
                 token_name = token_name[1:]
             if len(rest) == 0:
@@ -322,14 +326,20 @@ class PostSearch:
                 token_arg = rest[1]
 
                 if filter_split_pattern.search(token_arg):
-                    msg = "Search query tokens may only have a single relation operator"
+                    msg = "Search query filters may only have one operator"
                     raise ValidationError(msg)
                 try:
                     # NamedToken filter with an argument
                     token_category = TokenCategory.select(token_name)
                 except SearchTokenNameError as err:
-                    msg = f'The token name: "{token_name}" is not a valid filter'
+                    msg = f'The name "{token_name}" is not a valid filter'
                     raise ValidationError(msg) from err
+                else:
+                    if arg_relation not in [
+                        x.value for x in token_category.value.allowed_arg_relations
+                    ]:
+                        msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                        raise ValidationError(msg)
 
                 named_token = NamedToken(
                     token_category,
@@ -340,7 +350,7 @@ class PostSearch:
                 )
             else:
                 # Invalid query
-                msg = f'The query token "{token}" is invalid.'
+                msg = f'The query token "{token}" is invalid'
                 raise ValidationError(msg)
 
             named_token.category.is_valid()
