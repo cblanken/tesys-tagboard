@@ -7,8 +7,8 @@
            name="search-bar"
            class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
            placeholder="Search tags..."
-           hx-get='{% url "autocomplete" %}?partial='
-           hx-params="partial"
+           hx-get='{% url "autocomplete" %}?q='
+           hx-params="q"
            hx-trigger="input changed delay:500ms, keyup[key=='Enter']"
            hx-target="next .result-container"
            hx-on::config-request="event.detail.path += this.value" />
