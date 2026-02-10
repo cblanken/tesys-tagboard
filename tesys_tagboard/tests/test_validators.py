@@ -32,7 +32,8 @@ class TestTagName:
         tag_name_validator("category:sub_category:tag_name")
 
     def test_name_with_spaces(self):
-        tag_name_validator("tag name here")
+        with pytest.raises(ValidationError):
+            tag_name_validator("tag name here")
 
     def test_name_has_asterisks(self):
         with pytest.raises(ValidationError):

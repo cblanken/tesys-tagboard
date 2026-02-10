@@ -32,6 +32,7 @@ from .enums import SupportedMediaTypes
 from .validators import dhash_validator
 from .validators import md5_validator
 from .validators import phash_validator
+from .validators import tag_name_validator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -92,7 +93,7 @@ class Tag(models.Model):
         rating_level: PositiveSmallIntegerField
     """
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
     category = models.ForeignKey(TagCategory, null=True, on_delete=models.CASCADE)
     description = models.TextField(max_length=255, blank=True, default="")
     post_count = models.PositiveIntegerField(default=0)
@@ -118,7 +119,7 @@ class Tag(models.Model):
 class TagAlias(models.Model):
     """Aliases for Tags"""
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:

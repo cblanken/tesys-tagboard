@@ -36,7 +36,7 @@ class TagCategoryFactory(DjangoModelFactory[TagCategory]):
 
 
 class TagFactory(DjangoModelFactory[Tag]):
-    name = Faker("name")
+    name = Faker("word")
     category = None
     rating_level = Faker("enum", enum_cls=RatingLevel)
 
@@ -46,7 +46,7 @@ class TagFactory(DjangoModelFactory[Tag]):
 
 
 class TagAliasFactory(DjangoModelFactory[TagAlias]):
-    name = Faker("name")
+    name = Faker("word")
     tag = SubFactory(TagFactory)
 
     class Meta:

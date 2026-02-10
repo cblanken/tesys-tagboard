@@ -16,22 +16,22 @@ class TestTagAutocomplete:
     def test_autocomplete_included_by_name_partial(self, db):
         tags = tag_autocomplete(Tag.objects.all(), "blue")
         tag_names = [tag.name for tag in tags]
-        assert "blue jeans" in tag_names
+        assert "blue-jeans" in tag_names
         assert "blue" in tag_names
         assert "blue-gray" in tag_names
         assert "blueberry" in tag_names
-        assert "red vs. blue" in tag_names
-        assert "sky blue" in tag_names
+        assert "red_vs._blue" in tag_names
+        assert "sky-blue" in tag_names
         assert tags.count() == 6
 
     def test_autocomplete_excluded_by_name_partial(self, db):
         tags = tag_autocomplete(Tag.objects.all(), exclude_partial="blue")
         tag_names = [tag.name for tag in tags]
-        assert "blue jeans" not in tag_names
+        assert "blue-jeans" not in tag_names
         assert "blue" not in tag_names
         assert "blue-gray" not in tag_names
         assert "blueberry" not in tag_names
-        assert "sky blue" not in tag_names
+        assert "sky-blue" not in tag_names
 
     def test_autocomplete_excluded_by_tag_name(self, db):
         tags = tag_autocomplete(
@@ -41,9 +41,9 @@ class TestTagAutocomplete:
         assert "violet" not in tag_names
         assert "white" not in tag_names
         assert "yellow" not in tag_names
-        assert "white rapids" in tag_names
-        assert "yellow flowers" in tag_names
-        assert "violet hyacinth" in tag_names
+        assert "white-rapids" in tag_names
+        assert "yellow-flowers" in tag_names
+        assert "violet-hyacinth" in tag_names
 
     def test_autocomplete_excluded_by_tag(self, db):
         copyright_category = TagCategory.objects.get(name="copyright")
@@ -60,19 +60,19 @@ class TestTagAliasAutocomplete:
         assert "bluejeans" in alias_names
         assert "gray-blue" in alias_names
         assert "blue-berry" in alias_names
-        assert "red v. blue" in alias_names
-        assert "red vs blue" in alias_names
-        assert "red x blue" in alias_names
+        assert "red_v._blue" in alias_names
+        assert "red_vs_blue" in alias_names
+        assert "red_x_blue" in alias_names
         assert aliases.count() == 6
 
     def test_autocomplete_excluded_by_name_partial(self, db):
         aliases = tag_alias_autocomplete(TagAlias.objects.all(), exclude_partial="red")
         alias_names = [alias.name for alias in aliases]
-        assert "red v. blue" not in alias_names
-        assert "red vs blue" not in alias_names
-        assert "red x blue" not in alias_names
-        assert "r v. b" in alias_names
-        assert "r vs. b" in alias_names
+        assert "red_v._blue" not in alias_names
+        assert "red_vs_blue" not in alias_names
+        assert "red_x_blue" not in alias_names
+        assert "r_v._b" in alias_names
+        assert "r_vs._b" in alias_names
 
     def test_autocomplete_excluded_by_alias_name(self, db):
         aliases = tag_alias_autocomplete(
@@ -203,7 +203,68 @@ class TestPostAdvancedSearchQueryParsing:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchAutocomplete:
-    pass
+    def test_exclude_already_mentioned_tags(self):
+        ps = PostSearch("amber amaranth")
+        items = ps.autocomplete("am")
+        item_names = [x.name for x in items]
+        assert "amaranth-pink" in item_names
+        assert "amaranth-purple" in item_names
+        assert "amaranth" not in item_names
+        assert "amber" not in item_names
+
+    def test_include_tags_and_aliases(self):
+        ps = PostSearch("red")
+        items = list(ps.autocomplete())
+
+        # Tags
+        tag_names = [
+            item.name for item in items if item.token_category == TokenCategory.TAG
+        ]
+        assert "red" in tag_names
+        assert "red_vs._blue" in tag_names
+
+        # Aliases
+        alias_names = [
+            item.alias
+            for item in items
+            if item.token_category == TokenCategory.TAG_ALIAS
+        ]
+        assert "red_v._blue" in alias_names
+        assert "red_vs_blue" in alias_names
+        assert "red_x_blue" in alias_names
+
+    def test_exclude_negated_mentioned_tags(self):
+        ps = PostSearch("-green")
+        items = ps.autocomplete("gree")
+        item_names = [x.name for x in items]
+        assert "evergreen" in item_names
+        assert "lime-green" in item_names
+        assert "green" not in item_names
+
+    def test_yes_filters(self):
+        ps = PostSearch("")
+        items = list(ps.autocomplete(show_filters=True))
+        item_categories = {item.token_category for item in items}
+        for tc in TokenCategory:
+            assert tc in item_categories
+
+    def test_no_filters(self):
+        ps = PostSearch("")
+        items = ps.autocomplete(show_filters=False)
+        item_categories = {item.token_category for item in items}
+        item_categories.remove(TokenCategory.TAG)
+        item_categories.remove(TokenCategory.TAG_ALIAS)
+        for tc in TokenCategory:
+            assert tc not in item_categories
+
+    def test_complete_with_leading_negation(self):
+        ps = PostSearch("blue -blu")
+        items = ps.autocomplete("-blu")
+        item_names = [x.name for x in items]
+        assert "blue-jeans" in item_names
+        assert "blue-gray" in item_names
+        assert "blueberry" in item_names
+        assert "sky-blue" in item_names
 
 
 @pytest.mark.django_db

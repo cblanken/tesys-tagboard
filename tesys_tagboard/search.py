@@ -400,9 +400,23 @@ class PostSearch:
         if partial is None:
             partial = self.partial
 
-        tag_token_names = [
-            tok.name for tok in self.tokens if tok.category is TokenCategory.TAG
-        ]
+        # Trim "-" from negated partial
+        if len(partial) > 0 and partial[0] == "-":
+            partial = partial[1:]
+
+        # Don't yield autocompletion for duplicate filter or tag
+        if len(list(filter(lambda tok: tok.name == partial, self.tokens))) > 1:
+            tag_token_names = [
+                tok.name for tok in self.tokens if tok.category is TokenCategory.TAG
+            ]
+        else:
+            tag_token_names = [
+                tok.name
+                for tok in self.tokens
+                # Yield autocomplete item if name matches partial exactly
+                if tok.category is TokenCategory.TAG and tok.name != partial
+            ]
+
         tags = tag_autocomplete(
             Tag.objects.all(), partial, exclude_tag_names=tag_token_names
         )

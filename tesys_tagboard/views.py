@@ -363,9 +363,8 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     if create_tag_form.is_valid():
         create_tag_form.save()
     else:
-        msg = "The tag inputs were invalid."
+        msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
         messages.add_message(request, messages.WARNING, msg)
-        return HttpUnprocessableContent("Invalid form data")
 
     return redirect(reverse("tags"))
 
