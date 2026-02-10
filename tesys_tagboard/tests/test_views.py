@@ -595,6 +595,23 @@ class TestPostsView:
             client.get(self.url)
 
 
+@pytest.mark.django_db
+class TestPostsAutocomplete:
+    url = reverse("autocomplete")
+
+    def test_autocomplete_as_anonymous_user(self, client):
+        data = {"query": "blu"}
+        response = client.get(self.url, data)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_autocomplete_as_known_user(self, client):
+        user = UserFactory.create()
+        client.force_login(user)
+        data = {"query": "blu"}
+        response = client.get(self.url, data)
+        assert response.status_code == HTTPStatus.OK
+
+
 def get_uploaded_test_media_file(
     filename: str, ext: str, *, cat: MediaCategory = MediaCategory.IMAGE
 ):

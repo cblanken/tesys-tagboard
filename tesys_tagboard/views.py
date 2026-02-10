@@ -613,7 +613,7 @@ def delete_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def post_search_autocomplete(
     request: HtmxHttpRequest,
 ) -> TemplateResponse | HttpResponse:
-    if request.method == "GET" and request.htmx:
+    if request.method == "GET":
         query = request.GET.get("q", "")
         context = {}
         try:
@@ -622,9 +622,12 @@ def post_search_autocomplete(
             context |= {"error": err.message}
         else:
             partial = request.GET.get("partial")
-            items = ps.autocomplete(
-                partial=partial, exclude_tags=request.user.filter_tags.all()
-            )
+            if request.user.is_authenticated:
+                items = ps.autocomplete(
+                    partial=partial, exclude_tags=request.user.filter_tags.all()
+                )
+            else:
+                items = ps.autocomplete(partial=partial)
             context |= {"items": items}
 
         return TemplateResponse(request, "posts/search_autocomplete.html", context)
