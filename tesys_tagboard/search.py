@@ -170,7 +170,7 @@ class TokenCategory(Enum):
         "comment_count",
         "The number of comments on a Post. Accepts equality comparison operators =, <, >, <=, ) >=, and == which is equivalent to =.",  # noqa: E501
         ("cc",),
-        validators.integer_validator,
+        positive_int_validator,
     )
 
     FAV = WildcardSearchToken(
@@ -406,7 +406,7 @@ class PostSearch:
 
         return parsed_tokens
 
-    def get_search_expr(self) -> Q | None:
+    def get_search_expr(self) -> Q | None:  # noqa: C901, PLR0912
         """Builds a Post filter expression based on the provided `tokens`
 
         Note: tokens are validated when parsing the query string, so
@@ -436,8 +436,18 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COMMENT_BY:
-                    token_expr = Q(pk=token.arg)
+                case TokenCategory.COMMENT_COUNT:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(comment_count__lt=token.arg)
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(comment_count=token.arg)
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(comment_count__gt=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 
@@ -447,6 +457,15 @@ class PostSearch:
             search_filter_expr = search_filter_expr & token_expr
 
         return search_filter_expr
+
+    def get_posts(self) -> QuerySet[Post]:
+        token_categories = [x.category for x in self.tokens]
+        posts = Post.objects.all()
+        if TokenCategory.COMMENT_COUNT in token_categories:
+            posts = posts.annotate_comment_count()
+        if search_expr := self.get_search_expr():
+            return posts.filter(search_expr)
+        return Post.objects.all()
 
     def autocomplete(
         self,
@@ -521,8 +540,3 @@ class PostSearch:
             )
 
         return autocomplete_items
-
-    def get_posts(self) -> QuerySet[Post]:
-        if search_expr := self.get_search_expr():
-            return Post.objects.filter(search_expr)
-        return Post.objects.all()

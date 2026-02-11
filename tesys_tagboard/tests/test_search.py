@@ -13,6 +13,7 @@ from tesys_tagboard.search import TokenCategory
 from tesys_tagboard.search import tag_alias_autocomplete
 from tesys_tagboard.search import tag_autocomplete
 
+from .factories import CommentFactory
 from .factories import PostFactory
 from .factories import TagFactory
 
@@ -368,6 +369,61 @@ class TestPostAdvancedSearchID:
         post = PostFactory.create()
         with pytest.raises(ValidationError):
             PostSearch(f"id=-{post.pk}")
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchCommentCount:
+    def test_comment_count_equal(self):
+        post1 = PostFactory.create()
+        post2 = PostFactory.create()
+        post3 = PostFactory.create()
+
+        comment_count = 10
+        CommentFactory.create_batch(comment_count, post=post3)
+
+        ps = PostSearch(f"comment_count={comment_count}")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk in post_ids
+
+    def test_comment_count_less_than(self):
+        post1 = PostFactory.create()
+        post2 = PostFactory.create()
+        post3 = PostFactory.create()
+        CommentFactory.create_batch(5, post=post2)
+        CommentFactory.create_batch(10, post=post3)
+
+        ps = PostSearch("comment_count<10")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk not in post_ids
+
+    def test_comment_count_greater_than(self):
+        post1 = PostFactory.create()
+        post2 = PostFactory.create()
+        post3 = PostFactory.create()
+        CommentFactory.create_batch(1, post=post1)
+        CommentFactory.create_batch(5, post=post2)
+        CommentFactory.create_batch(10, post=post3)
+
+        ps = PostSearch("comment_count>1")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk not in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk in post_ids
+
+    def test_negative_arg(self):
+        PostFactory.create()
+        with pytest.raises(ValidationError):
+            PostSearch("comment_count>-5")
 
 
 @pytest.mark.django_db

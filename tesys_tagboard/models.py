@@ -299,6 +299,9 @@ class PostQuerySet(models.QuerySet):
 
         return filter_expr
 
+    def annotate_comment_count(self):
+        return self.annotate(comment_count=models.Count("comment"))
+
 
 class Post(models.Model):
     """Posts made by users with attached media"""
