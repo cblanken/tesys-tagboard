@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
 from itertools import chain
 from typing import TYPE_CHECKING
@@ -14,6 +15,7 @@ from .models import Post
 from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
+from .validators import positive_int_validator
 from .validators import tag_name_validator
 from .validators import username_validator
 
@@ -25,6 +27,18 @@ class SearchTokenNameError(Exception):
         *args,
         **kwargs,
     ):
+        super().__init__(msg, *args, **kwargs)
+
+
+class UnsupportedSearchOperatorError(Exception):
+    def __init__(
+        self,
+        operator: str,
+        token: NamedToken,
+        *args,
+        **kwargs,
+    ):
+        msg = f'The provided search operator: "{operator}" is not supported for the token: "{token}"'  # noqa: E501
         super().__init__(msg, *args, **kwargs)
 
 
@@ -79,29 +93,47 @@ class TokenArgRelation(Enum):
 
 
 @dataclass
-class TokenType:
+class SearchTokenBase:
+    """A base class for modeling search tokens"""
+
+    name: str
+    desc: str
+    aliases: tuple[str, ...]
+    arg_validator: validators.RegexValidator
+    allow_wildcard: bool
+    allowed_arg_relations: tuple[TokenArgRelation, ...]
+
+
+class SimpleSearchToken(SearchTokenBase):
+    """A dataclass for simple search tokens accepting just the equal (=) operator
+    and no wildcards"""
+
     name: str
     aliases: tuple[str, ...] = ()
-    arg_validator: validators.RegexValidator | None = None
+    arg_validator: validators.RegexValidator
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
-    desc: str = ""
 
 
-class ComparisonTokenType(TokenType):
-    """A TokenType that accepts comparison arguments (>, <, and =)"""
+@dataclass
+class ComparisonSearchToken(SearchTokenBase):
+    """A dataclass for search tokens that allow the following comparison operations
+    of the token argument (>, <, and =)"""
 
-    allowed_arg_relations = (
+    allow_wildcard: bool = False
+    allowed_arg_relations: tuple[TokenArgRelation, ...] = (
         TokenArgRelation.EQUAL,
         TokenArgRelation.LESS_THAN,
         TokenArgRelation.GREATER_THAN,
     )
 
 
-class WildcardTokenType(TokenType):
-    """A TokenType that accepts wildcards (*) in it's argument"""
+@dataclass
+class WildcardSearchToken(SearchTokenBase):
+    """A dataclass for search tokens that accepts wildcards (*) in its token argument"""
 
-    allow_wildcard = True
+    allow_wildcard: bool = True
+    allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
 
 
 class TokenCategory(Enum):
@@ -111,90 +143,90 @@ class TokenCategory(Enum):
     Tags take precendence when searching.
     """
 
-    TAG = WildcardTokenType(
+    TAG = WildcardSearchToken(
         "",
+        "The default (un-named) token. Used for searching tags.",
         (),
         tag_name_validator,
-        desc="The default (un-named) token. Used for searching tags.",
     )
 
-    ID = TokenType("id", (), validators.integer_validator, desc="The ID of a Post")
+    ID = ComparisonSearchToken("id", "The ID of a Post", (), positive_int_validator)
 
-    TAG_ALIAS = WildcardTokenType(
+    TAG_ALIAS = WildcardSearchToken(
         "alias",
+        "The name of a TagAlias. Allows wildcards.",
         ("tag_alias",),
         tag_name_validator,
-        desc="The name of a TagAlias. Allows wildcards.",
     )
 
-    COMMENT_BY = WildcardTokenType(
+    COMMENT_BY = WildcardSearchToken(
         "comment_by",
+        "The username of a user",
         ("comment", "cb"),
         username_validator,
-        desc="The username of a user",
     )
 
-    COMMENT_COUNT = ComparisonTokenType(
+    COMMENT_COUNT = ComparisonSearchToken(
         "comment_count",
+        "The number of comments on a Post. Accepts equality comparison operators =, <, >, <=, ) >=, and == which is equivalent to =.",  # noqa: E501
         ("cc",),
         validators.integer_validator,
-        desc="The number of comments on a Post. Accepts equality comparison operators =, <, >, <=, ) >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    FAV = WildcardTokenType(
+    FAV = WildcardSearchToken(
         "favorited_by",
+        "The username of a user who has favorited a Post",
         ("fav", "f"),
         username_validator,
-        desc="The username of a user who has favorited a Post",
     )
 
-    FAV_COUNT = ComparisonTokenType(
+    FAV_COUNT = ComparisonSearchToken(
         "favorite_count",
+        "The number of favorites received by a Post. Accepts equality comparison operators =,) <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
         ("fav_count", "fc"),
         validators.integer_validator,
-        desc="The number of favorites received by a Post. Accepts equality comparison operators =,) <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    HEIGHT = ComparisonTokenType(
+    HEIGHT = ComparisonSearchToken(
         "height",
+        "The height of a Post (only applies to Images and Videos. Accepts equality comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
         ("h",),
         validators.integer_validator,
-        desc="The height of a Post (only applies to Images and Videos. Accepts equality comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    WIDTH = ComparisonTokenType(
+    WIDTH = ComparisonSearchToken(
         "width",
+        "The width of a Post (only applies to Images and Videos. Accepts equa) lity comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
         ("w",),
         validators.integer_validator,
-        desc="The width of a Post (only applies to Images and Videos. Accepts equa) lity comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    RATING = ComparisonTokenType(
+    RATING = ComparisonSearchToken(
         "rating",
+        "The rating level of a Post. Accepts equality comparison operators =, <, >, <=) , >=, and == which is equivalent to =.",  # noqa: E501
         ("rate", "r"),
         validators.integer_validator,
-        desc="The rating level of a Post. Accepts equality comparison operators =, <, >, <=) , >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    RATING_NUM = ComparisonTokenType(
+    RATING_NUM = ComparisonSearchToken(
         "rating_num",
+        "The rating level of a Post. Accepts equality comparison operators =, <, >,) <=, >=, and == which is equivalent to =.",  # noqa: E501
         (),
         validators.integer_validator,
-        desc="The rating level of a Post. Accepts equality comparison operators =, <, >,) <=, >=, and == which is equivalent to =.",  # noqa: E501
     )
 
-    SOURCE = WildcardTokenType(
+    SOURCE = WildcardSearchToken(
         "source",
+        "The source url of a Post. Allows wildcards.",
         ("src",),
         validators.URLValidator(),
-        desc="The source url of a Post. Allows wildcards.",
     )
 
-    UPLOADER = WildcardTokenType(
+    UPLOADER = WildcardSearchToken(
         "uploaded_by",
+        "The username of the uploader of a Post. Allows wildcards",
         ("up",),
         username_validator,
-        desc="The username of the uploader of a Post. Allows wildcards",
     )
 
     @classmethod
@@ -209,14 +241,6 @@ class TokenCategory(Enum):
 
         raise SearchTokenNameError
 
-    def is_valid(self) -> bool:
-        if validator := self.value.arg_validator:
-            try:
-                validator(self.value)
-            except ValidationError:
-                return False
-        return True
-
 
 @dataclass
 class NamedToken:
@@ -226,16 +250,33 @@ class NamedToken:
         category: TokenCategory
         name: str, the name of a tag or filter category
         arg: str,  an argument value for filter tokens
-        arg_relation: str, a character defining the relationship between the argument
+        arg_relation_str: str, a character defining the relationship between the arg
             and its value e.g. an exact match (=), less than (<), or greater than (>).
+        arg_relation: TokenArgRelation, the parsed version of `arg_relation_str` which
+            is used for matching against an allowed set of search operators
         negate: bool, Posts matching this token should NOT be returned
     """
 
     category: TokenCategory
     name: str
     arg: str = ""
-    arg_relation: str = ""
+    arg_relation_str: str = ""
+    arg_relation: TokenArgRelation | None = field(init=False)
     negate: bool = False
+
+    def __post_init__(self):
+        self.arg_relation = (
+            TokenArgRelation(self.arg_relation_str) if self.arg_relation_str else None
+        )
+
+    def is_arg_valid(self):
+        """Checks the validity of a Token's argument (arg) value
+
+        Raises: ValidationError
+        """
+        validator = self.category.value.arg_validator
+        if self.arg:
+            validator(self.arg)
 
 
 @dataclass
@@ -273,12 +314,19 @@ class PostSearch:
     any posts NOT uploaded by the user "pablo".
     """
 
-    def __init__(self, query: str, max_tags: int = 20, max_aliases: int = 20):
+    def __init__(
+        self,
+        query: str,
+        *,
+        exclude_tags: QuerySet[Tag] | None = None,
+        max_tags: int = 20,
+        max_aliases: int = 20,
+    ):
         self.query = query
         self.tokens: list[NamedToken] = self.parse_query(query)
         self.max_tags = max_tags
         self.max_aliases = max_aliases
-        self.exclude_tags: QuerySet[Tag] | None = None
+        self.exclude_tags = exclude_tags
         self.partial: str = ""
         query_split = re.split(r"\s+", self.query)
         if len(query_split) > 0:
@@ -345,7 +393,7 @@ class PostSearch:
                     token_category,
                     name=token_name,
                     arg=token_arg,
-                    arg_relation=arg_relation,
+                    arg_relation_str=arg_relation,
                     negate=negate,
                 )
             else:
@@ -353,12 +401,12 @@ class PostSearch:
                 msg = f'The query token "{token}" is invalid'
                 raise ValidationError(msg)
 
-            named_token.category.is_valid()
+            named_token.is_arg_valid()
             parsed_tokens.append(named_token)
 
         return parsed_tokens
 
-    def get_search_expr(self) -> Q:
+    def get_search_expr(self) -> Q | None:
         """Builds a Post filter expression based on the provided `tokens`
 
         Note: tokens are validated when parsing the query string, so
@@ -367,21 +415,33 @@ class PostSearch:
         Args:
             tokens: parsed tokens from a query string
         """
-        search_filter_expr = ~Q(tags__in=self.exclude_tags)
+        if self.exclude_tags is not None:
+            search_filter_expr = ~Q(tags__in=self.exclude_tags)
+        else:
+            search_filter_expr = Q()
         for token in self.tokens:
+            token.is_arg_valid()
             match token.category:
                 case TokenCategory.TAG:
-                    token_expr = Q(tags__in=[token.name])
+                    token_expr = Q(tags__name=token.name)
                 case TokenCategory.ID:
-                    token_expr = Q(pk=token.arg)
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(pk__lt=token.arg)
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(pk=token.arg)
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(pk__gt=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case TokenCategory.COMMENT_BY:
                     token_expr = Q(pk=token.arg)
-
                 case _:
-                    token_expr = None
                     continue
 
-            if token.name:
+            if token.negate:
                 token_expr = ~token_expr
 
             search_filter_expr = search_filter_expr & token_expr
@@ -462,6 +522,7 @@ class PostSearch:
 
         return autocomplete_items
 
-    def get_posts(self):
-        search_expr = self.get_search_expr()
-        return Post.objects.filter(search_expr)
+    def get_posts(self) -> QuerySet[Post]:
+        if search_expr := self.get_search_expr():
+            return Post.objects.filter(search_expr)
+        return Post.objects.all()

@@ -287,9 +287,9 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     tags: QuerySet[Tag] | None = None
 
     if request.GET:
-        if tag := request.GET.get("tag"):
-            tags = Tag.objects.in_tagset([tag])
-            posts = posts.has_tags(tags)
+        if q := request.GET.get("q"):
+            ps = PostSearch(q)
+            posts = ps.get_posts()
 
     elif request.POST:
         data: dict[str, str | list[Any] | None] = {

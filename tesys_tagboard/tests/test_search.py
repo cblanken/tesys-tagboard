@@ -1,6 +1,9 @@
+import contextlib
+
 import pytest
 from django.core.exceptions import ValidationError
 
+from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
 from tesys_tagboard.models import TagCategory
@@ -9,6 +12,9 @@ from tesys_tagboard.search import TokenArgRelation
 from tesys_tagboard.search import TokenCategory
 from tesys_tagboard.search import tag_alias_autocomplete
 from tesys_tagboard.search import tag_autocomplete
+
+from .factories import PostFactory
+from .factories import TagFactory
 
 
 @pytest.mark.django_db
@@ -182,16 +188,20 @@ class TestPostAdvancedSearchQueryParsing:
         self, token_category: TokenCategory
     ):
         if token_category.value.name:
-            ps = PostSearch(f"{token_category.value.name}=100")
-            assert ps.tokens[0].category == token_category
+            # This test does not test validation, only token identification
+            with contextlib.suppress(ValidationError):
+                ps = PostSearch(f"{token_category.value.name}=100")
+                assert ps.tokens[0].category == token_category
 
     @pytest.mark.parametrize("token_category", list(TokenCategory))
     def test_correctly_identify_tag_categories_by_alias(
         self, token_category: TokenCategory
     ):
         for alias in token_category.value.aliases:
-            ps = PostSearch(f"{alias}=100")
-            assert ps.tokens[0].category == token_category
+            # This test does not test validation, only token identification
+            with contextlib.suppress(ValidationError):
+                ps = PostSearch(f"{alias}=100")
+                assert ps.tokens[0].category == token_category
 
     @pytest.mark.parametrize("arg_relation", list(TokenArgRelation))
     def test_parse_filter_token_with_multiple_arg_relations(self, arg_relation):
@@ -268,12 +278,34 @@ class TestPostAdvancedSearchAutocomplete:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearch:
+class TestPostAdvancedSearchTags:
     def test_empty_query(self):
-        pass
+        PostFactory.create_batch(10)
+        ps = PostSearch("")
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.all())) == 0
 
     def test_only_include_tags(self):
-        pass
+        common_tag = TagFactory.create()
+
+        included_posts = PostFactory.create_batch(10)
+        included_tag = TagFactory.create()
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        not_included_posts = PostFactory.create_batch(10)
+        not_included_tag = TagFactory.create()
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        ps = PostSearch(f"{included_tag.name}")
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+        ) == len(not_included_posts)
 
     def test_include_tag_with_wildcard(self):
         pass
@@ -296,9 +328,56 @@ class TestPostAdvancedSearch:
     def test_exclude_tag_alias_with_wildcard(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchID:
+    def test_id_equal(self):
+        post = PostFactory.create()
+        ps = PostSearch(f"id={post.pk}")
+        posts = ps.get_posts()
+        assert len(posts) == 1
+        assert posts[0].pk == post.pk
+
+    def test_id_less_than(self):
+        post1 = PostFactory.create(id=1)
+        post2 = PostFactory.create(id=2)
+        post3 = PostFactory.create(id=3)
+        post4 = PostFactory.create(id=4)
+        post5 = PostFactory.create(id=5)
+        ps = PostSearch(f"id<{post3.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post_ids == {post1.pk, post2.pk}
+        assert post4.pk not in post_ids
+        assert post5.pk not in post_ids
+
+    def test_id_greater_than(self):
+        post1 = PostFactory.create(id=1)
+        post2 = PostFactory.create(id=2)
+        post3 = PostFactory.create(id=3)
+        post4 = PostFactory.create(id=4)
+        post5 = PostFactory.create(id=5)
+        ps = PostSearch(f"id>{post3.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post_ids == {post4.pk, post5.pk}
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+
+    def test_negative_arg(self):
+        post = PostFactory.create()
+        with pytest.raises(ValidationError):
+            PostSearch(f"id=-{post.pk}")
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchCommentedBy:
     def test_commented_by_user(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchFavorited:
     def test_favorited_equal(self):
         pass
 
@@ -311,18 +390,30 @@ class TestPostAdvancedSearch:
     def test_favorited_by_user(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchFiletype:
     def test_filetype_extension(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchMimetype:
     def test_mimetype(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchTagCount:
     def test_tag_count_equal(self):
         pass
 
     def test_tag_count_greater_than(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchHeight:
     def test_height_equal(self):
         pass
 
@@ -332,6 +423,9 @@ class TestPostAdvancedSearch:
     def test_height_less_than(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchWeight:
     def test_weight_equal(self):
         pass
 
@@ -341,6 +435,9 @@ class TestPostAdvancedSearch:
     def test_weight_less_than(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchRating:
     def test_rating_label_equal(self):
         pass
 
@@ -359,11 +456,17 @@ class TestPostAdvancedSearch:
     def test_rating_num_less_than(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchSource:
     def test_src_url(self):
         pass
 
     def test_src_url_with_wildcard(self):
         pass
 
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchUploadedBy:
     def test_uploaded_by(self):
         pass

@@ -10,11 +10,17 @@ rgb_validator = validators.RegexValidator(r"^#[0-9A-F]{6}$")
 md5_validator = validators.RegexValidator(r"^[0-9A-Z]{32}$")
 phash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
 dhash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
-tag_name_validator = validators.RegexValidator(r"^[a-zA-Z\d\:-_]+$")
+tag_name_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^[a-zA-Z\d\:-_]+$"), message=_("Enter a valid tag name.")
+)
 tagset_name_validator = validators.RegexValidator(r"^[a-z\d\-_]+$")
 username_validator = validators.RegexValidator(
     _lazy_re_compile(r"^-?[a-zA-Z_]]\Z"),
     message=_("Enter a valid username."),
+)
+positive_int_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^\d+$"),
+    message=_("Enter a positive integer."),
 )
 
 
