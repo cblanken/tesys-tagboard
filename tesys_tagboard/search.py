@@ -448,6 +448,22 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.COMMENT_BY:
+                    wildcard_split = token.arg.split("*")
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if len(wildcard_split) > 1:
+                                token_expr = Q(
+                                    comment__user__username__like="%".join(
+                                        wildcard_split
+                                    )
+                                )
+                            else:
+                                token_expr = Q(comment__user__username=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 

@@ -15,7 +15,7 @@ tag_name_validator = validators.RegexValidator(
 )
 tagset_name_validator = validators.RegexValidator(r"^[a-z\d\-_]+$")
 username_validator = validators.RegexValidator(
-    _lazy_re_compile(r"^-?[a-zA-Z_]]\Z"),
+    _lazy_re_compile(r"^[a-zA-Z_\-\*]+\Z"),
     message=_("Enter a valid username."),
 )
 positive_int_validator = validators.RegexValidator(

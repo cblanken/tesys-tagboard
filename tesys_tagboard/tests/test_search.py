@@ -16,6 +16,7 @@ from tesys_tagboard.search import tag_autocomplete
 from .factories import CommentFactory
 from .factories import PostFactory
 from .factories import TagFactory
+from .factories import UserFactory
 
 
 @pytest.mark.django_db
@@ -429,7 +430,41 @@ class TestPostAdvancedSearchCommentCount:
 @pytest.mark.django_db
 class TestPostAdvancedSearchCommentedBy:
     def test_commented_by_user(self):
-        pass
+        post1 = PostFactory.create()
+        post2 = PostFactory.create()
+        post3 = PostFactory.create()
+        commenter = UserFactory.create()
+        other = UserFactory.create()
+        CommentFactory.create(post=post1, user=commenter)
+        CommentFactory.create(post=post2, user=commenter)
+        CommentFactory.create(post=post3, user=other)
+
+        ps = PostSearch(f"comment_by={commenter.username}")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk not in post_ids
+
+    def test_commented_by_user_with_wildcard(self):
+        post1 = PostFactory.create()
+        post2 = PostFactory.create()
+        post3 = PostFactory.create()
+        commenter1 = UserFactory.create(username="tom123")
+        commenter2 = UserFactory.create(username="tommy")
+        commenter3 = UserFactory.create(username="angela")
+        CommentFactory.create(post=post1, user=commenter1)
+        CommentFactory.create(post=post2, user=commenter2)
+        CommentFactory.create(post=post3, user=commenter3)
+
+        ps = PostSearch("comment_by=tom*")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk not in post_ids
 
 
 @pytest.mark.django_db
