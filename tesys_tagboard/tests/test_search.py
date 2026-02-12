@@ -14,6 +14,7 @@ from tesys_tagboard.search import tag_alias_autocomplete
 from tesys_tagboard.search import tag_autocomplete
 
 from .factories import CommentFactory
+from .factories import FavoriteFactory
 from .factories import PostFactory
 from .factories import TagFactory
 from .factories import UserFactory
@@ -467,19 +468,59 @@ class TestPostAdvancedSearchCommentedBy:
         assert post3.pk not in post_ids
 
 
-@pytest.mark.django_db
-class TestPostAdvancedSearchFavorited:
+@pytest.mark.django_db(transaction=True)
+class TestPostAdvancedSearchFavoritedCount:
     def test_favorited_equal(self):
-        pass
+        post1, post2, post3, post4 = PostFactory.create_batch(4)
+
+        FavoriteFactory.create_batch(5, post=post2)
+        FavoriteFactory.create_batch(10, post=post3)
+        FavoriteFactory.create_batch(50, post=post4)
+
+        ps = PostSearch("favorite_count=10")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk in post_ids
+        assert post4.pk not in post_ids
 
     def test_favorited_greater_than(self):
-        pass
+        post1, post2, post3, post4, post5 = PostFactory.create_batch(5)
+
+        FavoriteFactory.create_batch(5, post=post2)
+        FavoriteFactory.create_batch(10, post=post3)
+        FavoriteFactory.create_batch(50, post=post4)
+        FavoriteFactory.create_batch(100, post=post5)
+
+        ps = PostSearch("favorite_count>10")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
+        assert post4.pk in post_ids
+        assert post5.pk in post_ids
 
     def test_favorited_less_than(self):
-        pass
+        post1, post2, post3, post4, post5 = PostFactory.create_batch(5)
 
-    def test_favorited_by_user(self):
-        pass
+        FavoriteFactory.create_batch(5, post=post2)
+        FavoriteFactory.create_batch(10, post=post3)
+        FavoriteFactory.create_batch(50, post=post4)
+        FavoriteFactory.create_batch(100, post=post5)
+
+        ps = PostSearch("favorite_count<11")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post1.pk in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk in post_ids
+        assert post4.pk not in post_ids
+        assert post5.pk not in post_ids
 
 
 @pytest.mark.django_db

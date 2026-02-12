@@ -178,7 +178,7 @@ class TokenCategory(Enum):
         "favorite_count",
         "The number of favorites received by a Post. Accepts equality comparison operators =,) <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
         ("fav_count", "fc"),
-        validators.integer_validator,
+        positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchToken(
@@ -433,7 +433,7 @@ class PostSearch:
 
         return parsed_tokens
 
-    def get_search_expr(self) -> Q | None:  # noqa: C901, PLR0912
+    def get_search_expr(self) -> Q | None:  # noqa: C901, PLR0912, PLR0915
         """Builds a Post filter expression based on the provided `tokens`
 
         Note: tokens are validated when parsing the query string, so
@@ -488,6 +488,18 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.FAV_COUNT:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(fav_count__lt=int(token.arg))
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(fav_count=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(fav_count__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 
@@ -503,6 +515,8 @@ class PostSearch:
         posts = Post.objects.all()
         if TokenCategory.COMMENT_COUNT in token_categories:
             posts = posts.annotate_comment_count()
+        if TokenCategory.FAV_COUNT in token_categories:
+            posts = posts.annotate_fav_count()
         if search_expr := self.get_search_expr():
             return posts.filter(search_expr)
         return Post.objects.all()
