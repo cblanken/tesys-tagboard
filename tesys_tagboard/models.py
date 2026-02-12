@@ -319,6 +319,9 @@ class PostQuerySet(models.QuerySet):
     def annotate_fav_count(self):
         return self.annotate(fav_count=models.Count("favorite"))
 
+    def annotate_tag_count(self):
+        return self.annotate(tag_count=models.Count("tags"))
+
 
 class Post(models.Model):
     """Posts made by users with attached media"""

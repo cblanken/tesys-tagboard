@@ -524,6 +524,69 @@ class TestPostAdvancedSearchFavoritedCount:
 
 
 @pytest.mark.django_db
+class TestPostAdvancedSearchTagCount:
+    def test_tag_count_equal(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        tags1 = TagFactory.create_batch(5, post=post1)
+        tags2 = TagFactory.create_batch(10, post=post2)
+        tags3 = TagFactory.create_batch(25, post=post3)
+
+        post1.tags.set(tags1)
+        post2.tags.set(tags2)
+        post3.tags.set(tags3)
+
+        ps = PostSearch("tag_count=10")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk not in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk not in post_ids
+
+    def test_tag_count_greater_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        tags1 = TagFactory.create_batch(5, post=post1)
+        tags2 = TagFactory.create_batch(10, post=post2)
+        tags3 = TagFactory.create_batch(25, post=post3)
+
+        post1.tags.set(tags1)
+        post2.tags.set(tags2)
+        post3.tags.set(tags3)
+
+        ps = PostSearch("tag_count>5")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk not in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk in post_ids
+
+    def test_tag_count_less_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        tags1 = TagFactory.create_batch(5, post=post1)
+        tags2 = TagFactory.create_batch(10, post=post2)
+        tags3 = TagFactory.create_batch(25, post=post3)
+
+        post1.tags.set(tags1)
+        post2.tags.set(tags2)
+        post3.tags.set(tags3)
+
+        ps = PostSearch("tag_count<10")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk in post_ids
+        assert post1.pk in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
+
+
+@pytest.mark.django_db
 class TestPostAdvancedSearchFiletype:
     def test_filetype_extension(self):
         pass
@@ -532,15 +595,6 @@ class TestPostAdvancedSearchFiletype:
 @pytest.mark.django_db
 class TestPostAdvancedSearchMimetype:
     def test_mimetype(self):
-        pass
-
-
-@pytest.mark.django_db
-class TestPostAdvancedSearchTagCount:
-    def test_tag_count_equal(self):
-        pass
-
-    def test_tag_count_greater_than(self):
         pass
 
 

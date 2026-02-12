@@ -160,6 +160,13 @@ class TokenCategory(Enum):
         tag_name_validator,
     )
 
+    TAG_COUNT = ComparisonSearchToken(
+        "tag_count",
+        "The number of tags on a Post. Accepts comparison operators =, <, >",
+        ("cc",),
+        positive_int_validator,
+    )
+
     COMMENT_BY = WildcardSearchToken(
         "comment_by",
         "The username of a user",
@@ -169,42 +176,44 @@ class TokenCategory(Enum):
 
     COMMENT_COUNT = ComparisonSearchToken(
         "comment_count",
-        "The number of comments on a Post. Accepts equality comparison operators =, <, >, <=, ) >=, and == which is equivalent to =.",  # noqa: E501
+        "The number of comments on a Post. Accepts comparison operators =, <, >",
         ("cc",),
         positive_int_validator,
     )
 
     FAV_COUNT = ComparisonSearchToken(
         "favorite_count",
-        "The number of favorites received by a Post. Accepts equality comparison operators =,) <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
+        "The number of favorites recieved by a Post. Accepts comparison operators =, <, >",  # noqa: E501
         ("fav_count", "fc"),
         positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchToken(
         "height",
-        "The height of a Post (only applies to Images and Videos. Accepts equality comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
+        "The height of a Post (only applies to Images and Videos). Accepts comparison operators =, <, >",  # noqa: E501
         ("h",),
         validators.integer_validator,
     )
 
     WIDTH = ComparisonSearchToken(
         "width",
-        "The width of a Post (only applies to Images and Videos. Accepts equa) lity comparison operators =, <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
+        "The width of a Post (only applies to Images and Videos.  Accepts comparison operators =, <, >",  # noqa: E501
         ("w",),
         validators.integer_validator,
     )
 
-    RATING = ComparisonSearchToken(
+    RATING = SimpleSearchToken(
         "rating",
-        "The rating level of a Post. Accepts equality comparison operators =, <, >, <=) , >=, and == which is equivalent to =.",  # noqa: E501
+        "The rating of a Post. Accepts any current rating level label",
         ("rate", "r"),
         validators.integer_validator,
+        allow_wildcard=False,
+        allowed_arg_relations=(TokenArgRelation.EQUAL,),
     )
 
     RATING_NUM = ComparisonSearchToken(
         "rating_num",
-        "The rating level of a Post. Accepts equality comparison operators =, <, >,) <=, >=, and == which is equivalent to =.",  # noqa: E501
+        "The rating level of a Post. Accepts equality comparison operators =, <, >",
         (),
         validators.integer_validator,
     )
@@ -447,7 +456,6 @@ class PostSearch:
         else:
             search_filter_expr = Q()
         for token in self.tokens:
-            token.is_arg_valid()
             match token.category:
                 case TokenCategory.TAG:
                     token_expr = Q(tags__name=token.name)
@@ -500,6 +508,18 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.TAG_COUNT:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(tag_count__lt=int(token.arg))
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(tag_count=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(tag_count__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 
@@ -517,6 +537,8 @@ class PostSearch:
             posts = posts.annotate_comment_count()
         if TokenCategory.FAV_COUNT in token_categories:
             posts = posts.annotate_fav_count()
+        if TokenCategory.TAG_COUNT in token_categories:
+            posts = posts.annotate_tag_count()
         if search_expr := self.get_search_expr():
             return posts.filter(search_expr)
         return Post.objects.all()
