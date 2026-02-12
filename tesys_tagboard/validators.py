@@ -46,10 +46,12 @@ def media_file_type_matches_ext_validator(file):
     return
 
 
-def rating_label_validator(value):
-    rating_labels = [x.name for x in RatingLevel]
+def rating_label_validator(value: str):
+    value = value.lower()
+    rating_labels = [x.name.lower() for x in RatingLevel]
     if value not in rating_labels:
-        msg = f"Rating levels must be one of {rating_labels}"
+        label_names = ", ".join(rating_labels)
+        msg = f"Rating label must be one of: {label_names}"
         raise ValidationError(msg)
 
 

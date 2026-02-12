@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.db.models import QuerySet
 from more_itertools import take
 
+from .enums import RatingLevel
 from .models import Post
 from .models import Tag
 from .models import TagAlias
@@ -41,6 +42,16 @@ class UnsupportedSearchOperatorError(Exception):
         **kwargs,
     ):
         msg = f'The provided search operator: "{operator}" is not supported for the token: "{token}"'  # noqa: E501
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidRatingLabelError(Exception):
+    def __init__(
+        self,
+        msg="The provided rating label does not match an existing RatingLevel",
+        *args,
+        **kwargs,
+    ):
         super().__init__(msg, *args, **kwargs)
 
 
@@ -534,7 +545,17 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-
+                case TokenCategory.RATING_LABEL:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            rating = RatingLevel.select(token.arg)
+                            if rating is None:
+                                raise InvalidRatingLabelError
+                            token_expr = Q(rating_level=rating.value)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 

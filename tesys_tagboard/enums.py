@@ -23,6 +23,19 @@ class RatingLevel(IntEnum):
     def choices(cls):
         return [(level.value, level.name) for level in cls]
 
+    @classmethod
+    def select(cls, name: str) -> RatingLevel | None:
+        """Select rating level by label
+
+        Lettercase is ignored
+        """
+        name = name.strip()
+        selected_ratings = [r for r in RatingLevel if r.name.lower() == name.lower()]
+        if len(selected_ratings) == 0:
+            msg = f'Not match for rating level called "{name}"'
+            raise ValueError(msg)
+        return selected_ratings[0]
+
 
 class MediaCategory(StrEnum):
     """MIME media content type"""

@@ -625,8 +625,23 @@ class TestPostAdvancedSearchWeight:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchRatingLabel:
-    def test_rating_label_equal(self):
-        pass
+    @pytest.mark.parametrize("rating_level", list(RatingLevel))
+    def test_rating_valid_rating_labels(self, rating_level):
+        PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.UNRATED)
+        PostFactory.create_batch(10, rating_level=RatingLevel.QUESTIONABLE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.EXPLICIT)
+
+        ps = PostSearch(f"rating_label={rating_level.name.lower()}")
+        posts = ps.get_posts()
+
+        assert not posts.difference(
+            Post.objects.filter(rating_level=rating_level.value)
+        )
+
+    def test_rating_bad_label(self):
+        with pytest.raises(ValidationError):
+            PostSearch("rating_label=not_a_label")
 
 
 @pytest.mark.django_db
