@@ -174,13 +174,6 @@ class TokenCategory(Enum):
         positive_int_validator,
     )
 
-    FAV = WildcardSearchToken(
-        "favorited_by",
-        "The username of a user who has favorited a Post",
-        ("fav", "f"),
-        username_validator,
-    )
-
     FAV_COUNT = ComparisonSearchToken(
         "favorite_count",
         "The number of favorites received by a Post. Accepts equality comparison operators =,) <, >, <=, >=, and == which is equivalent to =.",  # noqa: E501
