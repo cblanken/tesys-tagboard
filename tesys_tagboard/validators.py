@@ -46,8 +46,15 @@ def media_file_type_matches_ext_validator(file):
     return
 
 
+def rating_label_validator(value):
+    rating_labels = [x.name for x in RatingLevel]
+    if value not in rating_labels:
+        msg = f"Rating levels must be one of {rating_labels}"
+        raise ValidationError(msg)
+
+
 def rating_level_validator(value):
-    levels = [x.value for x in RatingLevel]
-    if value not in levels:
-        msg = f"Rating levels must be one of {levels}"
+    rating_levels = [x.value for x in RatingLevel]
+    if value not in rating_levels:
+        msg = f"Rating levels must be one of {rating_levels}"
         raise ValidationError(msg)

@@ -17,6 +17,7 @@ from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
 from .validators import positive_int_validator
+from .validators import rating_label_validator
 from .validators import tag_name_validator
 from .validators import username_validator
 
@@ -44,6 +45,7 @@ class UnsupportedSearchOperatorError(Exception):
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from collections.abc import Iterable
 
 
@@ -100,7 +102,7 @@ class SearchTokenBase:
     name: str
     desc: str
     aliases: tuple[str, ...]
-    arg_validator: validators.RegexValidator
+    arg_validator: validators.RegexValidator | Callable
     allow_wildcard: bool
     allowed_arg_relations: tuple[TokenArgRelation, ...]
 
@@ -111,7 +113,7 @@ class SimpleSearchToken(SearchTokenBase):
 
     name: str
     aliases: tuple[str, ...] = ()
-    arg_validator: validators.RegexValidator
+    arg_validator: validators.RegexValidator | Callable
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
 
@@ -202,11 +204,11 @@ class TokenCategory(Enum):
         validators.integer_validator,
     )
 
-    RATING = SimpleSearchToken(
-        "rating",
+    RATING_LABEL = SimpleSearchToken(
+        "rating_label",
         "The rating of a Post. Accepts any current rating level label",
         ("rate", "r"),
-        validators.integer_validator,
+        rating_label_validator,
         allow_wildcard=False,
         allowed_arg_relations=(TokenArgRelation.EQUAL,),
     )
@@ -520,6 +522,19 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.RATING_NUM:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(rating_level__lt=int(token.arg))
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(rating_level=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(rating_level__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+
                 case _:
                     continue
 

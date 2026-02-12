@@ -289,7 +289,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     if request.GET:
         if q := request.GET.get("q"):
             ps = PostSearch(q)
-            posts = ps.get_posts()
+            posts = ps.get_posts().with_gallery_data(request.user)
 
     elif request.POST:
         data: dict[str, str | list[Any] | None] = {

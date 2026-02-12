@@ -3,6 +3,7 @@ import contextlib
 import pytest
 from django.core.exceptions import ValidationError
 
+from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
@@ -623,24 +624,48 @@ class TestPostAdvancedSearchWeight:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchRating:
+class TestPostAdvancedSearchRatingLabel:
     def test_rating_label_equal(self):
         pass
 
-    def test_rating_label_greater_than(self):
-        pass
 
-    def test_rating_label_less_than(self):
-        pass
+@pytest.mark.django_db
+class TestPostAdvancedSearchRatingNumber:
+    @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
+    def test_rating_num_equal(self, rating_level):
+        PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.UNRATED)
+        PostFactory.create_batch(10, rating_level=RatingLevel.QUESTIONABLE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.EXPLICIT)
 
-    def test_rating_num_equal(self):
-        pass
+        ps = PostSearch(f"rating_num={rating_level}")
+        posts = ps.get_posts()
 
-    def test_rating_num_greater_than(self):
-        pass
+        assert not posts.difference(Post.objects.filter(rating_level=rating_level))
 
-    def test_rating_num_less_than(self):
-        pass
+    @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
+    def test_rating_num_greater_than(self, rating_level):
+        PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.UNRATED)
+        PostFactory.create_batch(10, rating_level=RatingLevel.QUESTIONABLE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.EXPLICIT)
+
+        ps = PostSearch(f"rating_num>{rating_level}")
+        posts = ps.get_posts()
+
+        assert not posts.difference(Post.objects.filter(rating_level__gt=rating_level))
+
+    @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
+    def test_rating_num_less_than(self, rating_level):
+        PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.UNRATED)
+        PostFactory.create_batch(10, rating_level=RatingLevel.QUESTIONABLE)
+        PostFactory.create_batch(10, rating_level=RatingLevel.EXPLICIT)
+
+        ps = PostSearch(f"rating_num<{rating_level}")
+        posts = ps.get_posts()
+
+        assert not posts.difference(Post.objects.filter(rating_level__lt=rating_level))
 
 
 @pytest.mark.django_db
