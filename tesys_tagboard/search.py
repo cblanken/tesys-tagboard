@@ -1,4 +1,5 @@
 import re
+from array import array
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
@@ -246,6 +247,13 @@ class TokenCategory(Enum):
 class NamedToken:
     """A parsed token for Post search
 
+    Note that wildcards (*) are parsed out of the `arg` field into an array of
+    index/positions. This facilitates validation of NamedTokens immediately
+    after creation, since `arg` values can't allow the "*" character as part of the base
+    value since it's reserved for wildcard usage. When the full arg with wildcards is
+    needed it can simply be reconstructed from the `wildcard_positions`. This way
+    the `NamedToken` initializes with a clean `arg` value.
+
     Attributes:
         category: TokenCategory
         name: str, the name of a tag or filter category
@@ -254,6 +262,8 @@ class NamedToken:
             and its value e.g. an exact match (=), less than (<), or greater than (>).
         arg_relation: TokenArgRelation, the parsed version of `arg_relation_str` which
             is used for matching against an allowed set of search operators
+        wildcard_positions: array[int], an array of wild positions from the original
+            arg input
         negate: bool, Posts matching this token should NOT be returned
     """
 
@@ -262,12 +272,27 @@ class NamedToken:
     arg: str = ""
     arg_relation_str: str = ""
     arg_relation: TokenArgRelation | None = field(init=False)
+    wildcard_positions: array[int] = field(init=False)
     negate: bool = False
 
     def __post_init__(self):
         self.arg_relation = (
             TokenArgRelation(self.arg_relation_str) if self.arg_relation_str else None
         )
+
+        self.arg = self.arg.strip()
+        wildcard_split = list(re.finditer(r"\*", self.arg))
+        if len(wildcard_split) > 4:
+            msg = "This token's argument has too many wildcards"
+            raise ValidationError(msg)
+
+        if len(wildcard_split) > 0:
+            self.wildcard_positions = array(
+                "I", [m.span()[0] for m in re.finditer(r"\*", self.arg)]
+            )
+        else:
+            self.wildcard_positions = array("I", [])
+        self.arg = self.arg.replace("*", "")
 
     def is_arg_valid(self):
         """Checks the validity of a Token's argument (arg) value
@@ -277,6 +302,15 @@ class NamedToken:
         validator = self.category.value.arg_validator
         if self.arg:
             validator(self.arg)
+
+    def arg_with_wildcards(self):
+        """Reconstructs original `arg` with wildcards from `wildcard_positions`"""
+
+        arg = self.arg
+        for pos in self.wildcard_positions:
+            arg = self.arg[:pos] + "%" + self.arg[pos:]
+
+        return arg
 
 
 @dataclass
@@ -449,14 +483,11 @@ class PostSearch:
                                 token.arg_relation_str, token
                             )
                 case TokenCategory.COMMENT_BY:
-                    wildcard_split = token.arg.split("*")
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
-                            if len(wildcard_split) > 1:
+                            if token.wildcard_positions:
                                 token_expr = Q(
-                                    comment__user__username__like="%".join(
-                                        wildcard_split
-                                    )
+                                    comment__user__username__like=token.arg_with_wildcards()
                                 )
                             else:
                                 token_expr = Q(comment__user__username=token.arg)
