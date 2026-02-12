@@ -1,4 +1,5 @@
 import contextlib
+from itertools import chain
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -19,6 +20,13 @@ from .factories import FavoriteFactory
 from .factories import PostFactory
 from .factories import TagFactory
 from .factories import UserFactory
+
+
+class TestSearchTokenCategories:
+    def test_no_duplicate_aliases(self):
+        """Ensure available TokenCategory types don't have any duplicate aliases"""
+        token_aliases = list(chain(*[tok.value.aliases for tok in TokenCategory]))
+        assert len(token_aliases) == len(set(token_aliases))
 
 
 @pytest.mark.django_db

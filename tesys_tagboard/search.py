@@ -176,7 +176,7 @@ class TokenCategory(Enum):
     TAG_COUNT = ComparisonSearchToken(
         "tag_count",
         "The number of tags on a Post. Accepts comparison operators =, <, >",
-        ("cc",),
+        ("tc",),
         positive_int_validator,
     )
 
