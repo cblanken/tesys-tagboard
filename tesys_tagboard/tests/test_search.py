@@ -693,11 +693,60 @@ class TestPostAdvancedSearchRatingNumber:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchSource:
-    def test_src_url(self):
-        pass
+    def test_src_url_exact(self):
+        post1 = PostFactory.create(src_url="https://test1.example.com")
+        post2 = PostFactory.create(src_url="https://test2.example.com")
+        post3 = PostFactory.create(src_url="https://test3.example.com")
+
+        ps = PostSearch("source=https://test1.example.com")
+        posts = ps.get_posts()
+
+        assert post1 in posts
+        assert post2 not in posts
+        assert post3 not in posts
 
     def test_src_url_with_wildcard(self):
-        pass
+        post1 = PostFactory.create(src_url="https://test1.example.com")
+        post2 = PostFactory.create(src_url="https://test2.example.com")
+        post3 = PostFactory.create(src_url="https://test3.example.com")
+        post4 = PostFactory.create(src_url="https://test.example.org")
+
+        ps = PostSearch("source=https://test*.example.com")
+        posts = ps.get_posts()
+
+        assert post1 in posts
+        assert post2 in posts
+        assert post3 in posts
+        assert post4 not in posts
+
+    def test_src_url_with_start_and_end_wildcard(self):
+        post1 = PostFactory.create(src_url="https://test1.example.com")
+        post2 = PostFactory.create(src_url="https://test2.example.com")
+        post3 = PostFactory.create(src_url="https://test3.example.com")
+
+        post4 = PostFactory.create(src_url="https://test1.example.org")
+
+        ps = PostSearch("source=*test1.example.*")
+        posts = ps.get_posts()
+
+        assert post1 in posts
+        assert post2 not in posts
+        assert post3 not in posts
+        assert post4 in posts
+
+    def test_src_url_with_multipart_wildcard(self):
+        post1 = PostFactory.create(src_url="http://test.exam.com")
+        post2 = PostFactory.create(src_url="http://test.example.wow")
+        post3 = PostFactory.create(src_url="https://test.examine.com")
+        post4 = PostFactory.create(src_url="https://test.mine.org")
+
+        ps = PostSearch("source=http*test.exam*e.*")
+        posts = ps.get_posts()
+
+        assert post1 not in posts
+        assert post2 in posts
+        assert post3 in posts
+        assert post4 not in posts
 
 
 @pytest.mark.django_db

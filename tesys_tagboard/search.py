@@ -21,6 +21,7 @@ from .validators import positive_int_validator
 from .validators import rating_label_validator
 from .validators import tag_name_validator
 from .validators import username_validator
+from .validators import wildcard_url_validator
 
 
 class SearchTokenNameError(Exception):
@@ -58,6 +59,8 @@ class InvalidRatingLabelError(Exception):
 if TYPE_CHECKING:
     from collections.abc import Callable
     from collections.abc import Iterable
+
+    from colorfield.validators import RegexValidator
 
 
 def tag_autocomplete(
@@ -148,6 +151,11 @@ class WildcardSearchToken(SearchTokenBase):
 
     allow_wildcard: bool = True
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
+    wildcard_arg_validator: RegexValidator | Callable | None = None
+
+    def __post_init__(self):
+        if self.wildcard_arg_validator is None:
+            self.wildcard_arg_validator = self.arg_validator
 
 
 class TokenCategory(Enum):
@@ -161,7 +169,7 @@ class TokenCategory(Enum):
         "",
         "The default (un-named) token. Used for searching tags.",
         (),
-        tag_name_validator,
+        arg_validator=tag_name_validator,
     )
 
     ID = ComparisonSearchToken("id", "The ID of a Post", (), positive_int_validator)
@@ -236,6 +244,7 @@ class TokenCategory(Enum):
         "The source url of a Post. Allows wildcards.",
         ("src",),
         validators.URLValidator(),
+        wildcard_arg_validator=wildcard_url_validator,
     )
 
     UPLOADER = WildcardSearchToken(
@@ -243,6 +252,7 @@ class TokenCategory(Enum):
         "The username of the uploader of a Post. Allows wildcards",
         ("up",),
         username_validator,
+        wildcard_arg_validator=username_validator,
     )
 
     @classmethod
@@ -312,9 +322,18 @@ class NamedToken:
     def is_arg_valid(self):
         """Checks the validity of a Token's argument (arg) value
 
+        Note: Most WildcardSearchToken(s) will use the same validator for the wildcard
+        and non-wildcard variants, but some may need to provide a more permissive
+        validator to allow for incomplete arguments (e.g. URLs) which is why the
+        WildcardSearchToken may override the base `arg_validator` on an as-needed basis.
+
         Raises: ValidationError
         """
-        validator = self.category.value.arg_validator
+        if isinstance(self.category.value, WildcardSearchToken):
+            validator = self.category.value.wildcard_arg_validator
+        else:
+            validator = self.category.value.arg_validator
+
         if self.arg:
             validator(self.arg)
 
@@ -323,7 +342,7 @@ class NamedToken:
 
         arg = self.arg
         for pos in self.wildcard_positions:
-            arg = self.arg[:pos] + "%" + self.arg[pos:]
+            arg = arg[:pos] + "%" + arg[pos:]
 
         return arg
 
@@ -552,6 +571,17 @@ class PostSearch:
                             if rating is None:
                                 raise InvalidRatingLabelError
                             token_expr = Q(rating_level=rating.value)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.SOURCE:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.wildcard_positions:
+                                token_expr = Q(src_url__like=token.arg_with_wildcards())
+                            else:
+                                token_expr = Q(src_url=token.arg)
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
