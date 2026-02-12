@@ -22,6 +22,12 @@ positive_int_validator = validators.RegexValidator(
     _lazy_re_compile(r"^\d+$"),
     message=_("Enter a positive integer."),
 )
+wildcard_url_validator = validators.RegexValidator(
+    # For allowing URLs with wildcards and without requiring
+    # a protocol specifier or other URL validation
+    r"[ A-Za-z0-9-.,_~:\/#@!$&';%=\*\+\(\)\?\[\]]",
+    message=_("Enter a valid URL with wildcards"),
+)
 
 
 def tagset_validator(tag_ids: list):
