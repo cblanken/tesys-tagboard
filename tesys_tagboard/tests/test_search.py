@@ -751,5 +751,49 @@ class TestPostAdvancedSearchSource:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchUploadedBy:
-    def test_uploaded_by(self):
-        pass
+    def test_uploaded_by_exact(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        ps = PostSearch(f"uploaded_by={post0.uploader.username}")
+        posts = ps.get_posts()
+
+        assert post0 in posts
+        assert post1 not in posts
+        assert post2 not in posts
+        assert post3 not in posts
+
+    def test_uploaded_by_with_wildcard(self):
+        user1 = UserFactory.create(username="user1")
+        user2 = UserFactory.create(username="user2")
+        nobody = UserFactory.create(username="nobody")
+        u1_posts = PostFactory.create_batch(4, uploader=user1)
+        u2_posts = PostFactory.create_batch(4, uploader=user2)
+        nb_posts = PostFactory.create_batch(4, uploader=nobody)
+
+        ps = PostSearch("uploaded_by=user*")
+        posts = ps.get_posts()
+
+        for post in u1_posts + u2_posts:
+            assert post in posts
+
+        for post in nb_posts:
+            assert post not in posts
+
+    def test_uploaded_by_with_multi_part_wildcard(self):
+        user1 = UserFactory.create(username="i_am_user1")
+        user2 = UserFactory.create(username="i_am_user2")
+        nobody = UserFactory.create(username="i_am_nobody")
+        somebody = UserFactory.create(username="i_am_user_somebody")
+
+        u1_post = PostFactory.create(uploader=user1)
+        u2_post = PostFactory.create(uploader=user2)
+        nb_post = PostFactory.create(uploader=nobody)
+        sb_post = PostFactory.create(uploader=somebody)
+
+        ps = PostSearch("uploaded_by=*am*body")
+        posts = ps.get_posts()
+
+        assert u1_post not in posts
+        assert u2_post not in posts
+        assert nb_post in posts
+        assert sb_post in posts

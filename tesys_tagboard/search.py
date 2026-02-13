@@ -247,7 +247,7 @@ class TokenCategory(Enum):
         wildcard_arg_validator=wildcard_url_validator,
     )
 
-    UPLOADER = WildcardSearchToken(
+    UPLOADED_BY = WildcardSearchToken(
         "uploaded_by",
         "The username of the uploader of a Post. Allows wildcards",
         ("up",),
@@ -582,6 +582,19 @@ class PostSearch:
                                 token_expr = Q(src_url__like=token.arg_with_wildcards())
                             else:
                                 token_expr = Q(src_url=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.UPLOADED_BY:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.wildcard_positions:
+                                token_expr = Q(
+                                    uploader__username__like=token.arg_with_wildcards()
+                                )
+                            else:
+                                token_expr = Q(uploader__username=token.arg)
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
