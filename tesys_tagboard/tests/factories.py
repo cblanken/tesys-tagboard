@@ -84,6 +84,7 @@ class CollectionFactory(DjangoModelFactory[Collection]):
 
     class Meta:
         model = Collection
+        django_get_or_create = ("user", "name")
 
     @factory.post_generation
     def posts(self, create, extracted, **kwargs):
@@ -101,3 +102,4 @@ class FavoriteFactory(DjangoModelFactory[Favorite]):
 
     class Meta:
         model = Favorite
+        django_get_or_create = ("user", "post")
