@@ -319,18 +319,138 @@ class TestPostAdvancedSearchTags:
             posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
-    def test_include_tag_with_wildcard(self):
-        pass
+    def test_include_tag_with_wildcard(self):  # noqa: PLR0915
+        wild = TagFactory.create(name="wild")
+        wilder = TagFactory.create(name="wilder")
+        wilderness = TagFactory.create(name="wilderness")
+        ness = TagFactory.create(name="ness")
+        dress = TagFactory.create(name="dress")
+        bless = TagFactory.create(name="bless")
+
+        just_wild_post = PostFactory.create()
+        just_wild_post.tags.add(wild)
+
+        all_wild_post = PostFactory.create()
+        all_wild_post.tags.add(wild, wilder, wilderness)
+
+        all_wilder_post = PostFactory.create()
+        all_wilder_post.tags.add(wilder, wilderness)
+
+        just_wilderness_post = PostFactory.create()
+        just_wilderness_post.tags.add(wilderness)
+
+        ess_post = PostFactory.create()
+        ess_post.tags.add(ness, dress, bless)
+
+        ness_post = PostFactory.create()
+        ness_post.tags.add(wilderness, ness)
+
+        bless_post = PostFactory.create()
+        bless_post.tags.add(bless)
+
+        wild_ps = PostSearch("wild*")
+        wild_posts = wild_ps.get_posts()
+        assert just_wild_post in wild_posts
+        assert all_wild_post in wild_posts
+        assert all_wilder_post in wild_posts
+        assert just_wilderness_post in wild_posts
+        assert ness_post in wild_posts
+        assert ess_post not in wild_posts
+
+        wilder_ps = PostSearch("wilder*")
+        wilder_posts = wilder_ps.get_posts()
+        assert all_wild_post in wilder_posts
+        assert all_wilder_post in wilder_posts
+        assert just_wilderness_post in wilder_posts
+        assert ness_post in wilder_posts
+        assert just_wild_post not in wilder_posts
+
+        wilderness_ps = PostSearch("wilderness*")
+        wilderness_posts = wilderness_ps.get_posts()
+        assert all_wild_post in wilderness_posts
+        assert all_wilder_post in wilderness_posts
+        assert just_wilderness_post in wilderness_posts
+        assert ness_post in wilderness_posts
+        assert just_wild_post not in wilderness_posts
+
+        ess_ps = PostSearch("*ess")
+        ess_posts = ess_ps.get_posts()
+        assert ess_post in ess_posts
+        assert ness_post in ess_posts
+        assert bless_post in ess_posts
+        assert just_wilderness_post in ess_posts
+        assert just_wild_post not in ess_posts
+
+        ness_ps = PostSearch("*ness")
+        ness_posts = ness_ps.get_posts()
+        assert ess_post in ness_posts
+        assert ness_post in ness_posts
+        assert just_wilderness_post in ness_posts
+        assert bless_post not in ness_posts
+        assert just_wild_post not in ness_posts
 
     def test_only_exclude_tags(self):
-        pass
+        tags = TagFactory.create_batch(5)
+        test_posts = PostFactory.create_batch(5)
+
+        for i, post in enumerate(test_posts):
+            post.tags.add(tags[i])
+
+        posts = PostSearch(f"-{tags[0].name} -{tags[1].name}").get_posts()
+        assert test_posts[0] not in posts
+        assert test_posts[1] not in posts
+        assert test_posts[2] in posts
+        assert test_posts[3] in posts
+        assert test_posts[4] in posts
 
     def test_exclude_tag_with_wildcard(self):
-        pass
+        common_tag = TagFactory.create(name="mighty")
+        tags = TagFactory.create_batch(5)
+        test_posts = PostFactory.create_batch(5)
 
-    def test_include_and_exclude_tags(self):
-        pass
+        for i, post in enumerate(test_posts):
+            post.tags.add(common_tag, tags[i])
 
+        wildcard_tag = TagFactory.create(name="mire")
+        test_posts[0].tags.add(wildcard_tag)
+        test_posts[1].tags.add(wildcard_tag)
+        test_posts[2].tags.add(wildcard_tag)
+
+        posts = PostSearch("-mir*").get_posts()
+        assert test_posts[0] not in posts
+        assert test_posts[1] not in posts
+        assert test_posts[2] not in posts
+        assert test_posts[3] in posts
+        assert test_posts[4] in posts
+
+    def test_include_and_exclude_tags_with_wildcards(self):
+        common_tag = TagFactory.create(name="mighty")
+        tags = TagFactory.create_batch(5)
+        test_posts = PostFactory.create_batch(5)
+
+        for i, post in enumerate(test_posts):
+            post.tags.add(common_tag, tags[i])
+
+        wildcard_tag = TagFactory.create(name="mire")
+        test_posts[0].tags.add(wildcard_tag)
+        test_posts[1].tags.add(wildcard_tag)
+        test_posts[2].tags.add(wildcard_tag)
+
+        special_tag = TagFactory.create(name="special")
+        speciality_tag = TagFactory.create(name="speciality")
+
+        test_posts[4].tags.add(special_tag, speciality_tag)
+
+        posts = PostSearch("-mir* speci*").get_posts()
+        assert test_posts[0] not in posts
+        assert test_posts[1] not in posts
+        assert test_posts[2] not in posts
+        assert test_posts[3] not in posts
+        assert test_posts[4] in posts
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchTagAliases:
     def test_include_tag_alias(self):
         pass
 

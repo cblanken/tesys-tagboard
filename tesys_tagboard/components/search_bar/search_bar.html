@@ -5,6 +5,7 @@
     <div class="absolute left-2 z-5">{% include "icons/feather.html" with icon="search" %}</div>
     <input type="search"
            name="q"
+           {% if input_text %}value="{{ input_text }}"{% endif %}
            autocorrect="off"
            spellcheck="false"
            autocomplete="off"
