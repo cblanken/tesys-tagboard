@@ -477,7 +477,7 @@ class TestPostAdvancedSearchCommentedBy:
         assert post3.pk not in post_ids
 
 
-@pytest.mark.django_db(transaction=True)
+@pytest.mark.django_db
 class TestPostAdvancedSearchFavoritedCount:
     def test_favorited_equal(self):
         post1, post2, post3, post4 = PostFactory.create_batch(4)
