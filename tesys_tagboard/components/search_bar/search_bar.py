@@ -9,6 +9,8 @@ class SearchBarComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         hidden = kwargs.get("hidden")
+        input_text = kwargs.get("input_text")
         return {
             "hidden": hidden,
+            "input_text": input_text,
         }

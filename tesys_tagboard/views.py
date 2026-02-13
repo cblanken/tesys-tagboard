@@ -286,10 +286,12 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     posts = Post.objects.with_gallery_data(user)
     tags: QuerySet[Tag] | None = None
 
+    context = {}
     if request.GET:
         if q := request.GET.get("q"):
             ps = PostSearch(q)
             posts = ps.get_posts().with_gallery_data(request.user)
+            context |= {"query": q}
 
     elif request.POST:
         data: dict[str, str | list[Any] | None] = {
@@ -306,7 +308,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     page_num = int(request.GET.get("page", 1))
     page = pager.get_page(page_num)
 
-    context = {
+    context |= {
         "pager": pager,
         "page": page,
         "tags": tags,

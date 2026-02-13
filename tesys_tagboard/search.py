@@ -433,7 +433,9 @@ class PostSearch:
                 token_name = token_name[1:]
             if len(rest) == 0:
                 # Anonymous token i.e. tag
-                named_token = NamedToken(TokenCategory.TAG, token_name, negate=negate)
+                named_token = NamedToken(
+                    TokenCategory.TAG, token_name, token_name, negate=negate
+                )
             elif len(rest) == 1:
                 msg = "An invalid query split occurred"
                 raise ValidationError(msg)
@@ -490,7 +492,10 @@ class PostSearch:
         for token in self.tokens:
             match token.category:
                 case TokenCategory.TAG:
-                    token_expr = Q(tags__name=token.name)
+                    if token.wildcard_positions:
+                        token_expr = Q(tags__name__like=token.arg_with_wildcards())
+                    else:
+                        token_expr = Q(tags__name=token.arg)
                 case TokenCategory.ID:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
@@ -619,7 +624,7 @@ class PostSearch:
         if TokenCategory.TAG_COUNT in token_categories:
             posts = posts.annotate_tag_count()
         if search_expr := self.get_search_expr():
-            return posts.filter(search_expr)
+            return posts.filter(search_expr).distinct()
         return Post.objects.all()
 
     def autocomplete(
