@@ -23,6 +23,15 @@ from .validators import tag_name_validator
 from .validators import username_validator
 from .validators import wildcard_url_validator
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+    from collections.abc import Generator
+    from collections.abc import Iterable
+
+    from colorfield.validators import RegexValidator
+
+    from tesys_tagboard.users.models import User
+
 
 class SearchTokenNameError(Exception):
     def __init__(
@@ -56,20 +65,13 @@ class InvalidRatingLabelError(Exception):
         super().__init__(msg, *args, **kwargs)
 
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-    from collections.abc import Iterable
-
-    from colorfield.validators import RegexValidator
-
-
-def tag_autocomplete(
+def autocomplete_tags(
     tags: QuerySet[Tag],
     include_partial: str | None = None,
     exclude_partial: str | None = None,
     exclude_tag_names: Iterable[str] | None = None,
     exclude_tags: QuerySet[Tag] | None = None,
-) -> QuerySet[Tag]:
+) -> Generator[AutocompleteItem]:
     if include_partial is not None:
         tags = tags.filter(name__icontains=include_partial)
     if exclude_partial is not None:
@@ -79,16 +81,25 @@ def tag_autocomplete(
     if exclude_tags is not None:
         tags = tags.exclude(pk__in=exclude_tags)
 
-    return tags
+    return (
+        AutocompleteItem(
+            TokenCategory.TAG,
+            tag.name,
+            tag.category,
+            tag.pk,
+            extra=tag.post_count,
+        )
+        for tag in tags
+    )
 
 
-def tag_alias_autocomplete(
+def autocomplete_tag_aliases(
     aliases: QuerySet[TagAlias],
     include_partial: str | None = None,
     exclude_partial: str | None = None,
     exclude_alias_names: Iterable[str] | None = None,
     exclude_aliases: QuerySet[TagAlias] | None = None,
-) -> QuerySet[TagAlias]:
+) -> Generator[AutocompleteItem]:
     if include_partial is not None:
         aliases = TagAlias.objects.filter(name__icontains=include_partial)
     if exclude_partial is not None:
@@ -98,7 +109,17 @@ def tag_alias_autocomplete(
     if exclude_aliases is not None:
         aliases = aliases.exclude(pk__in=exclude_aliases)
 
-    return aliases
+    return (
+        AutocompleteItem(
+            TokenCategory.TAG_ALIAS,
+            alias.tag.name,
+            alias.tag.category,
+            alias.tag.pk,
+            alias=alias.name,
+            extra=alias.tag.post_count,
+        )
+        for alias in aliases
+    )
 
 
 class TokenArgRelation(Enum):
@@ -631,9 +652,10 @@ class PostSearch:
         self,
         partial: str | None = None,
         exclude_tags: QuerySet[Tag] | None = None,
+        user: User | None = None,
         *,
         show_filters: bool = True,
-    ) -> Iterable[AutocompleteItem]:
+    ) -> chain[AutocompleteItem]:
         """Return autocomplete matches based on the existing search query and
         the provided `partial`"""
         if partial is None:
@@ -656,40 +678,30 @@ class PostSearch:
                 if tok.category is TokenCategory.TAG and tok.name != partial
             ]
 
-        tags = tag_autocomplete(
-            Tag.objects.all(), partial, exclude_tag_names=tag_token_names
-        )
-        tags = take(self.max_tags, tags)
-        tag_aliases = tag_alias_autocomplete(
-            TagAlias.objects.all(), partial, exclude_alias_names=tag_token_names
-        )
-        tag_aliases = take(self.max_aliases, tag_aliases)
+        if user:
+            tag_autocompletions = autocomplete_tags(
+                Tag.objects.for_user(user), partial, exclude_tag_names=tag_token_names
+            )
+            tag_alias_autocompletions = autocomplete_tag_aliases(
+                TagAlias.objects.for_user(user),
+                partial,
+                exclude_alias_names=tag_token_names,
+            )
+        else:
+            tag_autocompletions = autocomplete_tags(
+                Tag.objects.all(), partial, exclude_tag_names=tag_token_names
+            )
 
-        autocomplete_items = chain(
-            (
-                AutocompleteItem(
-                    TokenCategory.TAG,
-                    tag.name,
-                    tag.category,
-                    tag.pk,
-                    extra=tag.post_count,
-                )
-                for tag in tags
-            ),
-            (
-                AutocompleteItem(
-                    TokenCategory.TAG_ALIAS,
-                    alias.tag.name,
-                    alias.tag.category,
-                    alias.tag.pk,
-                    alias=alias.name,
-                    extra=alias.tag.post_count,
-                )
-                for alias in tag_aliases
-            ),
-        )
+            tag_alias_autocompletions = autocomplete_tag_aliases(
+                TagAlias.objects.all(), partial, exclude_alias_names=tag_token_names
+            )
+
+        tag_autocompletions = take(self.max_tags, tag_autocompletions)
+        tag_alias_autocompletions = take(self.max_aliases, tag_alias_autocompletions)
+        autocomplete_items = chain(tag_autocompletions, tag_alias_autocompletions)
 
         if show_filters:
+            # Add search filters to autocomplete items
             autocomplete_items = chain(
                 (
                     AutocompleteItem(category, category.value.name)

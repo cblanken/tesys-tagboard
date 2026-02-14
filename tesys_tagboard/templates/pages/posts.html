@@ -5,13 +5,18 @@
 {% block title %}
   {{ block.super }} — Posts
 {% endblock title %}
+{% block javascript %}
+  {{ block.super }}
+  <script defer src="{% static 'js/posts.js' %}"></script>
+{% endblock javascript %}
 {% block content %}
   <div class="flex flex-col gap-4 justify-center items-center max-w-svw">
     {% include "heading.html" with text="POSTS" %}
-    <form id="advanced-post-search" action="{% url 'posts' %}" method="get">
-      <div class="inline-flex flex-wrap gap-2 items-center lg:flex-nowrap">
-        {% component "search_bar" input_text=query / %}
-      </div>
+    <form id="advanced-post-search"
+          action="{% url 'posts' %}"
+          method="get"
+          class="flex flex-wrap gap-2 items-center md:flex-nowrap">
+      {% component "search_bar" input_text=query / %}
       <input type="submit" value="Search" class="btn btn-info" />
     </form>
     <form action="{% url 'posts' %}"

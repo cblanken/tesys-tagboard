@@ -12,20 +12,18 @@ class AddTagsetComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         size: str = kwargs.get("size")
-        post_url: str = kwargs.get("post_url")
+        post_url: str = kwargs.get("post_url", reverse("confirm-tagset"))
+        autocomplete_url: str = kwargs.get(
+            "autocomplete_url", reverse("tag-autocomplete")
+        )
         add_tag_enabled: bool = kwargs.get("add_tag_enabled")
 
-        data = {
+        return {
             "size": size,
             "add_tag_enabled": bool(add_tag_enabled),
             "tags": kwargs.get("tags"),
             "actions": [Action("remove", "Remove this tag from the tag set", "")],
             "tagset_name": kwargs.get("tagset_name", "tagset"),
+            "post_url": post_url,
+            "autocomplete_url": autocomplete_url,
         }
-
-        if post_url:
-            data |= {"post_url": post_url}
-        else:
-            data |= {"post_url": reverse("confirm-tagset")}
-
-        return data

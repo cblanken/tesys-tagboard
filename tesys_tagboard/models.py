@@ -55,17 +55,6 @@ class Like(Lookup):
         return f"{lhs} LIKE {rhs}", params
 
 
-class TagQuerySet(models.QuerySet):
-    def for_post(self, post: Post):
-        return self.select_related("category").filter(post=post)
-
-    def in_tagset(self, tagset: list[int] | None):
-        return self.select_related("category").filter(pk__in=tagset)
-
-    def as_list(self) -> list[int]:
-        return [t.pk for t in self]
-
-
 class TagCategory(models.Model):
     """Categories for Tags
 
@@ -94,6 +83,22 @@ class TagCategory(models.Model):
 
     def __str__(self) -> str:
         return f"<TagCategory - {self.name}, bg: {self.bg}, fg: {self.fg}, parent: {self.parent}>"  # noqa: E501
+
+
+class TagQuerySet(models.QuerySet):
+    def for_post(self, post: Post):
+        return self.select_related("category").filter(post=post)
+
+    def in_tagset(self, tagset: list[int] | None):
+        return self.select_related("category").filter(pk__in=tagset)
+
+    def as_list(self) -> list[int]:
+        return [t.pk for t in self]
+
+    def for_user(self, user: User):
+        """Retrive Tags excluding any filtered tags from the User's settings"""
+        filter_tag_ids = user.filter_tags.values_list("pk", flat=True)
+        return self.exclude(pk__in=filter_tag_ids)
 
 
 class Tag(models.Model):
@@ -130,11 +135,19 @@ class Tag(models.Model):
         return f"<Tag - {self.name}, category: {self.category}>"
 
 
+class TagAliasQuerySet(models.QuerySet):
+    def for_user(self, user: User):
+        """Retrive TagAliases excluding any filtered tags from the User's settings"""
+        return self.exclude(tag__in=user.filter_tags.all())
+
+
 class TagAlias(models.Model):
     """Aliases for Tags"""
 
     name = models.CharField(max_length=100, validators=[tag_name_validator])
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    objects = TagAliasQuerySet.as_manager()
 
     class Meta:
         verbose_name_plural = "tag aliases"

@@ -16,7 +16,7 @@
       </div>
     </button>
     <div class="inline-flex flex-wrap gap-2 items-center lg:flex-nowrap">
-      {% component "search_bar" hidden=True / %}
+      {% component "search_bar" hidden=True autocomplete_url=autocomplete_url / %}
       <div class="inline-flex gap-1">
         <button class="hidden cancel-tag-btn {% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn btn-error">
           <div class="flex gap-1 items-center">
