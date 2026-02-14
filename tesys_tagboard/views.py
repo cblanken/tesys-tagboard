@@ -233,7 +233,7 @@ def delete_post(
         return HttpResponseNotFound("That post doesn't exist")
 
 
-@require(["POST"])
+@require(["POST"], login=False)
 def confirm_tagset(request: HtmxHttpRequest):
     if request.htmx:
         form = TagsetForm(request.POST)
