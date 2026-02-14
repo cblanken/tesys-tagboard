@@ -12,8 +12,8 @@ from tesys_tagboard.models import TagCategory
 from tesys_tagboard.search import PostSearch
 from tesys_tagboard.search import TokenArgRelation
 from tesys_tagboard.search import TokenCategory
-from tesys_tagboard.search import tag_alias_autocomplete
-from tesys_tagboard.search import tag_autocomplete
+from tesys_tagboard.search import autocomplete_tag_aliases
+from tesys_tagboard.search import autocomplete_tags
 
 from .factories import CommentFactory
 from .factories import FavoriteFactory
@@ -32,7 +32,7 @@ class TestSearchTokenCategories:
 @pytest.mark.django_db
 class TestTagAutocomplete:
     def test_autocomplete_included_by_name_partial(self, db):
-        tags = tag_autocomplete(Tag.objects.all(), "blue")
+        tags = autocomplete_tags(Tag.objects.all(), "blue")
         tag_names = [tag.name for tag in tags]
         assert "blue-jeans" in tag_names
         assert "blue" in tag_names
@@ -40,10 +40,10 @@ class TestTagAutocomplete:
         assert "blueberry" in tag_names
         assert "red_vs._blue" in tag_names
         assert "sky-blue" in tag_names
-        assert tags.count() == 6
+        assert len(tag_names) == 6
 
     def test_autocomplete_excluded_by_name_partial(self, db):
-        tags = tag_autocomplete(Tag.objects.all(), exclude_partial="blue")
+        tags = autocomplete_tags(Tag.objects.all(), exclude_partial="blue")
         tag_names = [tag.name for tag in tags]
         assert "blue-jeans" not in tag_names
         assert "blue" not in tag_names
@@ -52,7 +52,7 @@ class TestTagAutocomplete:
         assert "sky-blue" not in tag_names
 
     def test_autocomplete_excluded_by_tag_name(self, db):
-        tags = tag_autocomplete(
+        tags = autocomplete_tags(
             Tag.objects.all(), exclude_tag_names=["violet", "white", "yellow"]
         )
         tag_names = [tag.name for tag in tags]
@@ -66,26 +66,29 @@ class TestTagAutocomplete:
     def test_autocomplete_excluded_by_tag(self, db):
         copyright_category = TagCategory.objects.get(name="copyright")
         exclude_tags = Tag.objects.filter(category=copyright_category)
-        tags = tag_autocomplete(Tag.objects.all(), exclude_tags=exclude_tags)
-        assert len(tags.intersection(exclude_tags)) == 0
+        tag_items = autocomplete_tags(Tag.objects.all(), exclude_tags=exclude_tags)
+        for item in tag_items:
+            assert item.name not in [tag.name for tag in exclude_tags]
 
 
 @pytest.mark.django_db
 class TestTagAliasAutocomplete:
     def test_autocomplete_included_by_name_partial(self, db):
-        aliases = tag_alias_autocomplete(TagAlias.objects.all(), "blue")
-        alias_names = [alias.name for alias in aliases]
+        aliases = autocomplete_tag_aliases(TagAlias.objects.all(), "blue")
+        alias_names = [alias.alias for alias in aliases]
         assert "bluejeans" in alias_names
         assert "gray-blue" in alias_names
         assert "blue-berry" in alias_names
         assert "red_v._blue" in alias_names
         assert "red_vs_blue" in alias_names
         assert "red_x_blue" in alias_names
-        assert aliases.count() == 6
+        assert len(alias_names) == 6
 
     def test_autocomplete_excluded_by_name_partial(self, db):
-        aliases = tag_alias_autocomplete(TagAlias.objects.all(), exclude_partial="red")
-        alias_names = [alias.name for alias in aliases]
+        aliases = autocomplete_tag_aliases(
+            TagAlias.objects.all(), exclude_partial="red"
+        )
+        alias_names = [alias.alias for alias in aliases]
         assert "red_v._blue" not in alias_names
         assert "red_vs_blue" not in alias_names
         assert "red_x_blue" not in alias_names
@@ -93,11 +96,11 @@ class TestTagAliasAutocomplete:
         assert "r_vs._b" in alias_names
 
     def test_autocomplete_excluded_by_alias_name(self, db):
-        aliases = tag_alias_autocomplete(
+        aliases = autocomplete_tag_aliases(
             TagAlias.objects.all(),
             exclude_alias_names=["Justin K", "Solomon S", "Z. Zolan"],
         )
-        alias_names = [alias.name for alias in aliases]
+        alias_names = [alias.alias for alias in aliases]
         assert "Justin K" not in alias_names
         assert "Solomon S" not in alias_names
         assert "Z. Zolan" not in alias_names
@@ -105,10 +108,12 @@ class TestTagAliasAutocomplete:
     def test_autocomplete_excluded_by_alias(self, db):
         copyright_category = TagCategory.objects.get(name="copyright")
         exclude_aliases = TagAlias.objects.filter(tag__category=copyright_category)
-        aliases = tag_alias_autocomplete(
+        aliases = autocomplete_tag_aliases(
             TagAlias.objects.all(), exclude_aliases=exclude_aliases
         )
-        assert len(aliases.intersection(exclude_aliases)) == 0
+
+        for alias_item in aliases:
+            assert alias_item.alias not in [alias.name for alias in exclude_aliases]
 
 
 class TestTokenCategory:

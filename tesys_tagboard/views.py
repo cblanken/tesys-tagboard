@@ -56,7 +56,8 @@ from .models import TagCategory
 from .models import Video
 from .models import csv_to_tag_ids
 from .search import PostSearch
-from .search import tag_autocomplete
+from .search import autocomplete_tag_aliases
+from .search import autocomplete_tags
 from .validators import media_file_supported_validator
 from .validators import media_file_type_matches_ext_validator
 from .validators import tagset_validator
@@ -625,9 +626,7 @@ def post_search_autocomplete(
         else:
             partial = request.GET.get("partial")
             if request.user.is_authenticated:
-                items = ps.autocomplete(
-                    partial=partial, exclude_tags=request.user.filter_tags.all()
-                )
+                items = ps.autocomplete(partial=partial, user=request.user)
             else:
                 items = ps.autocomplete(partial=partial)
             context |= {"items": items}
@@ -643,9 +642,24 @@ def tag_search_autocomplete(
 ) -> TemplateResponse | HttpResponseNotAllowed:
     if request.method == "GET":
         partial = request.GET.get("partial", "")
-        tags = tag_autocomplete(Tag.objects.all(), partial)
-        context = {"tags": tags}
-        return TemplateResponse(request, "tags/search_autocomplete.html", context)
+        if request.user.is_authenticated:
+            items = chain(
+                autocomplete_tags(
+                    Tag.objects.for_user(request.user),
+                    partial,
+                ),
+                autocomplete_tag_aliases(
+                    TagAlias.objects.for_user(request.user),
+                    partial,
+                ),
+            )
+        else:
+            items = chain(
+                autocomplete_tags(Tag.objects.all(), partial),
+                autocomplete_tag_aliases(TagAlias.objects.all(), partial),
+            )
+        context = {"items": items}
+        return TemplateResponse(request, "posts/search_autocomplete.html", context)
 
     return HttpResponseNotAllowed(["GET"])
 

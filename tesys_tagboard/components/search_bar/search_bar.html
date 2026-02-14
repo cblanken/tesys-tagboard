@@ -11,7 +11,7 @@
            autocomplete="off"
            class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
            placeholder="Search tags..."
-           hx-get='{% url "autocomplete" %}'
+           hx-get="{{ autocomplete_url }}"
            hx-include="next input[name='partial']"
            hx-trigger="input delay:500ms, keyup[key=='Enter']"
            hx-target="next .result-container" />
