@@ -233,7 +233,7 @@
       <div class="flex flex-wrap gap-2 justify-end items-center mt-2 w-fit">
         {% if request.user.is_authenticated %}
           {% component "favorite_toggle" post=post / %}
-          {% component "collection_picker" post=post / %}
+          {% component "collection_picker" post=post collections=collections / %}
           {% if perms.tesys_tagboard.delete_post %}
             <form method="delete"
                   action="{% url 'post-delete' post_id=post.pk %}"

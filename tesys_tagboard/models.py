@@ -32,6 +32,7 @@ from .enums import SupportedMediaTypes
 from .validators import dhash_validator
 from .validators import md5_validator
 from .validators import phash_validator
+from .validators import tag_name_validator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -39,16 +40,19 @@ if TYPE_CHECKING:
 
     from users.models import User
 
+from django.db.models import Lookup
+from django.db.models.fields import Field
 
-class TagQuerySet(models.QuerySet):
-    def for_post(self, post: Post):
-        return self.select_related("category").filter(post=post)
 
-    def in_tagset(self, tagset: list[int] | None):
-        return self.select_related("category").filter(pk__in=tagset)
+@Field.register_lookup
+class Like(Lookup):
+    lookup_name = "like"
 
-    def as_list(self) -> list[int]:
-        return [t.pk for t in self]
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return f"{lhs} LIKE {rhs}", params
 
 
 class TagCategory(models.Model):
@@ -62,14 +66,14 @@ class TagCategory(models.Model):
     Attributes
         name: CharField
         parent: ForeignKey(self)
-        bg: Charfield(7) the background color for the category
-        fg: Charfield(7) the foreground color for the category
+        bg: ColorField the background color for the category
+        fg: ColorField the foreground color for the category
     """
 
     name = models.CharField(max_length=100, unique=True)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
-    bg = ColorField(format="hexa", null=True)
-    fg = ColorField(format="hexa", null=True)
+    bg = ColorField(format="hex", null=True)
+    fg = ColorField(format="hex", null=True)
 
     class Meta:
         ordering = ["name"]
@@ -79,6 +83,22 @@ class TagCategory(models.Model):
 
     def __str__(self) -> str:
         return f"<TagCategory - {self.name}, bg: {self.bg}, fg: {self.fg}, parent: {self.parent}>"  # noqa: E501
+
+
+class TagQuerySet(models.QuerySet):
+    def for_post(self, post: Post):
+        return self.select_related("category").filter(post=post)
+
+    def in_tagset(self, tagset: list[int] | None):
+        return self.select_related("category").filter(pk__in=tagset)
+
+    def as_list(self) -> list[int]:
+        return [t.pk for t in self]
+
+    def for_user(self, user: User):
+        """Retrive Tags excluding any filtered tags from the User's settings"""
+        filter_tag_ids = user.filter_tags.values_list("pk", flat=True)
+        return self.exclude(pk__in=filter_tag_ids)
 
 
 class Tag(models.Model):
@@ -92,7 +112,7 @@ class Tag(models.Model):
         rating_level: PositiveSmallIntegerField
     """
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
     category = models.ForeignKey(TagCategory, null=True, on_delete=models.CASCADE)
     description = models.TextField(max_length=255, blank=True, default="")
     post_count = models.PositiveIntegerField(default=0)
@@ -115,11 +135,19 @@ class Tag(models.Model):
         return f"<Tag - {self.name}, category: {self.category}>"
 
 
+class TagAliasQuerySet(models.QuerySet):
+    def for_user(self, user: User):
+        """Retrive TagAliases excluding any filtered tags from the User's settings"""
+        return self.exclude(tag__in=user.filter_tags.all())
+
+
 class TagAlias(models.Model):
     """Aliases for Tags"""
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    objects = TagAliasQuerySet.as_manager()
 
     class Meta:
         verbose_name_plural = "tag aliases"
@@ -132,6 +160,15 @@ class TagAlias(models.Model):
 
     def __str__(self) -> str:
         return f"<TagAlias - {self.name}, tag: {self.tag}>"
+
+
+class DefaultPostTag(models.Model):
+    """Default Tags applied to new Posts"""
+
+    tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self) -> str:
+        return f"<DefaultPostTag - {self.tag}>"
 
 
 class Artist(models.Model):
@@ -288,6 +325,15 @@ class PostQuerySet(models.QuerySet):
             filter_expr = filter_expr & self.filter(tags__in=[tag.pk])
 
         return filter_expr
+
+    def annotate_comment_count(self):
+        return self.annotate(comment_count=models.Count("comment"))
+
+    def annotate_fav_count(self):
+        return self.annotate(fav_count=models.Count("favorite"))
+
+    def annotate_tag_count(self):
+        return self.annotate(tag_count=models.Count("tags"))
 
 
 class Post(models.Model):
@@ -548,9 +594,9 @@ class CollectionQuerySet(models.QuerySet):
         """Returns only `public` Collections"""
         return self.filter(public=True)
 
-    def for_user(self, user):
+    def for_user(self, user_id):
         """Return Collections of a `user`"""
-        return self.filter(user=user).select_related("user")
+        return self.filter(user=user_id).select_related("user")
 
     def with_gallery_data(self):
         """Return optimized CollectionQuerySet including gallery data
@@ -624,8 +670,8 @@ class Comment(models.Model):
 
 
 class FavoriteQuerySet(models.QuerySet):
-    def for_user(self, user):
-        return self.filter(user=user)
+    def for_user(self, user_id):
+        return self.filter(user=user_id)
 
     def with_gallery_data(self):
         return self.select_related("post", "post", "post__image").prefetch_related(

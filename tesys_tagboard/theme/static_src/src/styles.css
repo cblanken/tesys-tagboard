@@ -92,12 +92,9 @@
   --font-heading: "Komikula", "Pak Kumis", "Courier New", mono;
 
   /* Colors */
-  --color-tag-default: #a8e6cf;
-  --color-tag-copyright: #ffd3b6;
-  --color-tag-artist: #bae1ff;
-
-  --color-filter-func: #fceb7e;
+  --color-tag-default: #a8e6cf; /* Tag background */
   --color-tag-content: #383737; /* Tag text */
+  --color-filter-func: #fceb7e; /* Post search filter items background */
   --color-user: #121212;
   --color-user-content: #ddd;
 
@@ -219,4 +216,12 @@
 .feather-lg {
   width: var(--text-lg);
   height: var(--text-lg);
+}
+
+/* Many tags may be rendered on a single page. These styles reduce the total
+rendered document size */
+.tag-container > button {
+  color: var(--color-tag-content);
+  background-color: var(--color-tag-default);
+  padding: var(--spacing) calc(var(--spacing) * 3)
 }

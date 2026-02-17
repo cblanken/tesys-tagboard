@@ -1,17 +1,21 @@
 {% load component_tags %}
 
-<div class="{% if hidden %}hidden{% endif %} relative flex-grow lg:w-96 search-container">
+<div class="{% if hidden %}hidden{% endif %} relative flex-grow w-full search-container">
   <label class="flex relative items-center">
     <div class="absolute left-2 z-5">{% include "icons/feather.html" with icon="search" %}</div>
     <input type="search"
-           name="search-bar"
+           name="q"
+           {% if input_text %}value="{{ input_text }}"{% endif %}
+           autocorrect="off"
+           spellcheck="false"
+           autocomplete="off"
            class="w-full rounded-none focus:border-none focus:shadow-none focus:outline-none ps-8 input grow f-full"
            placeholder="Search tags..."
-           hx-get='{% url "autocomplete" %}?partial='
-           hx-params="partial"
-           hx-trigger="input changed delay:500ms, keyup[key=='Enter']"
-           hx-target="next .result-container"
-           hx-on::config-request="event.detail.path += this.value" />
+           hx-get="{{ autocomplete_url }}"
+           hx-include="next input[name='partial']"
+           hx-trigger="input delay:500ms, keyup[key=='Enter']"
+           hx-target="next .result-container" />
+    <input type="hidden" name="partial" />
   </label>
   <div class="absolute top-full z-50 mt-1 w-full result-container"></div>
 </div>

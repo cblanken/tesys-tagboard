@@ -4,6 +4,7 @@ from .models import Artist
 from .models import Audio
 from .models import Collection
 from .models import Comment
+from .models import DefaultPostTag
 from .models import Favorite
 from .models import Image
 from .models import Post
@@ -20,6 +21,12 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "category", "rating_level"]
     search_fields = ["name", "category"]
     list_filter = ["category"]
+
+
+@admin.register(DefaultPostTag)
+class DefaultPostTagAdmin(admin.ModelAdmin):
+    list_display = ["tag"]
+    search_fields = ["tag__name", "tag__category__name"]
 
 
 @admin.register(TagAlias)

@@ -40,12 +40,12 @@ from .forms import CreateTagAliasForm
 from .forms import CreateTagForm
 from .forms import EditCommentForm
 from .forms import PostForm
-from .forms import PostSearchForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
 from .models import Audio
 from .models import Collection
 from .models import Comment
+from .models import DefaultPostTag
 from .models import Favorite
 from .models import Image
 from .models import Post
@@ -55,7 +55,8 @@ from .models import TagCategory
 from .models import Video
 from .models import csv_to_tag_ids
 from .search import PostSearch
-from .search import tag_autocomplete
+from .search import autocomplete_tag_aliases
+from .search import autocomplete_tags
 from .validators import media_file_supported_validator
 from .validators import media_file_type_matches_ext_validator
 from .validators import tagset_validator
@@ -117,7 +118,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
 
     posts = Post.objects.filter(pk=post_id).select_related("uploader")
     if request.user.is_authenticated:
-        favorites = Favorite.objects.for_user(request.user)
+        favorites = Favorite.objects.for_user(request.user.pk)
         posts = posts.annotate_favorites(favorites)
     post = get_object_or_404(posts.prefetch_related("posttaghistory_set"))
     comments = post.comment_set.order_by("-post_date").select_related("user")
@@ -165,6 +166,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
         "meta_tag_names": " ".join(tag.name for tag in tags),
         "comments_pager": comments_pager,
         "comments_page": comments_page,
+        "collections": Collection.objects.for_user(request.user.pk),
         "tag_history": tag_history,
         "source_history": source_history,
         "child_posts": Post.objects.filter(parent=post).with_gallery_data(request.user),
@@ -230,7 +232,7 @@ def delete_post(
         return HttpResponseNotFound("That post doesn't exist")
 
 
-@require(["POST"])
+@require(["POST"], login=False)
 def confirm_tagset(request: HtmxHttpRequest):
     if request.htmx:
         form = TagsetForm(request.POST)
@@ -284,27 +286,27 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     posts = Post.objects.with_gallery_data(user)
     tags: QuerySet[Tag] | None = None
 
+    context = {}
     if request.GET:
-        if tag := request.GET.get("tag"):
-            tags = Tag.objects.in_tagset([tag])
-            posts = posts.has_tags(tags)
+        if q := request.GET.get("q"):
+            ps = PostSearch(q)
+            posts = ps.get_posts().with_gallery_data(request.user)
+            context |= {"query": q}
 
     elif request.POST:
-        data: dict[str, str | list[Any] | None] = {
-            key: request.POST.get(key) for key in request.POST
-        }
-        data["tagset"] = request.POST.getlist("tagset")
-        form = PostSearchForm(data) if request.method == "POST" else PostForm()
-        if form.is_valid():
-            tagset = form.cleaned_data.get("tagset")
+        ps = PostSearch(request.POST)
+        if user.is_authenticated:
+            posts = ps.get_posts().with_gallery_data(request.user)
+            tagset = request.POST.getlist("tagset")
             tags = Tag.objects.in_tagset(tagset)
-            posts = posts.has_tags(tags)
+        else:
+            posts = ps.get_posts()
 
     pager = Paginator(posts, 36, 4)
     page_num = int(request.GET.get("page", 1))
     page = pager.get_page(page_num)
 
-    context = {
+    context |= {
         "pager": pager,
         "page": page,
         "tags": tags,
@@ -361,9 +363,8 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     if create_tag_form.is_valid():
         create_tag_form.save()
     else:
-        msg = "The tag inputs were invalid."
+        msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
         messages.add_message(request, messages.WARNING, msg)
-        return HttpUnprocessableContent("Invalid form data")
 
     return redirect(reverse("tags"))
 
@@ -612,14 +613,21 @@ def delete_comment(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def post_search_autocomplete(
     request: HtmxHttpRequest,
 ) -> TemplateResponse | HttpResponse:
-    if request.method == "GET" and request.htmx:
-        tag_prefixes = [cat.name.lower() for cat in TagCategory.objects.all()]
+    if request.method == "GET":
         query = request.GET.get("q", "")
-        ps = PostSearch(query, tag_prefixes)
-        partial = request.GET.get("partial", "")
-        items = ps.autocomplete(partial)
+        context = {}
+        try:
+            ps = PostSearch(query)
+        except ValidationError as err:
+            context |= {"error": err.message}
+        else:
+            partial = request.GET.get("partial")
+            if request.user.is_authenticated:
+                items = ps.autocomplete(partial=partial, user=request.user)
+            else:
+                items = ps.autocomplete(partial=partial)
+            context |= {"items": items}
 
-        context = {"items": items}
         return TemplateResponse(request, "posts/search_autocomplete.html", context)
 
     return HttpResponseNotAllowed(["GET"])
@@ -631,9 +639,24 @@ def tag_search_autocomplete(
 ) -> TemplateResponse | HttpResponseNotAllowed:
     if request.method == "GET":
         partial = request.GET.get("partial", "")
-        tags = tag_autocomplete(Tag.objects.all(), partial)
-        context = {"tags": tags}
-        return TemplateResponse(request, "tags/search_autocomplete.html", context)
+        if request.user.is_authenticated:
+            items = chain(
+                autocomplete_tags(
+                    Tag.objects.for_user(request.user),
+                    partial,
+                ),
+                autocomplete_tag_aliases(
+                    TagAlias.objects.for_user(request.user),
+                    partial,
+                ),
+            )
+        else:
+            items = chain(
+                autocomplete_tags(Tag.objects.all(), partial),
+                autocomplete_tag_aliases(TagAlias.objects.all(), partial),
+            )
+        context = {"items": items}
+        return TemplateResponse(request, "posts/search_autocomplete.html", context)
 
     return HttpResponseNotAllowed(["GET"])
 
@@ -689,7 +712,13 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
 
 @require(["GET", "POST"])
 def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa: C901
-    context = {"rating_levels": list(RatingLevel)}
+    context = {
+        "rating_levels": list(RatingLevel),
+        "default_tags": [
+            default.tag
+            for default in DefaultPostTag.objects.select_related("tag", "tag__category")
+        ],
+    }
     user = request.user
     if request.method == "POST":
         if not user.has_perm("tesys_tagboard.add_post"):

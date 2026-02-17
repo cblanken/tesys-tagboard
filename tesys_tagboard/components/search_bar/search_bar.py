@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django_components import Component
 from django_components import register
 
@@ -9,6 +10,11 @@ class SearchBarComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         hidden = kwargs.get("hidden")
+        autocomplete_url = kwargs.get("autocomplete_url", reverse("autocomplete"))
+        input_text = kwargs.get("input_text")
+
         return {
             "hidden": hidden,
+            "input_text": input_text,
+            "autocomplete_url": autocomplete_url,
         }

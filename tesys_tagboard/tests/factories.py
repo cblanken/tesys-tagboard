@@ -36,7 +36,7 @@ class TagCategoryFactory(DjangoModelFactory[TagCategory]):
 
 
 class TagFactory(DjangoModelFactory[Tag]):
-    name = Faker("name")
+    name = Faker("word")
     category = None
     rating_level = Faker("enum", enum_cls=RatingLevel)
 
@@ -46,7 +46,7 @@ class TagFactory(DjangoModelFactory[Tag]):
 
 
 class TagAliasFactory(DjangoModelFactory[TagAlias]):
-    name = Faker("name")
+    name = Faker("word")
     tag = SubFactory(TagFactory)
 
     class Meta:
@@ -84,6 +84,7 @@ class CollectionFactory(DjangoModelFactory[Collection]):
 
     class Meta:
         model = Collection
+        django_get_or_create = ("user", "name")
 
     @factory.post_generation
     def posts(self, create, extracted, **kwargs):
@@ -101,3 +102,4 @@ class FavoriteFactory(DjangoModelFactory[Favorite]):
 
     class Meta:
         model = Favorite
+        django_get_or_create = ("user", "post")

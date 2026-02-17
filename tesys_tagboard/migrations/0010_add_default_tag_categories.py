@@ -4,8 +4,8 @@ from django.db.models import Model
 
 def add_categories(apps, schema_editor):
     TagCategory = apps.get_model("tesys_tagboard.TagCategory")
-    TagCategory(name="artist").save()
-    TagCategory(name="copyright").save()
+    TagCategory(name="artist", bg="#bae1ff").save()
+    TagCategory(name="copyright", bg="#ffd3b6").save()
 
 class Migration(migrations.Migration):
     dependencies = [

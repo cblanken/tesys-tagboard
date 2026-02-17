@@ -52,7 +52,7 @@
         </select>
       </fieldset>
       <div id="all-posts-tagset" class="flex">
-        {% component "add_tagset" autocomplete_url="tag-autocomplete" add_tag_enabled=True / %}
+        {% component "add_tagset" autocomplete_url="tag-autocomplete" add_tag_enabled=True tags=default_tags / %}
       </div>
       <input type="submit" value="Post" class="text-xl btn btn-primary" />
       {% if form.errors %}

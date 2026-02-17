@@ -7,6 +7,7 @@ from django.contrib.auth.models import Permission
 from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from pytest_django.asserts import assertRedirects
 from pytest_django.asserts import assertTemplateUsed
 
 from tesys_tagboard.enums import MediaCategory
@@ -117,8 +118,11 @@ class TestCreateTagView:
 
         tag_name = "test_tag"
         data = {"name": tag_name, "category": "ZZ"}
-        response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        response = client.post(self.url, data, follow=True)
+        assertRedirects(response, reverse("tags"))
+        assert response.status_code == HTTPStatus.OK
+        msg = next(iter(response.context.get("messages")))
+        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
@@ -129,8 +133,11 @@ class TestCreateTagView:
 
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "999999"}
-        response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        response = client.post(self.url, data, follow=True)
+        assertRedirects(response, reverse("tags"))
+        assert response.status_code == HTTPStatus.OK
+        msg = next(iter(response.context.get("messages")))
+        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
@@ -141,8 +148,11 @@ class TestCreateTagView:
 
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "-1"}
-        response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        response = client.post(self.url, data, follow=True)
+        assertRedirects(response, reverse("tags"))
+        assert response.status_code == HTTPStatus.OK
+        msg = next(iter(response.context.get("messages")))
+        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.objects.get(name=tag_name)
@@ -583,6 +593,23 @@ class TestPostsView:
         client.force_login(user)
         with django_assert_max_num_queries(25):
             client.get(self.url)
+
+
+@pytest.mark.django_db
+class TestPostsAutocomplete:
+    url = reverse("autocomplete")
+
+    def test_autocomplete_as_anonymous_user(self, client):
+        data = {"query": "blu"}
+        response = client.get(self.url, data)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_autocomplete_as_known_user(self, client):
+        user = UserFactory.create()
+        client.force_login(user)
+        data = {"query": "blu"}
+        response = client.get(self.url, data)
+        assert response.status_code == HTTPStatus.OK
 
 
 def get_uploaded_test_media_file(
