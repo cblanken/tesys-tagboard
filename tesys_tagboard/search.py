@@ -193,7 +193,21 @@ class TokenCategory(Enum):
         arg_validator=tag_name_validator,
     )
 
-    ID = ComparisonSearchToken("id", "The ID of a Post", (), positive_int_validator)
+    TAG_ID = SimpleSearchToken(
+        "tag_id",
+        "The ID of a tag.",
+        (),
+        positive_int_validator,
+        allow_wildcard=False,
+        allowed_arg_relations=(TokenArgRelation.EQUAL,),
+    )
+
+    POST_ID = ComparisonSearchToken(
+        "id",
+        "The ID of a Post",
+        (),
+        positive_int_validator
+    )
 
     TAG_ALIAS = WildcardSearchToken(
         "alias",
@@ -278,7 +292,10 @@ class TokenCategory(Enum):
 
     @classmethod
     def select(cls, name: str) -> TokenCategory:
-        """Select token category by name or one of its aliases"""
+        """Select token category by name or one of its aliases
+
+        Raises: `SearchTokenNameError`
+        """
         for tc, name_and_aliases in [
             (tc, [tc.value.name, *tc.value.aliases])
             for tc in TokenCategory.__members__.values()
@@ -517,7 +534,15 @@ class PostSearch:
                         token_expr = Q(tags__name__like=token.arg_with_wildcards())
                     else:
                         token_expr = Q(tags__name=token.arg)
-                case TokenCategory.ID:
+                case TokenCategory.TAG_ID:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(tags__pk=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.POST_ID:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(pk__lt=token.arg)
