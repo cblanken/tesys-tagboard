@@ -455,6 +455,18 @@ class TestPostAdvancedSearchTags:
 
 
 @pytest.mark.django_db
+class TestPostAdvancedTagID:
+    def test_id_equal(self):
+        post = PostFactory.create()
+        tag = TagFactory.create()
+        post.tags.add(tag)
+        ps = PostSearch(f"tag_id={tag.pk}")
+        posts = ps.get_posts()
+        assert len(posts) == 1
+        assert posts[0].pk == post.pk
+
+
+@pytest.mark.django_db
 class TestPostAdvancedSearchTagAliases:
     def test_include_tag_alias(self):
         pass
@@ -467,7 +479,7 @@ class TestPostAdvancedSearchTagAliases:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchID:
+class TestPostAdvancedSearchPostID:
     def test_id_equal(self):
         post = PostFactory.create()
         ps = PostSearch(f"id={post.pk}")
