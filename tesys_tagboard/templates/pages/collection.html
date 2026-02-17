@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load static component_tags %}
+
+{% block title %}
+  {{ block.super }} — Collection: {{ collection.name }}
+{% endblock title %}
+{% block content %}
+  <div class="flex flex-col items-center">
+    <header>
+      <h1>{{ collection.name }}</h1>
+      <p class="text-placeholder text-md">{{ collection.desc }}</p>
+    </header>
+    <div class="flex flex-col gap-4 items-center">
+      <section class="flex flex-col gap-4 items-center">
+        <div class="flex flex-wrap gap-4 justify-center">{% component "post_gallery" with page=page pager=pager / %}</div>
+      </section>
+    </div>
+  </div>
+{% endblock content %}

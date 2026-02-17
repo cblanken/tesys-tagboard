@@ -1,7 +1,8 @@
 # ==== pytest ====
 [tool.pytest.ini_options]
+strict = true
 minversion = "6.0"
-addopts = "--ds=config.settings.test --reuse-db --import-mode=importlib"
+addopts = "--ds=config.settings.test --import-mode=importlib"
 python_files = [
     "tests.py",
     "test_*.py",
@@ -15,7 +16,7 @@ plugins = ["django_coverage_plugin"]
 
 # ==== mypy ====
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 check_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_ignores = true
@@ -29,6 +30,11 @@ plugins = [
 # Django migrations should not produce any errors:
 module = "*.migrations.*"
 ignore_errors = true
+
+[[tool.pyright]]
+reportAttributeAccessIssue = "warning"
+venvPath = "."
+venv = ".venv"
 
 [tool.django-stubs]
 django_settings_module = "config.settings.test"
@@ -113,13 +119,19 @@ select = [
 
 ignore = [
     "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
+    "S311", # Use of pseudo-random number generator detected
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
     "SIM102", # sometimes it's better to nest
     "COM812", # may cause conflicts with the formatter
+    "PLR2004",# allow hardcoded values
     # of types for comparison.
     # Deactivated because it can make the code slow:
     # https://github.com/astral-sh/ruff/issues/7871
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore print function lint for commands
+"tesys_tagboard/management/commands/*" = ["T201"]
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -140,9 +152,10 @@ dev = [
     "mypy==1.18.2",
     "pre-commit==4.3.0",
     "psycopg[c]==3.2.11",
-    "pytest==8.4.2",
+    "pytest>=9.0",
     "pytest-django==4.11.1",
     "pytest-sugar==1.1.1",
+    "pytest-xdist>=3.8.0",
     "ruff==0.14.2",
     "sphinx==8.2.3",
     "sphinx-autobuild==2025.8.25",
@@ -160,35 +173,44 @@ license = { text = "MIT" }
 authors = [
   { name = "Cameron Blankenbuehler", email = "cameron.blankenbuehler@protonmail.com" },
 ]
-requires-python = "==3.13.*"
+requires-python = "==3.14.*"
 dependencies = [
     "argon2-cffi==25.1.0",
     "crispy-bootstrap5==2025.6",
     "crispy-tailwind>=1.0.3",
-    "django==5.2.7",
+    "django>=6.0.1",
     "django-allauth[mfa,socialaccount]==65.12.1",
     "django-anymail[mailgun]==13.1",
     "django-browser-reload>=1.21.0",
+    "django-colorfield>=0.14.0",
     "django-components>=0.143.1",
     "django-cors-headers==4.9.0",
     "django-crispy-forms==2.4",
     "django-environ==0.12.0",
     "django-htmx>=1.26.0",
+    "django-minify-html>=1.14.0",
     "django-model-utils==5.0.0",
     "django-ninja>=1.4.5",
     "django-redis==6.0.0",
+    "django-silk>=5.4.3",
     "django-tailwind>=4.3.0",
     "django-template-partials>=25.2",
+    "django-typer>=3.5.1",
     "django-watchfiles>=1.4.0",
     "djangorestframework==3.16.1",
     "gunicorn==23.0.0",
     "hiredis==3.3.0",
     "imagehash>=4.3.2",
     "jwt>=1.4.0",
+    "markdown>=3.10",
+    "more-itertools>=10.8.0",
     "pillow==12.0.0",
+    "psycopg2>=2.9.11",
     "psycopg[c]==3.2.11",
+    "python-magic>=0.4.27",
     "python-slugify==8.0.4",
     "redis==7.1.0",
+    "rich>=14.2.0",
     "uvicorn-worker==0.4.0",
     "uvicorn[standard]==0.38.0",
     "whitenoise==6.11.0",

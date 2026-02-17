@@ -1,0 +1,9 @@
+{% load component_tags %}
+
+<section class="flex flex-col gap-2 w-full">
+  {% component "pager" with pager=comments_pager page=comments_page / %}
+  {% for comment in comments %}
+    {% component "comment" comment=comment / %}
+  {% endfor %}
+  {% component "pager" with pager=comments_pager page=comments_page / %}
+</section>

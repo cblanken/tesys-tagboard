@@ -1,12 +1,43 @@
 {% load component_tags %}
 
-<div class="flex flex-col gap-2 align-start add-tagset-container">
-  <div class="flex gap-2 items-start my-4">
-    <div>{% component "search_bar" autocomplete_url=autocomplete_url / %}</div>
-  </div>
-  <div class="flex gap-2 items-center tagset">
+<div class="flex flex-col gap-2 my-1 w-full align-start add-tagset-container"
+     data-tagset-name="{{ tagset_name }}">
+  {% if tags|length == 0 %}<div class="ml-2 text-md text-placeholder">No tags yet!</div>{% endif %}
+  <div class="flex flex-wrap gap-2 items-center tagset">
     {% for tag in tags %}
-      {% component "tag" tag=tag / %}
+      {% component "tag" tag=tag size=size actions=actions tagset_name=tagset_name / %}
     {% endfor %}
   </div>
+  {% if add_tag_enabled %}
+    <button class="add-tag-btn {% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn bg-base-200 text-base-content border-2 border-base-content border-dashed hover:bg-base-content hover:text-base-200">
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="tag" %}
+        <div>Add tags...</div>
+      </div>
+    </button>
+    <div class="inline-flex flex-wrap gap-2 items-center lg:flex-nowrap">
+      {% component "search_bar" hidden=True / %}
+      <div class="inline-flex gap-1">
+        <button class="hidden cancel-tag-btn {% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn btn-error">
+          <div class="flex gap-1 items-center">
+            {% include "icons/feather.html" with icon="x-square" %}
+            <div>Cancel</div>
+          </div>
+        </button>
+        <button type="button"
+                class="hidden confirm-tag-btn {% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn btn-success"
+                hx-post="{{ post_url }}"
+                hx-target="closest .add-tagset-container"
+                hx-include="closest .add-tagset-container"
+                hx-on="click"
+                hx-swap="outerHTML"
+                hx-vals='{"tagset_name": "{{ tagset_name }}", "size": "{{ size }}"}'>
+          <div class="flex gap-1 items-center">
+            {% include "icons/feather.html" with icon="check-square" %}
+            <div>Confirm</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  {% endif %}
 </div>

@@ -1,20 +1,25 @@
 {% load component_tags %}
 
-<div id="tags-container"
-     class="flex flex-col gap-4 p-8 w-full rounded-sm bg-base-100">
-  {% for cat, tags in tags_by_cat.items %}
-    {% if tags %}
-      <div>
-        <h2 class="mb-2 text-3xl font-bold">
-          <span>{{ cat.name|capfirst }}</span> tags
-        </h2>
-        <div class="flex flex-wrap gap-2">
-          {% for tag in tags %}
-            {% component "tag" tag=tag size="large" / %}
-          {% endfor %}
+<div id="tags-container" class="flex flex-col gap-8">
+  <section class="flex flex-col gap-4">
+    <div class="flex flex-wrap gap-2">
+      {% for tag in uncategorized_tags %}
+        {% component "tag" tag=tag / %}
+      {% endfor %}
+    </div>
+  </section>
+  <section class="flex flex-col gap-4">
+    {% for category, tags in tags_by_cat.items %}
+      {% if tags %}
+        <h3 class="text-3xl font-bold not-last:divider not-last:divider-start">{{ category.name|capfirst }}</h3>
+        <div>
+          <div class="flex flex-wrap gap-2">
+            {% for tag in tags %}
+              {% component "tag" tag=tag / %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-      <div class="not-last:divider"></div>
-    {% endif %}
-  {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </section>
 </div>

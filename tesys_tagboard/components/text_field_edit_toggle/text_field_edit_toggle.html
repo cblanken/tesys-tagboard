@@ -1,0 +1,36 @@
+<div class="flex flex-wrap gap-2 items-center text-field-edit-form">
+  <span class="field-display">
+    {% if empty_text %}
+      <span class="text-placeholder">{{ empty_text }}</span>
+    {% elif is_link %}
+      <a class="inline link" target="_blank" href="{{ text }}">{{ text }}</a>
+    {% else %}
+      <span>{{ text }}</span>
+    {% endif %}
+  </span>
+  <div class="flex flex-wrap gap-2">
+    <input class="hidden text-base min-w-30 input input-sm focus:input-secondary"
+           type="text"
+           name="{{ input_name }}"
+           value="{{ text|default:"" }}" />
+    <div class="flex flex-nowrap gap-1">
+      <label class="edit-btn" role="button">
+        <div class="flex hidden gap-2 items-center edit-btn_cancel btn btn-xs btn-error">
+          <div>{% include "icons/feather.html" with icon="x-square" %}</div>
+          <div class="uppercase">{{ toggle_text|default:"Cancel" }}</div>
+          <input name="edit-enabled" hidden type="checkbox" />
+        </div>
+        <div class="flex gap-2 items-center edit-btn_edit btn btn-xs btn-warning">
+          <div>{% include "icons/feather.html" with icon="edit" %}</div>
+          <div class="uppercase">{{ toggle_text|default:"Edit" }}</div>
+          <input name="edit-enabled" hidden type="checkbox" />
+        </div>
+      </label>
+      <button type="button"
+              class="flex hidden gap-1 items-center btn btn-xs btn-success">
+        <div>{% include "icons/feather.html" with icon="check-square" %}</div>
+        <div class="uppercase">Confirm</div>
+      </button>
+    </div>
+  </div>
+</div>

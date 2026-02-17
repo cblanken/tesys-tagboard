@@ -50,9 +50,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-staticfiles/
-
 # Sphinx documentation
 docs/_build/
 
@@ -271,6 +268,9 @@ tesys_tagboard/media/
 .ipython/
 .env
 .envs/*
+!.envs/.local/
 
 # Dev env
 .helix
+
+staticfiles

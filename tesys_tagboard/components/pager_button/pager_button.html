@@ -1,0 +1,7 @@
+{% if disabled or page_num == "…" %}
+  <button disabled
+          class="join-item btn btn-xs sm:btn-sm md:btn-lg {% if active %}btn-active{% endif %}">{{ text }}</button>
+{% else %}
+  <a href="?{% for key, value in request.GET.items %}{% if key != query_page_arg_name %}{{ key }}={{ value }}&{% endif %}{% endfor %}{{ query_page_arg_name }}={{ page_num }}"
+     class="join-item btn btn-xs sm:btn-sm md:btn-lg {% if active %}btn-active{% endif %}">{{ text }}</a>
+{% endif %}

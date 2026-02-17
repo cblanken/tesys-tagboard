@@ -1,26 +1,38 @@
-{% load component_tags %}
+{% load component_tags static %}
 
-<a class="relative skeleton post-thumbnail group/post w-[400px] h-[400px]"
-   href="{% url "post" media_id=post.media.id %}">
-  <img class="object-cover invisible w-full h-full rounded-md"
-       loading="lazy"
-       src="{{ post.media.image.file.url }}"
-       alt="image" />
-  <div class="flex hidden absolute top-0 flex-col justify-between p-2 w-full h-full post-thumbnail-hover group-hover/post:flex">
-    <section class="flex gap-1 self-end">
-      <button class="flex align-center btn btn-secondary">
-        <div>Favorite</div>
-        {% include "icons/feather.html" with icon="heart" %}
-      </button>
-      <button class="btn btn-secondary">
-        <div>Add to collection</div>
-        {% include "icons/feather.html" with icon="list" %}
-      </button>
+<div data-post_id="{{ post.pk|safe }}"
+     {% if post.favorited %}data-favorite{% endif %}
+     class="{% if post.blur_level or post.blur_tag %}overflow-clip hover:overflow-visible{% endif %} relative rounded-box {% if post.image %}skeleton{% else %}bg-neutral{% endif %} post-thumbnail group/post w-[calc(100svw - 14px)] max-h-svh md:w-75 md:h-75 md:max-w-75 md:max-h-75">
+  <a class="absolute w-full h-full link z-2"
+     href="{% url "post" post_id=post.pk %}"></a>
+  {% if post.image %}
+    <img class="{% if post.blur_level or post.blur_tag %}blur-md group-hover/post:blur-none{% endif %} object-cover w-full h-full rounded-box invisible"
+         loading="lazy"
+         {% if post.image.thumbnail %} src="{{ post.image.thumbnail.url|safe }}" width="{{ post.image.thumbnail.width|safe }}" height="{{ post.image.thumbnail.height|safe }}" {% else %} src="{% static "images/default_thumbnail.png" %}" width="400px" height="400px" {% endif %}
+         alt="image" />
+  {% elif post.audio %}
+    <div class="flex justify-center items-center size-full text-neutral-content">
+      {% include "icons/feather.html" with icon="volume-2" size="xl" %}
+    </div>
+  {% elif post.video %}
+    <div class="flex justify-center items-center size-full text-neutral-content">
+      {% include "icons/feather.html" with icon="play-circle" size="xl" %}
+    </div>
+  {% else %}
+  {% endif %}
+  <div class="hidden absolute top-0 flex-col justify-between p-0 w-full h-full rounded-box post-thumbnail-hover group-hover/post:flex">
+    <section class="flex z-10 gap-1 self-end p-2">
+      {% if request.user.is_authenticated %}
+        {% component "favorite_toggle" post=post / %}
+        {% component "collection_picker" post=post collections=collections / %}
+      {% endif %}
     </section>
-    <section class="flex flex-wrap gap-1 text-sm">
-      {% for tag in tags %}
-        {% component "tag" tag=tag size="small" / %}
-      {% endfor %}
-    </section>
+    <div class="absolute {% if tags|length > 4 %}top-2/3 max-h-1/3 hover:max-h-fit{% else %}top-3/4 hover:h-1/4 hover:max-h-1/4{% endif %} rounded-b-box p-2 w-full z-5 overflow-clip hover:overflow-visible hover:bg-neutral/30">
+      <div class="flex flex-wrap gap-1">
+        {% for tag in tags %}
+          {% component "tag" tag=tag size="xs" / %}
+        {% endfor %}
+      </div>
+    </div>
   </div>
-</a>
+</div>

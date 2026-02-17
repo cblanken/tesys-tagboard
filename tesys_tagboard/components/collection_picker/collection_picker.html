@@ -1,0 +1,33 @@
+{% load custom_filters %}
+
+<div class="dropdown">
+  <button tabindex="0"
+          role="button"
+          class="{% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn btn-secondary">
+    <div class="flex gap-1 items-center text-nowrap">
+      {% include "icons/feather.html" with icon="list" %}
+      <div>Add to collection</div>
+    </div>
+  </button>
+  <ul tabindex="-1"
+      class="top-full mt-1 rounded-field dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+    {% if collections %}
+      {% for collection in collections %}
+        <div hx-on="click"
+             hx-swap="innerHTML"
+             hx-include="#post-{{ post.pk }}-collection-{{ collection.pk }} input"
+             hx-target="#post-{{ post.pk }}-collection-{{ collection.pk }}"
+             {% if post in collection.posts.all %} hx-post="{% url 'collection-remove-post' collection_id=collection.pk %}" {% else %} hx-post="{% url 'collection-add-post' collection_id=collection.pk %}" {% endif %}>
+          <input name="collection-edit" type="hidden" />
+          {% if post in collection.posts.all %}
+            {% include "collections/picker_item.html" with collection=collection post=post checked=True %}
+          {% else %}
+            {% include "collections/picker_item.html" with collection=collection post=post %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      {% include "collections/picker_item.html" with text="You don't have any collections yet!" %}
+    {% endif %}
+  </ul>
+</div>

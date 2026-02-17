@@ -2,8 +2,8 @@ from ninja import NinjaAPI
 from ninja import Schema
 from ninja.orm import create_schema
 
-from .enums import TagCategory
 from .models import Tag
+from .models import TagCategory
 
 api = NinjaAPI()
 
@@ -36,15 +36,15 @@ def create_tag(request, params: TagIn):
     """
 
     if params.category_name is None:
-        category = TagCategory.BASIC
+        category = None
     else:
-        category = TagCategory.__members__.get(params.category_name.upper())
+        category = TagCategory.objects.get(name=params.category_name.lower())
         if category is None:
             return {"error": "That tag category doesn't exist"}
 
     tag = Tag.objects.create(
         name=params.name,
-        category=category.value.shortcode,
+        category=category,
         rating_level=params.rating_level,
     )
     return {"id": tag.pk}

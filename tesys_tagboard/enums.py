@@ -1,49 +1,27 @@
 from dataclasses import dataclass
 from enum import Enum
+from enum import IntEnum
 from enum import StrEnum
 from typing import Self
 
-from django.utils.deconstruct import deconstructible
 
+class RatingLevel(IntEnum):
+    """Rating levels for posts
+    Default: UNRATED
 
-@dataclass
-@deconstructible
-class TagCategoryData:
-    """Class for categorizes tags"""
+    These levels are ordered such that SAFE < UNRATED < QUESTIONABLE < EXPLICIT
+    This enables a simple integer comparison to be made on the RatingLevel value
+    to show only the desired posts
+    """
 
-    shortcode: str
-    prefixes: set[str]
-    display_name: str
-
-    def __repr__(self):
-        return f"<TagCategory: {self.shortcode} - {','.join(self.prefixes)}>"
-
-    def __eq__(self, other):
-        return (
-            self.shortcode == other.shortcode
-            and self.prefixes == other.prefixes
-            and self.display_name == other.display_name
-        )
-
-    def __hash__(self):
-        return hash(self.shortcode)
-
-
-class TagCategory(Enum):
-    """A basic tag with no prefix"""
-
-    BASIC = TagCategoryData("BA", {"", "basic"}, "basic")
-    ARTIST = TagCategoryData("AR", {"art", "artist"}, "artist")
-    COPYRIGHT = TagCategoryData("CO", {"copy", "copyright"}, "copyright")
+    SAFE = 0
+    UNRATED = 1
+    QUESTIONABLE = 50
+    EXPLICIT = 100
 
     @classmethod
-    def select(cls, name: str):
-        """Select TagCategory by name or one of its aliases"""
-        for names, category in [(x.value.prefixes, x) for x in TagCategory]:
-            if name in names:
-                return category
-
-        return cls.BASIC
+    def choices(cls):
+        return [(level.value, level.name) for level in cls]
 
 
 class MediaCategory(StrEnum):
@@ -86,11 +64,14 @@ class SupportedMediaTypes(Enum):
     JPEG = MediaType("JPEG image", ["jpg", "jpeg"], MediaCategory.IMAGE, "jpeg")
     PNG = MediaType("PNG", ["png"], MediaCategory.IMAGE, "png")
     WEBP = MediaType("WEBP image", ["webp"], MediaCategory.IMAGE, "webp")
+    TIFF = MediaType("TIFF image", ["tif", "tiff"], MediaCategory.IMAGE, "tiff")
     # TODO: support SVG
 
     # Audio types
     MP3 = MediaType("MP3 audio", ["mp3", "mpeg"], MediaCategory.AUDIO, "mpeg")
-    WAV = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "wav")
+    WAV = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "vnd.wav")
+    WAV2 = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "vnd.wave")
+    WAV3 = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "wave")
 
     # Video types
     MP4 = MediaType("MP4 video", ["mp4"], MediaCategory.VIDEO, "mp4")
@@ -102,7 +83,7 @@ class SupportedMediaTypes(Enum):
         """A function to search the supported media types by
         template string.
         Returns the first matched instance of SupportedMediaTypes"""
-        for smt in cls.__members__.values():
+        for smt in cls:
             if template == smt.value.get_template():
                 return smt
 

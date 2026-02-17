@@ -2,20 +2,22 @@ from django.contrib import admin
 
 from .models import Artist
 from .models import Audio
+from .models import Collection
 from .models import Comment
 from .models import Favorite
 from .models import Image
-from .models import Media
-from .models import Pool
 from .models import Post
+from .models import PostTagHistory
+from .models import SourceHistory
 from .models import Tag
 from .models import TagAlias
+from .models import TagCategory
 from .models import Video
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ["pk", "name", "category"]
+    list_display = ["pk", "name", "category", "rating_level"]
     search_fields = ["name", "category"]
     list_filter = ["category"]
 
@@ -23,14 +25,27 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(TagAlias)
 class TagAliasAdmin(admin.ModelAdmin):
     list_display = [
+        "pk",
         "name",
         "tag__name",
         "tag__category",
         "tag__rating_level",
-        "tag__description",
     ]
     search_fields = ["name", "tag__name", "tag__category"]
     list_filter = ["tag__category", "tag__rating_level"]
+
+
+@admin.register(TagCategory)
+class TagCategoryAdmin(admin.ModelAdmin):
+    list_display = ["pk", "name", "parent", "bg", "fg"]
+    search_fields = ["name", "pk"]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if form:
+            form.base_fields["bg"].required = False
+            form.base_fields["fg"].required = False
+        return form
 
 
 @admin.register(Artist)
@@ -41,50 +56,64 @@ class ArtistAdmin(admin.ModelAdmin):
     ordering = ["user"]
 
 
-@admin.register(Media)
-class MediaAdmin(admin.ModelAdmin):
-    list_display = ["orig_name", "type", "src_url", "upload_date", "edit_date"]
-    search_fields = ["orig_name", "type"]
-    list_filter = ["type"]
-
-    def get_form(self, request, obj=None, *args, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if form:
-            form.base_fields["src_url"].required = False
-        return form
+@admin.register(SourceHistory)
+class SourceHistoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "src_url",
+        "mod_time",
+    ]
+    search_fields = ["user", "src_url"]
+    list_filter = ["user"]
 
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
     list_display = [
+        "pk",
+        "post__id",
         "file",
-        "meta__id",
-        "meta__orig_name",
-        "meta__type",
         "md5",
         "phash",
         "dhash",
     ]
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "og_name", "source"]
+    autocomplete_fields = ["post"]
+    list_filter = ["post__type"]
+    search_fields = ["pk", "post__id", "orig_name", "md5", "phash", "dhash"]
 
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "og_name", "source"]
+    list_display = [
+        "pk",
+        "post__id",
+        "file",
+        "md5",
+    ]
+    autocomplete_fields = ["post"]
+    list_filter = ["post__type"]
+    search_fields = ["pk", "post__id", "orig_name", "md5"]
 
 
 @admin.register(Audio)
 class AudioAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["meta"]
-    search_fields = ["meta__type", "og_name", "source"]
+    list_display = [
+        "pk",
+        "post__id",
+        "file",
+        "md5",
+    ]
+    autocomplete_fields = ["post"]
+    list_filter = ["post__type"]
+    search_fields = ["pk", "post__id", "orig_name", "md5"]
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ["user", "text"]
+    list_display = ["pk", "user", "post_id", "post_date", "edit_date", "text"]
     list_filter = ["user"]
+    search_fields = ["text", "user__username", "post__title", "post_date", "edit_date"]
     autocomplete_fields = ["user"]
 
 
@@ -95,21 +124,44 @@ class PostAdmin(admin.ModelAdmin):
         "uploader",
         "post_date",
         "rating_level",
-        "media__orig_name",
-        "media__src_url",
+        "src_url",
     ]
-    search_fields = ["media__orig_name, source__url"]
-    autocomplete_fields = ["media"]
+    search_fields = ["pk", "src_url", "uploader__username"]
+    autocomplete_fields = ["uploader"]
     list_filter = ["rating_level", "uploader"]
 
 
-@admin.register(Pool)
-class PoolAdmin(admin.ModelAdmin):
+@admin.register(PostTagHistory)
+class PostTagHistoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "tags",
+        "mod_time",
+    ]
+    search_fields = ["user", "tags"]
+    list_filter = ["user"]
+
+
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "name",
+        "desc",
+        "public",
+    ]
     autocomplete_fields = ["user", "posts"]
     search_fields = ["user", "name", "desc"]
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "user",
+        "post",
+    ]
     autocomplete_fields = ["user", "post"]
     search_fields = ["user"]

@@ -1,0 +1,446 @@
+from itertools import islice
+from pathlib import Path
+from random import choice
+from random import choices
+from random import randint
+from random import sample
+from typing import TYPE_CHECKING
+from typing import Annotated
+
+import magic
+import typer
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import UploadedFile
+from django_typer.management import Typer
+from faker import Faker
+from PIL import UnidentifiedImageError
+from rich.progress import Progress
+from rich.progress import SpinnerColumn
+from rich.progress import TextColumn
+from rich.progress import track
+
+from tesys_tagboard.enums import MediaCategory
+from tesys_tagboard.enums import RatingLevel
+from tesys_tagboard.enums import SupportedMediaTypes
+from tesys_tagboard.models import Audio
+from tesys_tagboard.models import Collection
+from tesys_tagboard.models import Comment
+from tesys_tagboard.models import Image
+from tesys_tagboard.models import Post
+from tesys_tagboard.models import Tag
+from tesys_tagboard.models import TagAlias
+from tesys_tagboard.models import TagCategory
+from tesys_tagboard.models import Video
+from tesys_tagboard.models import add_tag_history
+from tesys_tagboard.models import update_tag_post_counts
+from tesys_tagboard.users.models import User
+
+Faker.seed(0)
+fake = Faker()
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from django.db.models import QuerySet
+
+
+DEFAULT_USER_USERNAMES = ["user1", "user2", "user3"]
+DEFAULT_MOD_USERNAMES = ["mod1", "mod2", "mod3"]
+DEFAULT_USER_GROUP = Group.objects.get(name="Users")
+DEFAULT_MOD_GROUP = Group.objects.get(name="Moderators")
+
+app = Typer()
+
+
+def delete_recursively(path: Path):
+    for root, dirs, files in path.walk(top_down=False):
+        for file in files:
+            Path(root / file).unlink()
+        for d in dirs:
+            Path(root / d).rmdir()
+
+
+@app.command()
+def main(  # noqa: PLR0913
+    media_dir: Annotated[str, typer.Argument()],
+    max_tags: Annotated[
+        int,
+        typer.Option(
+            "--max-tags", "-t", help="The maximum number of tags to randomly generate."
+        ),
+    ] = 500,
+    max_users: Annotated[
+        int,
+        typer.Option(
+            "--max-users",
+            "-u",
+            help="The maximum number of users to randomly generate.",
+        ),
+    ] = 200,
+    max_posts: Annotated[
+        int,
+        typer.Option(
+            "--max-posts",
+            "-p",
+            help="The maximum number of posts to randomly generate.",
+        ),
+    ] = 500,
+    max_collections: Annotated[
+        int,
+        typer.Option(
+            "--max-collections",
+            "-c",
+            help="The maximum number of collections to randomly generate.",
+        ),
+    ] = 50,
+    max__posts_per_collection: Annotated[
+        int,
+        typer.Option(
+            help="The maximum number of posts to link to any single collection"
+        ),
+    ] = 50,
+):
+    """
+    A command to create demo data for testing the app. Media files must be loaded from
+    disk. The provided `media_dir` will be searched recursively for any supported files
+    and create posts from them. All other data such as Tags, Comments, Collections, and
+    Users will be generated randomly with options to adjust the thresholds.
+    """
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Deleting old DB data...", total=None)
+        Tag.objects.all().delete()
+        TagAlias.objects.all().delete()
+        Post.objects.all().delete()
+        User.objects.exclude(is_staff=True).delete()
+        Collection.objects.all().delete()
+
+        progress.add_task(description="Deleting old media files...", total=None)
+        media_root = Path(settings.MEDIA_ROOT)
+        thumbnails_dir = media_root / "thumbnails"
+        delete_recursively(thumbnails_dir)
+        uploads_dir = media_root / "uploads"
+        delete_recursively(uploads_dir)
+
+    print("Old data deleted.")
+
+    # Create default users
+    default_users = User.objects.bulk_create(
+        [User(username=name) for name in DEFAULT_USER_USERNAMES]
+    )
+    default_mods = User.objects.bulk_create(
+        [User(username=name) for name in DEFAULT_MOD_USERNAMES]
+    )
+
+    for user in default_users + default_mods:
+        user.save()
+
+    # Apply default groups to default users
+    DEFAULT_USER_GROUP.user_set.set(default_users + default_mods)
+    DEFAULT_MOD_GROUP.user_set.set(default_mods)
+
+    create_random_users(max_users)
+
+    create_random_tags(max_tags)
+
+    create_random_tag_aliases(Tag.objects.all())
+
+    media_files = get_media_files_from_disk(Path(media_dir), max_files=max_posts)
+    create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
+
+    create_random_post_collections(Post.objects.all(), max_collections=50)
+
+
+def create_random_users(n: int = 50):
+    """Create `n` randomized Users
+    Note each user's password is the same as their username repeated twice
+    """
+    n = min(n, 10_000)
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating random users...", total=None)
+        random_user_names = fake.words(
+            n, ext_word_list=[fake.user_name() for _ in range(n * 2)], unique=True
+        )
+        users = [
+            User(username=name, password=name + name) for name in random_user_names
+        ]
+        random_users = User.objects.bulk_create(users)
+        for user in random_users:
+            user.save()
+        DEFAULT_USER_GROUP.user_set.add(*random_users)
+
+    print(f"Created {len(users)} users.")
+
+
+def create_random_tags(n: int = 500):
+    """Create `n` randomized Tags"""
+    n = min(n, 10_000)
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating random tags...", total=None)
+
+        tag_split = 0.5
+        simple_random_tag_names = fake.words(int(n * tag_split), unique=True)
+        categorized_random_tag_names = fake.words(int(n * (1 - tag_split)), unique=True)
+
+        simple_tags = [
+            Tag(name=name, category=None) for name in simple_random_tag_names
+        ]
+        tags_with_categories = [
+            Tag(name=name, category=choice(TagCategory.objects.all()))
+            for name in categorized_random_tag_names
+        ]
+        Tag.objects.bulk_create(simple_tags, ignore_conflicts=True)
+        Tag.objects.bulk_create(tags_with_categories, ignore_conflicts=True)
+    print(f"Created {len(tags_with_categories)} tags.")
+
+
+def create_random_tag_aliases(tags: QuerySet[Tag], percent: float = 0.1):
+    """Create TagAliases for the given set of tags
+    percent: percent of Tags to receive an alias
+    """
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating random tag aliases...", total=None)
+        picked_tags = choices(tags, k=int(percent * len(tags)))
+        tag_aliases = [
+            TagAlias(name=f"alias_{i}_{tag.name}", tag=tag)
+            for i, tag in enumerate(picked_tags)
+        ]
+        TagAlias.objects.bulk_create(tag_aliases, ignore_conflicts=True)
+    print(f"Created {len(tag_aliases)} tag aliases.")
+
+
+def create_random_post_collections(
+    posts: QuerySet[Post],
+    max_collections: int = 100,
+    max_posts_per_collection: int = 50,
+):
+    """Create collections with randomly assigned posts"""
+    collections = []
+    collection_posts = []
+    user_options = list(User.objects.all())
+    post_options = list(posts)
+    for _ in range(max_collections):
+        collection = Collection(
+            user=choice(user_options),
+            name=fake.sentence(8),
+            desc=fake.sentence(15),
+        )
+        collections.append(collection)
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating collections...", total=None)
+        created_collections = Collection.objects.bulk_create(collections)
+
+    print(f"Created {len(created_collections)} collections.")
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Linking collections to posts...", total=None)
+
+        def get_random_post_ids():
+            return [
+                s.pk
+                for s in sample(post_options, k=randint(0, max_posts_per_collection))
+            ]
+
+        collection_posts = []
+        for collection in created_collections:
+            collection_posts.extend(
+                [
+                    Collection.posts.through(
+                        collection_id=collection.pk, post_id=post_id
+                    )
+                    for post_id in get_random_post_ids()
+                ]
+            )
+
+        created_collection_posts = Collection.posts.through.objects.bulk_create(
+            collection_posts
+        )
+    print(f"Added {len(created_collection_posts)} posts to collections.")
+
+
+def create_random_posts(  # noqa: C901, PLR0912, PLR0915
+    media_files: Iterable[Path], user_select_max=100, max_posts=1000
+):
+    tag_options = list(Tag.objects.all())
+    users = User.objects.all()
+    uploaders = choices(users, k=user_select_max)
+    posts = []
+    comments = []
+    media_objects = []
+    media_files_list = list(media_files)
+
+    media_files_sample = sample(
+        media_files_list, k=min(len(media_files_list), max_posts)
+    )
+    for file in track(
+        media_files_sample,
+        description="Creating posts from media files...",
+    ):
+        m = magic.from_file(file, mime=True)
+        if smt := SupportedMediaTypes.find(m):
+            if media_type := SupportedMediaTypes.find(smt.value.get_template()):
+                post = Post(
+                    title=fake.sentence(10),
+                    uploader=choice(uploaders),
+                    rating_level=choice(RatingLevel.choices())[0],
+                    src_url=fake.word() + ".example.com",
+                    type=media_type.name,
+                )
+
+                comment_texts = [
+                    " ".join(fake.sentences(4)) for _ in range(randint(0, 10))
+                ]
+
+                comments.extend(
+                    [
+                        Comment(post=post, user=choice(users), text=text)
+                        for text in comment_texts
+                    ]
+                )
+
+                media_object = None
+                match smt.value.category:
+                    case MediaCategory.AUDIO:
+                        fp = file.open("rb")
+                        media_object = Audio(
+                            file=UploadedFile(UploadedFile(fp)), orig_name=file.name
+                        )
+                    case MediaCategory.IMAGE:
+                        try:
+                            fp = file.open("rb")
+                            media_object = Image(
+                                file=UploadedFile(fp), orig_name=file.name
+                            )
+                        except UnidentifiedImageError:
+                            print("The image file couldn't be identified by PIL")
+                            print(f"See the file at {file.resolve()}")
+                    case MediaCategory.VIDEO:
+                        fp = file.open("rb")
+                        media_object = Video(
+                            file=UploadedFile(UploadedFile(fp)), orig_name=file.name
+                        )
+
+                if media_object:
+                    media_object.post = post
+                    media_objects.append(media_object)
+
+                posts.append(post)
+            else:
+                print(f"The file type of '{file}' is not supported")
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating posts...", total=None)
+        created_posts = Post.objects.bulk_create(posts)
+    print(f"Created {len(created_posts)} posts.")
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Adding tags to posts...", total=None)
+
+        post_tags = []
+
+        def get_random_tag_ids():
+            return [s.pk for s in sample(tag_options, k=randint(0, 25))]
+
+        for post in created_posts:
+            post_tags.extend(
+                [
+                    Post.tags.through(post_id=post.pk, tag_id=tag_id)
+                    for tag_id in get_random_tag_ids()
+                ]
+            )
+
+        Post.tags.through.objects.bulk_create(post_tags)
+    print("Tags added to posts.")
+
+    for post in track(created_posts, description="Updating posts' tag histories..."):
+        add_tag_history(post.tags.all(), post, post.uploader)
+
+    for post in track(created_posts, description="Updating posts' source histories..."):
+        post.save_with_src_history(post.uploader, post.src_url)
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Adding comments to posts...", total=None)
+        Comment.objects.bulk_create(comments)
+    print("Comments added to posts.")
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Updating tag post counts", total=None)
+        update_tag_post_counts()
+    print("Tag post counts updated.")
+
+    for post in track(
+        created_posts, description="Adding parent and child post links..."
+    ):
+        for child_post in choices(created_posts, k=randint(0, 5)):
+            child_post.parent = post
+            child_post.save()
+    print("Parent and child post links added.")
+
+    for obj in track(
+        media_objects,
+        description="Saving media files to database and generating thumbnails...",
+    ):
+        try:
+            obj.save()
+        except OSError as e:
+            print(e)
+            continue
+    print(f"Saved {len(media_objects)} media files.")
+
+
+def get_media_files_from_disk(
+    path: Path, *, recursive: bool = True, max_files: int = 1000
+) -> Iterable[Path]:
+    """Imports media (audios, images, or videos) from disk"""
+    media_files = []
+    if recursive:
+        media_files = (f for f in path.glob("**") if f.is_file())
+    else:
+        media_files = (f for f in path.glob("*") if f.is_file())
+
+    return islice(media_files, max_files)

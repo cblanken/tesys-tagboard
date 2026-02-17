@@ -1,6 +1,8 @@
-{% load static custom_filters %}
+{% load static custom_filters cache %}
 
+{% cache None feather_icon size fill icon %}
 {% get_static_prefix as STATIC_PREFIX %}
-<svg class="feather">
-  <use href="{{ STATIC_PREFIX }}/icons/feather-sprite.svg#{{ icon }}" />
+<svg class="feather {% if size == "lg" %}size-8!{% elif size == "xl" %}size-32!{% endif %} {% if fill %}fill-current!{% endif %}">
+  <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#{{ icon }}" />
 </svg>
+{% endcache %}

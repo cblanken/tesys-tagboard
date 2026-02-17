@@ -11,17 +11,70 @@
   logs: true;
 }
 
+@font-face {
+  font-family: "Komikula";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+
+  src:
+    local("Komikula"),
+    url("/static/fonts/komikula/Komikula.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Pak Kumis";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+
+  src:
+    url("/static/fonts/pak_kumis/Pak Kumis.otf") format("opentype");
+}
+
+@utility text-placeholder {
+  @apply opacity-70 italic
+}
+
+@utility input {
+  @apply focus:outline-none focus:border-2;
+}
+
 @layer base {
   h1 {
-    @apply text-3xl font-bold tracking-tight;
+    @apply text-4xl font-bold mt-3 mb-1 font-heading tracking-widest;
   }
 
   h2 {
-    @apply text-2xl font-bold tracking-tight;
+    @apply text-3xl font-bold mt-3 mb-1 font-heading tracking-widest;
   }
 
   h3 {
-    @apply text-xl font-bold tracking-tight;
+    @apply text-2xl font-bold mt-3 mb-1 font-heading tracking-widest;
+  }
+
+  ul:not(.dropdown-content) {
+    @apply list-disc list-outside ms-5;
+  }
+
+  li {
+    @apply leading-7;
+  }
+
+  a:not(.link) {
+    @apply border-b-2 border-b-accent;
+  }
+
+  a:not(.link):hover {
+    @apply bg-accent text-accent-content transition duration-100 ease-in-out;
+  }
+
+  p {
+    @apply leading-6;
+  }
+
+  code {
+    @apply bg-neutral text-neutral-content pt-1;
   }
 }
 
@@ -36,12 +89,18 @@
   --text-4xl: 2.55rem;
   --text-5xl: 3.65rem;
 
+  --font-heading: "Komikula", "Pak Kumis", "Courier New", mono;
+
   /* Colors */
-  --color-tag-basic: #a8e6cf;
+  --color-tag-default: #a8e6cf;
   --color-tag-copyright: #ffd3b6;
   --color-tag-artist: #bae1ff;
+
   --color-filter-func: #fceb7e;
   --color-tag-content: #383737; /* Tag text */
+  --color-user: #121212;
+  --color-user-content: #ddd;
+
 
   /* Keyframes */
   @keyframes fade_in {

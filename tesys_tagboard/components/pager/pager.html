@@ -1,19 +1,23 @@
+{% load component_tags %}
+
 <div class="join">
-  {% if page.has_previous %}
-    {% include "nav/pager_button.html" with text="Previous" page_num=page.previous_page_number %}
-  {% else %}
-    {% include "nav/pager_button.html" with text="Previous" disabled=True %}
-  {% endif %}
-  {% for page_num in pager.page_range %}
-    {% if page_num == page.number %}
-      {% include "nav/pager_button.html" with text=page_num page_num=page_num active=True %}
+  {% if pager.num_pages > 1 %}
+    {% if page.has_previous %}
+      {% component "pager_button" text="Previous" page_num=page.previous_page_number query_page_arg_name=query_page_arg_name / %}
     {% else %}
-      {% include "nav/pager_button.html" with text=page_num page_num=page_num active=False %}
+      {% component "pager_button" text="Previous" disabled=True query_page_arg_name=query_page_arg_name / %}
     {% endif %}
-  {% endfor %}
-  {% if page.has_next %}
-    {% include "nav/pager_button.html" with text="Next" page_num=page.next_page_number %}
-  {% else %}
-    {% include "nav/pager_button.html" with text="Next" disabled=True %}
+    {% for page_num in page_range %}
+      {% if page_num == page.number %}
+        {% component "pager_button" text=page_num page_num=page_num active=True query_page_arg_name=query_page_arg_name / %}
+      {% else %}
+        {% component "pager_button" text=page_num page_num=page_num active=False query_page_arg_name=query_page_arg_name / %}
+      {% endif %}
+    {% endfor %}
+    {% if page.has_next %}
+      {% component "pager_button" text="Next" page_num=page.next_page_number query_page_arg_name=query_page_arg_name / %}
+    {% else %}
+      {% component "pager_button" text="Next" disabled=True query_page_arg_name=query_page_arg_name / %}
+    {% endif %}
   {% endif %}
 </div>

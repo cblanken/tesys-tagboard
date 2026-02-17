@@ -6,25 +6,25 @@
   {{ block.super }} — Posts
 {% endblock title %}
 {% block content %}
-  <div class="flex flex-col gap-4 items-center">
+  <div class="flex flex-col gap-4 justify-center items-center max-w-svw">
+    {% include "heading.html" with text="POSTS" %}
+    <form method="post"
+          class="flex flex-wrap gap-2 justify-center items-center w-full md:flex-nowrap">
+      <input type="text"
+             placeholder="Search..."
+             class="w-full input md:w-100 lg:w-150" />
+      <button class="w-full btn btn-info md:w-50 lg:w-75" type="submit">Search</button>
+    </form>
     <form action="{% url 'posts' %}"
           method="post"
           enctype="multipart/form-data"
-          class="flex gap-2 items-center">
+          class="flex flex-col gap-2 w-full align-stretch lg:max-w-250">
       {% csrf_token %}
-      <div id="post-search-tags" class="flex gap-2">
-        {% component "add_tagset" autocomplete_url="post-autocomplete" tags=tags / %}
-        <input type="submit" value="Search" class="mt-4 text-xl btn btn-primary" />
-      </div>
+      {% component "add_tagset" tags=tags add_tag_enabled=True / %}
+      <input type="submit"
+             value="Search"
+             class="w-full text-xl btn btn-lg btn-primary" />
     </form>
-    <section class="flex flex-col gap-4 items-center">
-      {% component "pager" with pager=pager page=page / %}
-      <div class="flex flex-wrap gap-4 justify-center">
-        {% for post in page %}
-          {% component "post_thumbnail" post=post / %}
-        {% endfor %}
-      </div>
-      {% component "pager" with pager=pager page=page / %}
-    </section>
+    {% component "post_gallery" page=page pager=pager / %}
   </div>
 {% endblock content %}

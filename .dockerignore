@@ -16,3 +16,4 @@ venv
 .ipython
 .pytest_cache
 staticfiles
+node_modules

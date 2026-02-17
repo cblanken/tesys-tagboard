@@ -1,26 +1,363 @@
 {% extends "base.html" %}
 
-{% load component_tags %}
+{% load humanize i18n static component_tags %}
 
+{% block extra_meta %}
+  <meta name="keywords" content="{{ meta_tag_names }}" />
+  <meta property="og:title" content="{{ post.title }}" />
+  <meta property="og:description" content="{{ meta_tag_names }}" />
+  <meta property="og:url" content="{{ request.get_full_path }}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="{{ post.image.file.url }}" />
+  <meta property="og:image:height" content="{{ post.image.height }}" />
+  <meta property="og:image:width" content="{{ post.image.width }}" />
+  <meta property="twitter:title" content="{{ meta_tag_names }}" />
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:image:src" content="{{ post.image.file.url }}" />
+{% endblock extra_meta %}
 {% block title %}
   {{ block.super }} — Posts
 {% endblock title %}
+{% block javascript %}
+  {{ block.super }}
+  <script defer src="{% static 'js/post.js' %}"></script>
+{% endblock javascript %}
 {% block content %}
-  <div class="flex flex-wrap gap-4 justify-center">
-    <img class="bg-slate-200 border-2 rounded-md max-h-[1000px] max-w-[70%] object-cover"
-         src="{{ post.media.image.file.url }}"
-         alt="image" />
-    <div class="flex flex-col gap-2 text-xl grow">
-      <div>Uploader: {{ post.uploader.username }}</div>
-      <div>Post date: {{ post.post_date }}</div>
-      {% if post.media.src_url %}<div>Source: {{ post.media.src_url }}</div>{% endif %}
-      <div class="flex flex-wrap gap-2 max-w-[70%]">
-        Tags:
-        {% for tag in tags %}
-          {% component "tag" tag=tag / %}
-        {% endfor %}
+  <main class="touch-manipulation! flex flex-col-reverse gap-6 lg:flex-row lg:items-start">
+    <div class="w-full leading-8 post-meta-data lg:max-w-142">
+      <div class="hidden lg:block">
+        {% partialdef next-prev-nav inline %}
+        <div class="flex gap-4 pb-3 w-full">
+          <a {% if previous_post %}href="{% url "post" post_id=previous_post.pk %}"{% endif %}
+             {% if not previous_post %}disabled{% endif %}
+             class="flex items-center w-1/2 font-mono btn btn-info shrink">
+            {% include "icons/feather.html" with icon="chevron-left" size="lg" %}
+          </a>
+          <a {% if next_post %}href="{% url "post" post_id=next_post.pk %}"{% endif %}
+             {% if not next_post %}disabled{% endif %}
+             class="flex items-center w-1/2 font-mono btn btn-info shrink">
+            {% include "icons/feather.html" with icon="chevron-right" size="lg" %}
+          </a>
+        </div>
+      {% endpartialdef next-prev-nav %}
+    </div>
+    <form id="edit-post-form"
+          method="post"
+          class="p-2 border rounded-box border-base-content/15 bg-base-100"
+          action="{% url "post-edit" post_id=post.pk %}">
+      {% csrf_token %}
+      <table class="table table-fixed border-bottom border-b-1 border-base-content/5 text-sm/5 lg:text-base/6">
+        <colgroup>
+          <col />
+          <col class="w-3/4" />
+        </colgroup>
+        <tr>
+          <td class="font-bold">Title</td>
+          <td>
+            {% if request.user.is_authenticated %}
+              {% if post.title %}
+                {% component "text_field_edit_toggle" input_name="title" text=post.title / %}
+              {% else %}
+                {% component "text_field_edit_toggle" input_name="title" empty_text="No title" / %}
+              {% endif %}
+            {% else %}
+              <div class="{% if not post.title %}text-placeholder{% endif %}">{{ post.title|default:"No title" }}</div>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td class="font-bold">Uploaded by</td>
+          <td>{% include "nav/user_link.html" with user=post.uploader %}</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="font-bold">Posted on</span>
+          </td>
+          <td>{{ post.post_date }}</td>
+        </tr>
+        <tr id="post-rating-field">
+          <td class="font-bold">Rating</td>
+          <td>
+            <select onchange=""
+                    name="rating_level"
+                    class="font-bold select select-sm text-md w-fit">
+              {% for rating_level in rating_levels %}
+                <option value="{{ rating_level.value }}"
+                        {% if rating_level.value == post.rating_level %}selected{% endif %}>
+                  {{ rating_level.name|lower|capfirst }} <span class="font-mono">({{ rating_level.value }})</span>
+                </option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td class="font-bold">Source</td>
+          <td>
+            {% if request.user.is_authenticated %}
+              {% if post.title %}
+                {% component "text_field_edit_toggle" input_name="src_url" text=post.src_url / %}
+              {% else %}
+                {% component "text_field_edit_toggle" input_name="src_url" empty_text="Unknown" / %}
+              {% endif %}
+            {% else %}
+              <div class="{% if not post.title %}text-placeholder{% endif %}">{{ post.src_url|default:"Unknown" }}</div>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+      <div class="flex flex-wrap gap-1 my-2 post-tags shrink">
+        {% component "add_tagset" post=post tags=tags size="sm" add_tag_enabled=True / %}
       </div>
-      <div>Rating: {{ post.get_rating_level_display }}</div>
+      <button disabled
+              id="save-post-btn"
+              type="submit"
+              class="w-full btn btn-secondary min-w-30">Save</button>
+    </form>
+    {% partialdef comments inline %}
+    <div id="comments" class="mt-4 mb-8">
+      {% partialdef add-comments inline %}
+      <div id="add-comments" class="flex flex-col gap-4">
+        <div class="flex justify-between">
+          <h2>Comments</h2>
+          {% if perms.tesys_tagboard.edit_post and perms.tesys_tagboard.lock_comments %}
+            <div class="place-self-end p-1 btn btn-ghost tooltip"
+                 data-tip="{% if post.locked_comments %}Unlock{% else %}Lock{% endif %} the comments for this post"
+                 hx-post="{% url "post-toggle-comment-lock" post_id=post.pk %}"
+                 hx-swap="innerHTML"
+                 hx-target="#add-comments">
+              {% partialdef post-comment-lock inline %}
+              {% if post.locked_comments %}
+                {% include "icons/feather.html" with icon="lock" size="lg" %}
+              {% else %}
+                {% include "icons/feather.html" with icon="unlock" size="lg" %}
+              {% endif %}
+            {% endpartialdef post-comment-lock %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="flex">
+        {% if request.user.is_authenticated %}
+          {% if post.locked_comments %}
+            <div class="p-0 m-0 w-full tooltip"
+                 data-tip="The comments for this post are locked">
+            {% endif %}
+            <form class="flex flex-col w-full"
+                  method="post"
+                  id="post-add-comment-form"
+                  action="{% url "post-add-comment" post_id=post.pk %}">
+              {% csrf_token %}
+              <fieldset {% if post.locked_comments %}disabled{% endif %}
+                        class="text-lg fieldset">
+                <textarea maxlength="1000"
+                          name="text"
+                          class="w-full h-24 text-base input textarea max-h-100 focus:input-secondary focus:outline-secondary focus:outline-2"
+                          placeholder="Add a comment..."></textarea>
+              </fieldset>
+              <input {% if post.locked_comments %}disabled{% endif %}
+                     class="my-1 w-full lg:w-36 btn btn-secondary btn-lg"
+                     type="submit"
+                     value="Post"
+                     hx-post="{% url "post-add-comment" post_id=post.pk %}"
+                     hx-target="#post-comments"
+                     hx-swap="innerHTML"
+                     hx-confirm="Are you sure you want to post this comment?"
+                     hx-on::after-request="document.querySelector('#post-add-comment-form textarea').value = ''" />
+            </form>
+            {% if post.locked_comments %}</div>{% endif %}
+        {% endif %}
+      </div>
+    {% endpartialdef add-comments %}
+  </div>
+  <div class="flex flex-col gap-4 items-stretch my-2 w-full">
+    <div id="post-comments">
+      <section class="flex flex-col gap-4 items-center w-full">
+        {% include "posts/comments.html" with comments=comments_page %}
+      </section>
+      {% if comments_pager.num_pages <= 1 and comments_pager.object_list|length == 0 %}
+        <div class="m-auto w-full text-xl text-placeholder">No comments yet!</div>
+      {% endif %}
     </div>
   </div>
+</div>
+{% endpartialdef comments %}
+</div>
+<section class="flex flex-col gap-2 w-full max-w-7xl">
+  <div class="lg:hidden">{% partial next-prev-nav %}</div>
+  <div class="tabs tabs-lift">
+    <label class="tab group">
+      <input type="radio" name="post_content_pane" checked="checked" />
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="image" %}
+        <div class="hidden md:block group-has-[input:checked]:block">
+          {% if post.image %}
+            Image
+          {% elif post.audio %}
+            Audio
+          {% elif post.video %}
+            Video
+          {% else %}
+            No Media
+          {% endif %}
+        </div>
+      </div>
+    </label>
+    <div class="p-2 tab-content bg-base-200 border-base-300">
+      {% if post.image.file.url %}
+        <figure class="rounded-box">
+          <div class="relative w-fit">
+            <img class="rounded-box max-h-[80svh] xl:m-none"
+                 src="{{ post.image.file.url }}"
+                 alt="{{ post.title }}" />
+            <button class="absolute right-2 bottom-2 p-1 border-none hover:scale-110 rounded-field bg-neutral/40 text-neutral-content hover:bg-neutral"
+                    onclick="post_full_screen.showModal()">
+              {% include "icons/feather.html" with icon="maximize" size="lg" %}
+            </button>
+          </div>
+          {% if post.title %}<figcaption class="p-2 italic opacity-70">{{ post.title }}</figcaption>{% endif %}
+        </figure>
+      {% elif post.audio.file.url %}
+        <figure class="flex gap-4 items-center my-4 rounded-box">
+          <audio controls src="{{ post.audio.file.url }}" alt="{{ post.title }}"></audio>
+          <a class="btn btn-info" href="{{ post.audio.file.url }}" target="_blank">
+            {% include "icons/feather.html" with icon='download' %}
+          Download</a>
+        </figure>
+      {% elif post.video.file.url %}
+        <video controls alt="{{ post.title }}" class="rounded-box">
+          <source src="{{ post.video.file.url }}" />
+          <a href="{{ post.video.file.url }}">{{ post.video.file.url }}</a>
+        </video>
+      {% else %}
+        <div class="my-3 text-placeholder">The media file for this post is missing</div>
+      {% endif %}
+      <div class="flex flex-wrap gap-2 justify-end items-center mt-2 w-fit">
+        {% if request.user.is_authenticated %}
+          {% component "favorite_toggle" post=post / %}
+          {% component "collection_picker" post=post / %}
+          {% if perms.tesys_tagboard.delete_post %}
+            <form method="delete"
+                  action="{% url 'post-delete' post_id=post.pk %}"
+                  class="p-0"
+                  onsubmit="return confirm('Are you sure you want to delete this post?');">
+              <button type="submit" class="flex p-3 align-center btn btn-error text-nowrap">
+                <div>{% include "icons/feather.html" with icon="trash" %}</div>
+                <div class="hidden sm:block">Delete post</div>
+              </button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    <label class="tab group">
+      <input type="radio" name="post_content_pane" />
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="tag" %}
+        <div class="hidden sm:block group-has-[input:checked]:block">Tag History</div>
+      </div>
+    </label>
+    <div class="p-6 tab-content bg-base-100 border-base-300">
+      {% if tag_history %}
+        <div class="grid gap-4 lg:grid-cols-[minmax(50px,_1fr)_minmax(100px,_5fr)]">
+          {% for history in tag_history %}
+            <div class="place-self-start text-placeholder min-w-20 max-w-50">{{ history.mod_time|naturaltime }}</div>
+            <div class="flex flex-wrap gap-1">
+              {% for tag in history.tag_objects %}
+                {% component "tag" tag=tag size="sm" / %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-placeholder">This post hasn't had any tag changes yet!</div>
+      {% endif %}
+    </div>
+    <label class="tab group">
+      <input type="radio" name="post_content_pane" />
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="link" %}
+        <div class="hidden sm:block group-has-[input:checked]:block">Source History</div>
+      </div>
+    </label>
+    <div class="p-6 tab-content bg-base-100 border-base-300">
+      {% if source_history %}
+        <div class="grid gap-4 lg:grid-cols-[minmax(50px,_1fr)_minmax(100px,_5fr)]">
+          {% for src_history in source_history %}
+            {% if src_history.src_url.strip %}
+              <div class="place-self-start italic opacity-60 min-w-20 max-w-50">{{ src_history.mod_time|naturaltime }}</div>
+              <a class="link" target="_blank" href="{{ src_history.src_url }}">{{ src_history.src_url }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-placeholder">This post hasn't had any source changes yet.</div>
+      {% endif %}
+    </div>
+    <label class="tab group">
+      <input type="radio" name="post_content_pane" />
+      <div class="flex gap-1 items-center">
+        {% include "icons/feather.html" with icon="link-2" %}
+        <div class="hidden sm:block group-has-[input:checked]:block">Linked Posts</div>
+      </div>
+    </label>
+    <div class="p-6 tab-content bg-base-100 border-base-300">
+      <div class="flex flex-col gap-4 lg:gap-6">
+        {% if post.parent %}
+          <div>
+            <h2>Parent post</h2>
+            {% component "post_thumbnail" post=post.parent / %}
+          </div>
+        {% else %}
+          <div class="text-placeholder">This post doesn't have any linked parent posts.</div>
+        {% endif %}
+        {% if child_posts %}
+          <div>
+            <h2>Child posts</h2>
+            <div class="flex flex-wrap gap-3">
+              {% for child in child_posts %}
+                {% component "post_thumbnail" post=child / %}
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class="text-placeholder">This post doesn't have any linked children posts.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<dialog id="post_full_screen"
+        closedby="any"
+        class="overflow-auto p-2 sm:p-4 lg:p-6 w-dvw h-dvh modal bg-neutral/75 modal-middle">
+  <img class="max-h-[94svh] max-w-[94svw] object-fit"
+       src="{{ post.image.file.url }}"
+       alt="{{ post.title }}" />
+  <div class="fixed right-2 bottom-2 lg:right-4 lg:bottom-4 modal-action">
+    <form method="dialog">
+      <button class="btn btn-primary lg:btn-lg">Close</button>
+    </form>
+  </div>
+  <div class="flex fixed bottom-2 left-2 flex-wrap-reverse gap-4 items-center md:flex-nowrap h-fit max-w-1/2">
+    <button id="zoom-toggle" class="flex gap-2 items-center btn btn-secondary">
+      <div>Zoom</div>
+      {% include "icons/feather.html" with icon="zoom-in" %}
+    </button>
+    <div id="zoom-slider-container"
+         class="flex hidden gap-2 items-center m-auto">
+      <button id="media-zoom-out" class="text-secondary">
+        {% include "icons/feather.html" with icon="zoom-out" size="lg" %}
+      </button>
+      <input id="media-zoom"
+             type="range"
+             min="10"
+             max="300"
+             value="100"
+             step="10"
+             class="range range-lg range-secondary min-w-20 [--range-bg:var(--color-neutral)] lg:min-w-45" />
+      <button id="media-zoom-in" class="text-secondary">
+        {% include "icons/feather.html" with icon="zoom-in" size="lg" %}
+      </button>
+    </div>
+  </div>
+</dialog>
 {% endblock content %}

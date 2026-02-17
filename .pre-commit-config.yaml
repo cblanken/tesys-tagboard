@@ -3,7 +3,7 @@ default_stages: [pre-commit]
 minimum_pre_commit_version: "3.2.0"
 
 default_language_version:
-  python: python3.13
+  python: python3.14
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -27,7 +27,7 @@ repos:
       - id: django-upgrade
         args: ['--target-version', '5.2']
 
-  # Run the Ruff linter.
+  # Run the Ruff linter hook
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.2
     hooks:
@@ -37,6 +37,7 @@ repos:
       # Formatter
       - id: ruff-format
 
+  # Run djlint hook
   - repo: https://github.com/Riverside-Healthcare/djLint
     rev: v1.36.4
     hooks:

@@ -1,22 +1,32 @@
-<ul class="absolute top-full p-0 w-full menu bg-base-200">
+<ul class="absolute top-full p-0 w-full ms-0 menu bg-base-200">
   {% for item in items %}
     <li data-id="{{ item.tag_id }}"
         data-name="{{ item.name }}"
         tabindex="-1"
-        class="border-1 border-b-0 border-neutral/80 last:border-b-1 rounded-none hover:brightness-115 focus:brightness-115 focus:outline-none focus:font-bold text-tag-content {% if item.tag_category == "BA" %}bg-tag-basic {% elif item.tag_category == "AR" %}bg-tag-artist {% elif item.tag_category == "CO" %}bg-tag-copyright {% else %}bg-filter-func{% endif %}">
-      <div class="flex gap-2 rounded-none">
-        {% if item.tag_category %}
-          <div>{% include "icons/feather.html" with icon="tag" %}</div>
-        {% else %}
-          <div>{% include "icons/feather.html" with icon="filter" %}</div>
-        {% endif %}
-        {% if item.alias %}<div class="px-2">{{ alias }} &gt;</div>{% endif %}
-        {% if item.category %}<div>item.category.name</div>{% endif %}
-        <div class="flex justify-between w-full">
-          <div>{{ item.name }}</div>
-          <div>{{ item.extra }}</div>
+        class="max-w-full border-1 border-b-0 border-neutral/80 last:border-b-1 rounded-none hover:brightness-115 focus:brightness-115 focus:outline-none focus:font-bold text-tag-content {% if item.tag_category == "BA" %}bg-tag-basic {% elif item.tag_category == "AR" %}bg-tag-artist {% elif item.tag_category == "CO" %}bg-tag-copyright {% else %}bg-filter-func{% endif %}">
+      <div class="flex justify-between leading-5 rounded-none">
+        <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10">
+          {% if item.alias %}
+            <div>{% include "icons/feather.html" with icon="corner-down-right" %}</div>
+          {% elif item.tag_category %}
+            <div>{% include "icons/feather.html" with icon="tag" %}</div>
+          {% else %}
+            <div>{% include "icons/feather.html" with icon="filter" %}</div>
+          {% endif %}
+          <div>
+            {% if item.alias %}
+              <div class="flex flex-wrap gap-1 items-center">
+                <div>{{ item.alias }}</div>
+                {% include "icons/feather.html" with icon="arrow-right" %}
+                <div>{{ item.name }}</div>
+              </div>
+            {% else %}
+              {{ item.name }}
+            {% endif %}
+          </div>
         </div>
       </div>
+      <div class="flex absolute right-2 h-full lg:right-4">{{ item.extra }}</div>
     </li>
   {% endfor %}
 </ul>

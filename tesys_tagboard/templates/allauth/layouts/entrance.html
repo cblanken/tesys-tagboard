@@ -10,24 +10,9 @@
     {% trans "Sign In" %}
   {% endblock head_title %}
 {% endblock title %}
-{% block body %}
-  <div class="flex justify-center h-full">
-    <div class="py-2 px-4 my-2">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-      {% block content %}
-      {% endblock content %}
-      {% block extra_body %}
-      {% endblock extra_body %}
-    </div>
-  </div>
-{% endblock body %}
+{% block main %}
+  <main class="p-3 lg:p-8">
+    {% block content %}
+    {% endblock content %}
+  </main>
+{% endblock main %}

@@ -1,22 +1,113 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import QuerySet
+from django.core.paginator import Paginator
+from django.http import HttpRequest
+from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
-from tesys_tagboard.users.models import User
+from tesys_tagboard.decorators import require
+from tesys_tagboard.enums import RatingLevel
+from tesys_tagboard.forms import EditUserSettingsForm
+from tesys_tagboard.models import Collection
+from tesys_tagboard.models import Tag
+
+from .models import User
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from django.db.models import QuerySet
+    from django_htmx.middleware import HtmxDetails
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    slug_field = "username"
-    slug_url_kwarg = "username"
+class HtmxHttpRequest(HttpRequest):
+    htmx: HtmxDetails
 
 
-user_detail_view = UserDetailView.as_view()
+@require(["GET", "POST"], login=True)
+def user_detail_view(
+    request: HtmxHttpRequest, username: str
+) -> TemplateResponse | HttpResponse:
+    user = get_object_or_404(User, username=username)
+    context = {
+        "user": user,
+        "tab": request.GET.get("tab"),
+    }
+    if request.user == user and user.is_authenticated:
+        # This user's page
+        collections = user.collection_set.with_gallery_data()
+        favorited_posts = [f.post for f in user.favorite_set.with_gallery_data()]
+        for post in favorited_posts:
+            post.favorited = True
+
+        favorites_pager = Paginator(favorited_posts, 24, 4)
+        fav_page_arg_name = "fav_page"
+        favorites_page_num = request.GET.get(fav_page_arg_name, 1)
+        favorites_page = favorites_pager.get_page(favorites_page_num)
+        context |= {
+            "favorites_pager": favorites_pager,
+            "favorites_page": favorites_page,
+            "favorites_page_arg_name": fav_page_arg_name,
+            "collections": collections,
+            "blur_rating_levels": list(RatingLevel),
+            "filter_tags": user.filter_tags.all(),
+            "blur_tags": user.blur_tags.all(),
+        }
+    else:
+        # Other users' pages
+        public_collections = Collection.objects.filter(user=user, public=True)
+        context |= {
+            "collections": public_collections,
+        }
+
+    if request.method == "POST":
+        if user != request.user:
+            return HttpResponseForbidden()
+
+        data: dict[str, str | list[Any] | None] = {
+            key: request.POST.get(key) for key in request.POST
+        }
+        data["filter_tags"] = (
+            request.POST.getlist("filter_tags")
+            if "filter_tags" in request.POST
+            else None
+        )
+        data["blur_tags"] = (
+            request.POST.getlist("blur_tags", None)
+            if "blur_tags" in request.POST
+            else None
+        )
+
+        form = EditUserSettingsForm(data)
+        if form.is_valid():
+            user.blur_rating_level = form.cleaned_data.get("blur_rating_level")
+
+            filter_tagset = form.cleaned_data.get("filter_tags")
+            user.filter_tags.set(Tag.objects.in_tagset(filter_tagset))
+
+            blur_tagset = form.cleaned_data.get("blur_tags")
+            user.blur_tags.set(Tag.objects.in_tagset(blur_tagset))
+
+            user.save()
+        else:
+            return HttpResponseBadRequest("Invalid form data")
+
+        if request.htmx:
+            return TemplateResponse(request, "users/user_detail.html#user-settings")
+
+        return redirect(reverse("users:detail", args=[user.username]), context)
+
+    return TemplateResponse(request, "users/user_detail.html", context)
 
 
 class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -28,7 +119,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         assert self.request.user.is_authenticated  # type guard
         return self.request.user.get_absolute_url()
 
-    def get_object(self, queryset: QuerySet | None=None) -> User:
+    def get_object(self, queryset: QuerySet | None = None) -> User:
         assert self.request.user.is_authenticated  # type guard
         return self.request.user
 

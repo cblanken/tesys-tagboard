@@ -1,38 +1,45 @@
-<form method="post"
-      enctype="multipart/form-data"
-      action='{% url "posts" %}'
-      class="rounded-md cursor-pointer select-none tag-form">
-  <div class="hidden">{% csrf_token %}</div>
-  <div class="dropdown">
-    <button tabindex="0"
-            role="button"
-            class="{% if size == "small" %}btn-sm{% elif size == "large" %}btn-lg{% endif %} px-3 py-1 btn text-tag-content {% if category == "basic" %}bg-tag-basic{% elif category == "artist" %} bg-tag-artist {% elif category == "copyright" %}bg-tag-copyright{% else %}text-secondary-content bg-secondary{% endif %}">
-      <div class="flex gap-1 items-center">
-        {% include "icons/feather.html" with icon="tag" %}
-        <div>{{ tag.name }}</div>
-      </div>
-      <div>({{ tag.post_count }})</div>
-      <input id="tag-{{ tag.pk }}"
-             type="hidden"
-             name="tagset"
-             value="{{ tag.pk }}" />
-    </button>
-    {% if actions %}
-      <ul tabindex="-1"
-          class="top-full mt-1 rounded-lg first:rounded-t-lg last:rounded-b-lg tag-actions dropdown-content bg-base-300 text-base-content">
-        {% for action in actions %}
-          <li class="relative p-2 w-52 font-bold group menu z-1 hover:bg-accent hover:text-accent-content">
-            <button data-action="{{ action.name }}"
-                    class="w-full h-full"
-                    {% if action.name == "search" %}{% elif action.name == "favorite" %} {% elif action.name == "blocklist" %} {% else %} {% endif %}>
+<div class="dropdown tag-container">
+  <button tabindex="0"
+          {% if actions %}role="button"{% endif %}
+          type="button"
+          style="{% if category.bg %}background: {{ category.bg }};
+                 {% endif %} {% if category.fg %}color: {{ category.fg }};{% endif %}"
+          class="{% if size == "xs" %}btn-xs{% elif size == "sm" %}btn-sm{% elif size == "lg" %}btn-lg{% else %}btn-md{% endif %} px-3 py-1 btn text-tag-content {% if not category.name %}bg-tag-default{% elif category.name == "artist" %} bg-tag-artist {% elif category.name == "copyright" %}bg-tag-copyright{% endif %}">
+    <div class="inline-flex gap-1 items-center w-fit nowrap">
+      {% if alias %}
+        {% include "icons/feather.html" with icon="corner-down-right" %}
+        <div class="font-bold">{{ alias.name }}</div>
+        <div>{% include "icons/feather.html" with icon="arrow-right" %}</div>
+      {% endif %}
+      {% include "icons/feather.html" with icon="tag" %}
+      <div>{{ tag.name }}</div>
+    </div>
+    <div>({{ tag.post_count }})</div>
+    <input id="tag-{{ tag.pk }}"
+           type="hidden"
+           name="{{ tagset_name }}"
+           value="{{ tag.pk }}" />
+  </button>
+  {% if actions %}
+    <ul tabindex="-1"
+        class="top-full mt-1 rounded-field tag-actions dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+      {% for action in actions %}
+        <li class="relative p-0 w-full font-bold hover:rounded-none min-w-25 group menu z-1 hover:bg-accent hover:text-accent-content">
+          {% if action.name == "search" %}
+            <a href='{% url "posts" %}?tag={{ tag.pk }}'
+               class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none link link-hover">{{ action.name }}</a>
+          {% else %}
+            <button type="button"
+                    data-action="{{ action.name }}"
+                    class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none">
               {{ action.name }}
             </button>
-            <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-40 h-content bg-info text-info-content">
-              {{ action.desc }}
-            </aside>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  </div>
-</form>
+          {% endif %}
+          <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-30 h-content bg-info text-info-content">
+            {{ action.desc }}
+          </aside>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>

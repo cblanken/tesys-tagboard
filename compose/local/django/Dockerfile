@@ -1,10 +1,11 @@
 # define an alias for the specific python version used in this file.
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS python
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS python
 
 # Python build stage
 FROM python AS python-build-stage
 
 ARG APP_HOME=/app
+ARG TAILWIND_HOME=${APP_HOME}/tesys_tagboard/theme/static_src
 
 WORKDIR ${APP_HOME}
 
@@ -17,21 +18,36 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   build-essential \
   # psycopg dependencies
   libpq-dev \
+  curl \
   gettext \
+  postgresql \
+  libmagic1 \
   wait-for-it
+
+# Install Tailwind dependencies
+RUN curl -sl https://deb.nodesource.com/setup_24.x | bash - \
+  && apt-get install -y nodejs --no-install-recommends
+
 
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+    --mount=type=bind,source=uv.lock,target=uv.lock,readwrite \
     uv sync --no-install-project
 
 COPY . ${APP_HOME}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=uv.lock,target=uv.lock:rw \
+    --mount=type=bind,source=uv.lock,target=uv.lock,readwrite \
     uv sync
+
+# Build Tailwind styles
+WORKDIR ${TAILWIND_HOME}
+RUN npm install
+RUN npm run build
+RUN rm -rf ./node_modules
+WORKDIR ${APP_HOME}
 
 # devcontainer dependencies and utils
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -44,7 +60,7 @@ RUN groupadd --gid 1000 dev-user \
   && chmod 0440 /etc/sudoers.d/dev-user
 
 ENV PATH="/${APP_HOME}/.venv/bin:$PATH"
-ENV PYTHONPATH="${APP_HOME}/.venv/lib/python3.13/site-packages:$PYTHONPATH"
+ENV PYTHONPATH="${APP_HOME}/.venv/lib/python3.14/site-packages:$PYTHONPATH"
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint

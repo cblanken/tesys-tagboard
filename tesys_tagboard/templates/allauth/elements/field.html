@@ -17,7 +17,7 @@
             {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
             {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
             {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
-            class="form-control">{% slot value %}{% endslot %}</textarea>
+            class="form-control textarea input">{% slot value %}{% endslot %}</textarea>
 </div>
 {% elif attrs.type == "radio" %}
 <div class="mb-3">
@@ -32,7 +32,8 @@
              {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
              {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
              value="{{ attrs.value|default_if_none:"" }}"
-             type="{{ attrs.type }}" />
+             type="{{ attrs.type }}"
+             class="radio" />
       <label class="form-check-label" for="{{ attrs.id }}">
         {% slot label %}
       {% endslot %}
@@ -58,7 +59,7 @@
          {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
          value="{{ attrs.value|default_if_none:"" }}"
          type="{{ attrs.type }}"
-         class="form-control" />
+         class="form-control input" />
 </div>
 {% endif %}
 {% if slots.help_text %}

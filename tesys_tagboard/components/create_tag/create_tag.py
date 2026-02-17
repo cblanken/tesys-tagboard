@@ -8,4 +8,5 @@ class CreateTagComponent(Component):
     js_file = "create_tag.js"
 
     def get_template_data(self, args, kwargs, slots, context):
-        return {}
+        categories = kwargs.get("categories")
+        return {"categories": categories}

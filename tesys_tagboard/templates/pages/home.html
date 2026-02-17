@@ -1,4 +1,33 @@
 {% extends "base.html" %}
 
+{% load custom_filters component_tags %}
+
 {% block content %}
+  {% partialdef main-link %}
+  <div class="w-full bg-accent">
+    <a href="{{ link.href }}"
+       class="block overflow-x-hidden py-2 px-3 w-full text-3xl tracking-widest border-b-4 transition duration-150 ease-in-out lg:py-3 lg:pt-4 lg:text-5xl hover:-translate-x-4 font-[Pak_Kumis] overflow-y-clip bg-neutral text-neutral-content border-b-accent hover:bg-accent hover:text-accent-content">{{ link.text }}</a>
+  </div>
+{% endpartialdef %}
+<main class="flex flex-col gap-12 m-auto mt-4 lg:flex-row lg:pb-24 min-h-200">
+  <section class="flex flex-col gap-4 items-start lg:w-1/2">
+    <h1 class="flex flex-col gap-2 items-center m-0 w-full text-8xl font-bold tracking-widest text-center text-secondary leading-30"
+        id="post-count">
+      {% component "counter" num=post_count / %}
+      <div>Posts</div>
+    </h1>
+    <div class="w-full text-base tracking-wide max-w-200 lg:min-w-150">{{ markdown_html }}</div>
+  </section>
+  {% if links %}
+    <section class="flex flex-col gap-2 h-full lg:pb-2 lg:w-1/2 min-w-50 lg:max-w-150 xl:max-w-200">
+      <div class="flex flex-col gap-4 pb-4 lg:border-e-accent lg:border-e-6">
+        {% for link in links %}
+          {% partial main-link %}
+        {% endfor %}
+      </div>
+      <div class="mask-linear-[180deg,black,transparent_90%] h-50 lg:border-e-accent lg:border-e-6 border-dotted mask-b-from-80% mask-b-to-0%">
+      </div>
+    </section>
+  {% endif %}
+</main>
 {% endblock content %}

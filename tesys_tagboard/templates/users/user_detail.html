@@ -1,44 +1,153 @@
-{% extends "base.html" %}
+{% extends "account/base_entrance.html" %}
 
-{% load static %}
+{% load static component_tags %}
 
 {% block title %}
-  User: 
-  
-    {{ object.username }}
-  
-  
+  User:
+  {{ object.username }}
 {% endblock title %}
 {% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <h2>
-        
-        
-          {{ object.username }}
-        
-      </h2>
-      {% if object.name %}
-        <p>{{ object.name }}</p>
+  {% include "heading.html" with text="PROFILE" %}
+  <div class="w-full xl:max-w-screen">
+    <div class="tabs">
+      <label id="account-tab" class="flex gap-2 items-center text-lg tab group">
+        <input type="radio"
+               name="profile_tabs"
+               value="account"
+               {% if not tab or tab == "account" %}checked{% endif %} />
+        <div class="flex gap-2 items-center">
+          {% include "icons/feather.html" with icon="user" %}
+          <div class="hidden sm:block group-has-[input:checked]:block">Account</div>
+        </div>
+      </label>
+      <div class="relative p-6 rounded-none tab-content lg:bg-base-200">
+        <div class="py-2 px-4 w-full text-center md:absolute md:top-0 md:right-0 bg-base-300 md:size-fit md:max-2-400">
+          <h2 class="text-4xl">{{ user.username }}</h2>
+          {% if user.name %}<p>{{ user.name }}</p>{% endif %}
+        </div>
+        {% if user == request.user %}
+          <!-- Action buttons -->
+          <h2 class="py-4 upper">Account Options</h2>
+          <div class="flex gap-2">
+            <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
+            <a class="btn btn-primary"
+               href="{% url 'account_email' %}"
+               role="button">E-Mail</a>
+            <a class="btn btn-primary" href="{% url 'mfa_index' %}" role="button">MFA</a>
+          </div>
+          <!-- End Action buttons -->
+          <h2 class="py-4 upper">Settings</h2>
+          <div class="flex flex-col gap-6">
+            {% partialdef user-settings inline %}
+            <form id="user-settings" method="post" action="">
+              {% csrf_token %}
+              <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-base-300 rounded-box tooltip"
+                     data-tip="Posts with the following tags will not appear in searches. Note that posts with these tags will still appear in collections or in your own favorites and collection galleries. This setting only affect post searches.">
+                  <label>
+                    <span class="label">Filter tags</span>
+                    {% component "add_tagset" tags=filter_tags tagset_name="filter_tags" add_tag_enabled=True / %}
+                  </label>
+                </div>
+                <div class="p-4 bg-base-300 rounded-box tooltip"
+                     data-tip="Posts with the following tags will be blurred by default. Blurred posts can be seen by hovering over their thumbnail with the mouse or navigating to the related post's page.">
+                  <label>
+                    <span class="label">Blur Tags</span>
+                    {% component "add_tagset" tags=blur_tags tagset_name="blur_tags" add_tag_enabled=True / %}
+                  </label>
+                </div>
+                <div class="p-4 bg-base-300 rounded-box tooltip"
+                     data-tip="Posts with the selected rating (or higher) will be blurred by default. Blurred posts can be seen by hovering over their thumbnail with the mouse or navigating to the related post's page.">
+                  <label class="flex gap-4">
+                    <span class="label">Blur Rating</span>
+                    <select name="blur_rating_level"
+                            class="font-bold select select-md text-md w-fit">
+                      {% for rating_level in blur_rating_levels %}
+                        <option value="{{ rating_level.value }}"
+                                {% if rating_level.value == user.blur_rating_level %}selected{% endif %}>
+                          {{ rating_level.name|lower|capfirst }} <span class="font-mono">({{ rating_level.value }})</span>
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button class="mt-4 w-full btn btn-lg btn-secondary lg:max-w-50" type=submit>Save</button>
+            </form>
+          {% endpartialdef user-settings %}
+        </div>
       {% endif %}
     </div>
-  </div>
-  {% if object == request.user %}
-    <!-- Action buttons -->
-    <div class="row">
-      <div class="col-sm-12">
-        <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
-        <a class="btn btn-primary"
-           href="{% url 'account_email' %}"
-           role="button">E-Mail</a>
-        <a class="btn btn-primary"
-           href="{% url 'mfa_index' %}"
-           role="button">MFA</a>
-        <!-- Your Stuff: Custom user template urls -->
+    {% if favorites_pager %}
+      <label id="favorites-tab" class="flex gap-2 items-center text-lg tab group">
+        <input type="radio"
+               name="profile_tabs"
+               value="favorites"
+               {% if tab == "favorites" %}checked{% endif %} />
+        <div class="flex gap-2 items-center">
+          {% include "icons/feather.html" with icon="heart" %}
+          <div class="hidden sm:block group-has-[input:checked]:block">Favorites</div>
+        </div>
+      </label>
+      <div class="rounded-none lg:p-6 tab-content lg:bg-base-200">
+        <div class="flex flex-col gap-4">
+          {% if favorites_pager.object_list|length == 0 %}
+            <div class="text-lg text-placeholder">No favorites yet!</div>
+          {% else %}
+            <div class="flex flex-wrap gap-4 justify-center">
+              {% component "post_gallery" pager=favorites_pager page=favorites_page query_page_arg_name=favorites_page_arg_name / %}
+            </div>
+          {% endif %}
+        </div>
       </div>
+    {% endif %}
+    <label id="collection-tab" class="flex gap-2 items-center text-lg tab group">
+      <input type="radio"
+             name="profile_tabs"
+             value="collections"
+             {% if tab == "collections" %}checked{% endif %} />
+      {% include "icons/feather.html" with icon="list" %}
+      <div class="hidden sm:block group-has-[input:checked]:block">Collections</div>
+    </label>
+    <div class="p-3 rounded-none lg:p-6 tab-content lg:bg-base-200">
+      <div class="flex flex-col gap-8 md:flex-row">
+        {% if user == request.user %}
+          <div class="grow-0">{% component "create_collection" / %}</div>
+        {% endif %}
+        {% partialdef collection-gallery inline %}
+        <div id="user-collection-gallery"
+             class="grid grid-cols-1 gap-4 w-full xl:grid-cols-2">
+          {% if collections.count == 0 %}
+            <div class="text-3xl text-placeholder">No collections yet!</div>
+          {% else %}
+            {% for collection in collections %}
+              {% component "collection_thumbnail" collection=collection %}
+              {% fill "delete_button" %}
+              <button type="submit"
+                      class="w-20 btn btn-error"
+                      hx-delete="{% url "delete-collection" collection_id=collection.pk %}"
+                      hx-on="click"
+                      hx-swap="outerHTML"
+                      hx-target="#user-collection-gallery"
+                      hx-confirm="Are you sure you want to delete this collection?">Delete</button>
+            {% endfill %}
+          {% endcomponent %}
+        {% endfor %}
+      {% endif %}
     </div>
-    <!-- End Action buttons -->
-  {% endif %}
+  {% endpartialdef %}
 </div>
+</div>
+</div>
+</div>
+<script>
+  let tab_buttons = document.querySelectorAll(".tabs input[name='profile_tabs']");
+  tab_buttons.forEach(btn => {
+    btn.addEventListener("click", e => {
+      let url = new URL(window.location.href);
+      url.searchParams.set('tab', btn.value);
+      window.history.replaceState(null, "", url.href)
+    });
+  });
+</script>
 {% endblock content %}

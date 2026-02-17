@@ -1,0 +1,15 @@
+{% load component_tags %}
+
+<section class="flex flex-col gap-4 items-center my-4 w-full md:my-6">
+  {% if page.count == 0 %}
+    <div class="py-4 text-4xl text-placeholder">No posts yet!</div>
+  {% else %}
+    {% component "pager" pager=pager page=page query_page_arg_name=query_page_arg_name / %}
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 5xl:grid-cols-6">
+      {% for post in page %}
+        {% component "post_thumbnail" post=post / %}
+      {% endfor %}
+    </div>
+    {% component "pager" pager=pager page=page query_page_arg_name=query_page_arg_name / %}
+  {% endif %}
+</section>

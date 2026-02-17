@@ -18,13 +18,21 @@ class TagComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         tag = kwargs.get("tag")
+        alias = kwargs.get("alias")
+        tag = alias.tag if alias else kwargs.get("tag")
+        if tag is None and alias is None:
+            return {}
         size = kwargs.get("size")
-        category = tag.get_category_display()
+        category = tag.category
         extra_actions = kwargs.get("actions", [])
         actions = [
             Action("search", "Search for posts with this tag", ""),
-            Action("favorite", "Add this tag to your favorites", ""),
-            Action("blocklist", "Add this tag to your tag blocklist", ""),
             *extra_actions,
         ]
-        return {"tag": tag, "size": size, "category": category, "actions": actions}
+        return {
+            "tag": tag,
+            "size": size,
+            "category": category,
+            "actions": actions,
+            "alias": alias,
+        }

@@ -1,47 +1,47 @@
 {% load static i18n %}
 
 <li>
-  <a class="text-xl link link-hover" href="{% url 'home' %}">Home</a>
+  <a class="link link-hover" href="{% url 'home' %}">Home</a>
 </li>
 <li>
-  <a class="text-xl link link-hover" href="{% url 'about' %}">About</a>
+  <a class="link link-hover" href="{% url 'tags' %}">Tags</a>
 </li>
 <li>
-  <a class="text-xl link link-hover" href="{% url 'tags' %}">Tags</a>
-</li>
-<li>
-  <a class="text-xl link link-hover" href="{% url 'posts' %}">Posts</a>
+  <a class="link link-hover" href="{% url 'posts' %}">Posts</a>
 </li>
 {% if request.user.is_authenticated %}
   <li>
-    <a class="text-xl link link-hover" href="{% url 'upload' %}">Upload</a>
+    <a class="link link-hover" href="{% url 'upload' %}">Upload</a>
   </li>
+{% endif %}
+<li>
+  <a class="link link-hover" href="{% url 'collections' %}">Collections</a>
+</li>
+<li>
+  <a class="link link-hover" href="{% url 'help' %}">Help</a>
+</li>
+{% if request.user.is_authenticated %}
   <li>
-    <a class="text-xl link link-hover" href="{% url 'help' %}">Help</a>
+    <a class="link link-hover"
+       href="{% url 'users:detail' request.user.username %}">{% translate "Profile" %}</a>
   </li>
-  {% if request.user.is_authenticated %}
-    <li>
-      <a class="text-xl link link-hover"
-         href="{% url 'users:detail' request.user.username %}">{% translate "Profile" %}</a>
-    </li>
-  {% endif %}
   {# URL provided by django-allauth/account/urls.py #}
   <li>
-    <a class="text-xl link link-hover" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
+    <a class="link link-hover" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
   </li>
 {% else %}
   {% if ACCOUNT_ALLOW_REGISTRATION %}
     {# URL provided by django-allauth/account/urls.py #}
     <li>
       <a id="sign-up-link"
-         class="text-xl link link-hover"
+         class="link link-hover"
          href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
     </li>
   {% endif %}
   {# URL provided by django-allauth/account/urls.py #}
   <li>
     <a id="log-in-link"
-       class="text-xl link link-hover"
+       class="link link-hover"
        href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
   </li>
 {% endif %}

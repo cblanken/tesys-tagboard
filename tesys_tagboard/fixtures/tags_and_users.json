@@ -1,0 +1,1492 @@
+[
+{
+  "model": "sites.site",
+  "pk": 1,
+  "fields": {
+    "domain": "example.com",
+    "name": "Tesy's Tagboard"
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "email": "tesy-tagboard@example.com",
+    "verified": false,
+    "primary": false
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 4,
+  "fields": {
+    "user": 4,
+    "email": "user1@example.com",
+    "verified": false,
+    "primary": true
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 1,
+  "fields": {
+    "name": "red",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 2,
+  "fields": {
+    "name": "orange",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 3,
+  "fields": {
+    "name": "yellow",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 4,
+  "fields": {
+    "name": "green",
+    "category": "BA",
+    "description": "",
+    "post_count": 5,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 5,
+  "fields": {
+    "name": "blue",
+    "category": "BA",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 6,
+  "fields": {
+    "name": "indigo",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 7,
+  "fields": {
+    "name": "violet",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 10,
+  "fields": {
+    "name": "public_domain",
+    "category": "CO",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 11,
+  "fields": {
+    "name": "CC_BY",
+    "category": "CO",
+    "description": "Creative Commons\r\nSee: https://creativecommons.org/share-your-work/cclicenses/",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 12,
+  "fields": {
+    "name": "CC_BY_SA",
+    "category": "CO",
+    "description": "Creative Commons\r\nSee: https://creativecommons.org/share-your-work/cclicenses/",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 13,
+  "fields": {
+    "name": "CC_BY_NC",
+    "category": "CO",
+    "description": "Creative Commons\r\nSee: https://creativecommons.org/share-your-work/cclicenses/",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 14,
+  "fields": {
+    "name": "pixabay",
+    "category": "CO",
+    "description": "Pixabay license\r\nSee: https://pixabay.com/service/license-summary/",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 15,
+  "fields": {
+    "name": "unsplash",
+    "category": "CO",
+    "description": "Unsplash license\r\nSee: https://unsplash.com/license",
+    "post_count": 32,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 16,
+  "fields": {
+    "name": "bicycle",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 17,
+  "fields": {
+    "name": "trees",
+    "category": "BA",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 18,
+  "fields": {
+    "name": "road",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 19,
+  "fields": {
+    "name": "bricks",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 20,
+  "fields": {
+    "name": "fog",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 21,
+  "fields": {
+    "name": "Netherlands",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 22,
+  "fields": {
+    "name": "Fer_Troulik",
+    "category": "AR",
+    "description": "https://unsplash.com/@fertroulik",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 23,
+  "fields": {
+    "name": "bike_garage",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 24,
+  "fields": {
+    "name": "sign",
+    "category": "BA",
+    "description": "",
+    "post_count": 7,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 25,
+  "fields": {
+    "name": "grayscale",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 26,
+  "fields": {
+    "name": "train",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 27,
+  "fields": {
+    "name": "underground",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 28,
+  "fields": {
+    "name": "subway",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 29,
+  "fields": {
+    "name": "transportation",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 30,
+  "fields": {
+    "name": "staircase",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 31,
+  "fields": {
+    "name": "stairs",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 32,
+  "fields": {
+    "name": "building",
+    "category": "BA",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 33,
+  "fields": {
+    "name": "urban",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 34,
+  "fields": {
+    "name": "Marc_Kleen",
+    "category": "AR",
+    "description": "See https://unsplash.com/@marckleen",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 35,
+  "fields": {
+    "name": "Rikki_Chan",
+    "category": "AR",
+    "description": "See https://unsplash.com/@rikkichan89",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 36,
+  "fields": {
+    "name": "train_station",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 37,
+  "fields": {
+    "name": "clock",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 38,
+  "fields": {
+    "name": "bench",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 39,
+  "fields": {
+    "name": "shadows",
+    "category": "BA",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 40,
+  "fields": {
+    "name": "Kyiv",
+    "category": "BA",
+    "description": "Kyiv, Україна",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 41,
+  "fields": {
+    "name": "books",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 42,
+  "fields": {
+    "name": "book_shop",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 43,
+  "fields": {
+    "name": "library",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 44,
+  "fields": {
+    "name": "Olena_Bohovyk",
+    "category": "AR",
+    "description": "See https://unsplash.com/@olenkasergienko",
+    "post_count": 9,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 45,
+  "fields": {
+    "name": "black_pants",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 46,
+  "fields": {
+    "name": "wristwatch",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 47,
+  "fields": {
+    "name": "ring",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 48,
+  "fields": {
+    "name": "book",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 49,
+  "fields": {
+    "name": "tattoo",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 50,
+  "fields": {
+    "name": "handstand",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 51,
+  "fields": {
+    "name": "beach",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 52,
+  "fields": {
+    "name": "sunset",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 53,
+  "fields": {
+    "name": "sand",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 54,
+  "fields": {
+    "name": "footprints",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 55,
+  "fields": {
+    "name": "Annie_Spratt",
+    "category": "AR",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 56,
+  "fields": {
+    "name": "lord_of_the_rings",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 57,
+  "fields": {
+    "name": "white_pants",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 58,
+  "fields": {
+    "name": "neon_lights",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 59,
+  "fields": {
+    "name": "bridge",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 60,
+  "fields": {
+    "name": "street",
+    "category": "BA",
+    "description": "",
+    "post_count": 5,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 61,
+  "fields": {
+    "name": "crosswalk",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 62,
+  "fields": {
+    "name": "sidewalk",
+    "category": "BA",
+    "description": "",
+    "post_count": 6,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 63,
+  "fields": {
+    "name": "bollards",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 64,
+  "fields": {
+    "name": "baguettes",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 65,
+  "fields": {
+    "name": "fence",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 66,
+  "fields": {
+    "name": "hat",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 67,
+  "fields": {
+    "name": "newspaper",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 68,
+  "fields": {
+    "name": "brown_hair",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 69,
+  "fields": {
+    "name": "pub",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 70,
+  "fields": {
+    "name": "Poland",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 71,
+  "fields": {
+    "name": "cafe",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 72,
+  "fields": {
+    "name": "chairs",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 73,
+  "fields": {
+    "name": "rain",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 74,
+  "fields": {
+    "name": "cars",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 75,
+  "fields": {
+    "name": "snow",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 76,
+  "fields": {
+    "name": "water",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 77,
+  "fields": {
+    "name": "car",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 78,
+  "fields": {
+    "name": "tracks",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 79,
+  "fields": {
+    "name": "headphones",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 80,
+  "fields": {
+    "name": "sunlight",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 81,
+  "fields": {
+    "name": "sky",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 82,
+  "fields": {
+    "name": "illustration",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 83,
+  "fields": {
+    "name": "mountain",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 84,
+  "fields": {
+    "name": "sketch",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 85,
+  "fields": {
+    "name": "flower",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 86,
+  "fields": {
+    "name": "pear",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 87,
+  "fields": {
+    "name": "green_background",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 88,
+  "fields": {
+    "name": "fruit",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 89,
+  "fields": {
+    "name": "black_background",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 90,
+  "fields": {
+    "name": "smile",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 91,
+  "fields": {
+    "name": "mountains",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 92,
+  "fields": {
+    "name": "mushrooms",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 93,
+  "fields": {
+    "name": "fungi",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 94,
+  "fields": {
+    "name": "white",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 95,
+  "fields": {
+    "name": "window",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 96,
+  "fields": {
+    "name": "tram_tracks",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 97,
+  "fields": {
+    "name": "railing",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 98,
+  "fields": {
+    "name": "bus",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 99,
+  "fields": {
+    "name": "tram",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 100,
+  "fields": {
+    "name": "buildings",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 101,
+  "fields": {
+    "name": "windows",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 102,
+  "fields": {
+    "name": "dog",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 103,
+  "fields": {
+    "name": "blue_hat",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 104,
+  "fields": {
+    "name": "doors",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 105,
+  "fields": {
+    "name": "traffic_lights",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 106,
+  "fields": {
+    "name": "cats",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 107,
+  "fields": {
+    "name": "high-rise",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 108,
+  "fields": {
+    "name": "blanket",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 109,
+  "fields": {
+    "name": "Quan Jing",
+    "category": "AR",
+    "description": "",
+    "post_count": 11,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 110,
+  "fields": {
+    "name": "man",
+    "category": "BA",
+    "description": "",
+    "post_count": 4,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 111,
+  "fields": {
+    "name": "woman",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 112,
+  "fields": {
+    "name": "yellow shirt",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 113,
+  "fields": {
+    "name": "China",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 114,
+  "fields": {
+    "name": "outdoors",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 115,
+  "fields": {
+    "name": "jacket",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 116,
+  "fields": {
+    "name": "girl",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 117,
+  "fields": {
+    "name": "boy",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 118,
+  "fields": {
+    "name": "lake",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 119,
+  "fields": {
+    "name": "Great Wall of China",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 120,
+  "fields": {
+    "name": "film photo",
+    "category": "BA",
+    "description": "",
+    "post_count": 3,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 121,
+  "fields": {
+    "name": "fishing",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 122,
+  "fields": {
+    "name": "cat",
+    "category": "BA",
+    "description": "",
+    "post_count": 2,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 123,
+  "fields": {
+    "name": "cooking",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 124,
+  "fields": {
+    "name": "plant",
+    "category": "BA",
+    "description": "",
+    "post_count": 0,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 125,
+  "fields": {
+    "name": "lamp",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tag",
+  "pk": 126,
+  "fields": {
+    "name": "Hong Kong",
+    "category": "BA",
+    "description": "",
+    "post_count": 1,
+    "rating_level": 0
+  }
+},
+{
+  "model": "tesys_tagboard.tagalias",
+  "pk": 1,
+  "fields": {
+    "name": "bike",
+    "tag": 16
+  }
+},
+{
+  "model": "tesys_tagboard.tagalias",
+  "pk": 2,
+  "fields": {
+    "name": "greyscale",
+    "tag": 25
+  }
+},
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$aXd1OHI0dFloYkpXRHhBbktNdk8wUw$9E/WSrhvenhy0qaD/nT2RTQjnzMNszjvxiANDeoQ4s8",
+    "last_login": "2026-01-07T23:16:16.258Z",
+    "is_superuser": true,
+    "username": "admin",
+    "email": "tesy-tagboard@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-14T19:38:38.835Z",
+    "name": "",
+    "blur_rating_level": 100,
+    "groups": [],
+    "user_permissions": [],
+    "filter_tags": [],
+    "blur_tags": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 4,
+  "fields": {
+    "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$ZVZMbmpPSFliRzNwM0JaR1BFM1lNOQ$4y/ERi8mwi75JxJAjXktUbCSfUtMulfI/+jgDrre2lE",
+    "last_login": "2025-12-10T15:54:32.620Z",
+    "is_superuser": false,
+    "username": "user1",
+    "email": "user1@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-23T21:01:38.838Z",
+    "name": "",
+    "blur_rating_level": 100,
+    "groups": [],
+    "user_permissions": [],
+    "filter_tags": [],
+    "blur_tags": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 5,
+  "fields": {
+    "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$WkxhcjlEUFRoY05ESXRyZU1pbkpPVQ$uMeWSSxBHhB67LPMYlg6bC9FMr8DAwERonjXHOMXHSQ",
+    "last_login": "2025-12-02T15:16:32.916Z",
+    "is_superuser": false,
+    "username": "user2",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-24T01:35:37.184Z",
+    "name": "",
+    "blur_rating_level": 100,
+    "groups": [],
+    "user_permissions": [],
+    "filter_tags": [],
+    "blur_tags": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 6,
+  "fields": {
+    "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$dDdzVDJrRGN2RTVCM1FsamZWbmNOeQ$VpY75V8ovIFdw7+IxmkJ/dlfbLfoni2Z6nsT9CpbOTU",
+    "last_login": "2025-11-25T14:32:17Z",
+    "is_superuser": false,
+    "username": "mod1",
+    "email": "mod1@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-25T14:18:59Z",
+    "name": "",
+    "blur_rating_level": 100,
+    "groups": [
+      1
+    ],
+    "user_permissions": [],
+    "filter_tags": [],
+    "blur_tags": []
+  }
+}
+]

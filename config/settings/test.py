@@ -3,6 +3,7 @@ With these settings, tests run faster.
 """
 
 from .base import *  # noqa: F403
+from .base import APPS_DIR
 from .base import TEMPLATES
 from .base import env
 
@@ -34,5 +35,18 @@ TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore[index]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "http://media.testserver/"
-# Your stuff...
-# ------------------------------------------------------------------------------
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
+    },
+    "test-media": {
+        "BACKEND": "django.core.files.storage.InMemoryStorage",
+        "OPTIONS": {
+            "location": APPS_DIR / "tests" / "media",
+            "base_url": "/test-media",
+        },
+    },
+}

@@ -1,7 +1,7 @@
 <div id="theme-picker" class="relative dropdown">
   <div tabindex="0" role="button" class="m-1 btn">
     {% include "icons/feather.html" with icon="monitor" %}
-    Theme
+    <span class="hidden md:block">Theme</span>
     <svg width="12px"
          height="12px"
          class="inline-block w-2 h-2 opacity-60 fill-current"
@@ -11,7 +11,7 @@
     </svg>
   </div>
   <ul tabindex="-1"
-      class="absolute right-1 top-12 p-2 w-52 shadow-2xl dropdown-content bg-secondary text-secondary-content rounded-box z-1">
+      class="absolute right-1 top-12 p-2 w-52 list-none shadow-2xl menu dropdown-content text-secondary-content rounded-box z-1 bg-secondary">
     {% for theme in themes %}
       <li>
         <input type="radio"

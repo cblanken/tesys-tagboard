@@ -2,7 +2,9 @@
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
-<html lang="{{ LANGUAGE_CODE }}" data-theme="default">
+<html lang="{{ LANGUAGE_CODE }}"
+      data-theme="default"
+      class="xl:overflow-x-auto overflow-x-clip touch-manipulation">
   <script>
     // Apply theme picker setting
     let theme = window.localStorage.getItem("theme");
@@ -21,8 +23,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
           content="A self-hosted Booru and media tagging application" />
-    <meta name="author" content="Cameron Blankenbuehler" />
+    {% block extra_meta %}
+    {% endblock extra_meta %}
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
+    {% tailwind_preload_css %}
     {% tailwind_css %}
     {% block css %}
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
@@ -35,7 +39,7 @@
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
   </head>
-  <nav class="flex justify-between px-2 shadow-sm sm:text-2xl lg:text-lg navbar bg-primary text-primary-content">
+  <nav class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm !h-6">
     <div class="flex">
       <div class="text-left dropdown">
         <div tabindex="0" role="button" class="lg:hidden btn btn-ghost">
@@ -48,45 +52,60 @@
           </svg>
         </div>
         <ul tabindex="-1"
-            class="p-2 mt-3 w-52 shadow menu menu-sm dropdown-content bg-base-100 rounded-box z-1">
+            class="z-50 p-2 mt-3 shadow-xl ms-0 menu menu-xl dropdown-content bg-base-300 text-base-content rounded-box border-info">
           {% include "nav/navbar_links.html" %}
         </ul>
       </div>
       <a class="text-2xl btn btn-ghost" href="{% url 'home' %}">Tesy's Tagboard</a>
     </div>
     <div class="hidden lg:flex navbar-center">
-      <ul class="px-1 menu menu-horizontal">
+      <ul class="px-1 text-lg menu menu-horizontal">
         {% include "nav/navbar_links.html" %}
       </ul>
     </div>
     <div>{% component "theme_picker" %}{% endcomponent %}</div>
   </nav>
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-        class="{% block bodyclass %}{% endblock bodyclass %}">
+        class="max-w-screen overflow-x-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
+    <!-- Form for global search from tag widget popup -->
+    <input id="tagSearchForm"
+           class="hidden"
+           type="hidden"
+           action="{% url "posts" %}"
+           method="post" />
     {% block body %}
-      <div class="flex justify-center p-4 sm:w-full bg-base-100 lg:max-w-1600px">
-        {% if messages %}
+      {% if messages %}
+        <div class="flex z-10 flex-col gap-2 px-4 pt-4 w-full">
           {% for message in messages %}
-            <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-              {{ message }}
-              <button type="button"
-                      class="btn-close"
-                      data-bs-dismiss="alert"
-                      aria-label="Close"></button>
+            <div class="django-message flex justify-between items-center text-wrap text-xl alert alert-info alert-soft {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+              <div>{{ message.message }}</div>
+              <div class="flex gap-2 items-center">
+                <button type="button"
+                        class="btn-close btn btn-sm btn-error"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">{% include "icons/feather.html" with size="lg" icon="x" %}</button>
+              </div>
             </div>
           {% endfor %}
-        {% endif %}
-        {% block main %}
-          <main class="flex flex-col justify-center w-full max-w-[1600px] lg:w-[80%]">
-            {% block content %}
-            {% endblock content %}
-          </main>
-        {% endblock main %}
-      </div>
+        </div>
+      {% endif %}
+      {% block main %}
+        <div class="p-3 m-auto lg:p-8 max-w-[1700px]">
+          {% block content %}
+          {% endblock content %}
+        </div>
+      {% endblock main %}
     {% endblock body %}
     {% block modal %}
     {% endblock modal %}
     {% block inline_javascript %}
     {% endblock inline_javascript %}
+    <a id="back-to-top-btn"
+       href="#top"
+       class="hidden fixed bottom-2 left-2 z-50 rounded-full border-2 lg:hidden btn btn-xl btn-secondary bg-secondary/90 btn-square">
+      {% include "icons/feather.html" with icon="arrow-up" %}
+    </a>
+    <div id="bottom-of-screen-threshold"
+         class="absolute top-0 w-full h-[250dvh] -z-1"></div>
   </body>
 </html>
