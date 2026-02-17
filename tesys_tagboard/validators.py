@@ -31,6 +31,7 @@ wildcard_url_validator = validators.RegexValidator(
 
 
 def tagset_validator(tag_ids: list):
+    """Validates a tagset. A Sequence of positive integers."""
     msg = _("A tagset may only contain positive integers")
     try:
         for tag_id in tag_ids:

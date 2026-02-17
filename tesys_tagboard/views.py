@@ -40,7 +40,6 @@ from .forms import CreateTagAliasForm
 from .forms import CreateTagForm
 from .forms import EditCommentForm
 from .forms import PostForm
-from .forms import PostSearchForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
 from .models import Audio
@@ -295,15 +294,13 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             context |= {"query": q}
 
     elif request.POST:
-        data: dict[str, str | list[Any] | None] = {
-            key: request.POST.get(key) for key in request.POST
-        }
-        data["tagset"] = request.POST.getlist("tagset")
-        form = PostSearchForm(data) if request.method == "POST" else PostForm()
-        if form.is_valid():
-            tagset = form.cleaned_data.get("tagset")
+        ps = PostSearch(request.POST)
+        if user.is_authenticated:
+            posts = ps.get_posts().with_gallery_data(request.user)
+            tagset = request.POST.getlist("tagset")
             tags = Tag.objects.in_tagset(tagset)
-            posts = posts.has_tags(tags)
+        else:
+            posts = ps.get_posts()
 
     pager = Paginator(posts, 36, 4)
     page_num = int(request.GET.get("page", 1))

@@ -10,6 +10,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models import QuerySet
+from django.http import QueryDict
 from more_itertools import take
 
 from .enums import RatingLevel
@@ -203,10 +204,7 @@ class TokenCategory(Enum):
     )
 
     POST_ID = ComparisonSearchToken(
-        "id",
-        "The ID of a Post",
-        (),
-        positive_int_validator
+        "id", "The ID of a Post", (), positive_int_validator
     )
 
     TAG_ALIAS = WildcardSearchToken(
@@ -333,7 +331,7 @@ class NamedToken:
     category: TokenCategory
     name: str
     arg: str = ""
-    arg_relation_str: str = ""
+    arg_relation_str: str = TokenArgRelation.EQUAL.value
     arg_relation: TokenArgRelation | None = field(init=False)
     wildcard_positions: array[int] = field(init=False)
     negate: bool = False
@@ -365,7 +363,7 @@ class NamedToken:
         validator to allow for incomplete arguments (e.g. URLs) which is why the
         WildcardSearchToken may override the base `arg_validator` on an as-needed basis.
 
-        Raises: ValidationError
+        Raises: `ValidationError`
         """
         if isinstance(self.category.value, WildcardSearchToken):
             validator = self.category.value.wildcard_arg_validator
@@ -416,31 +414,148 @@ class PostSearch:
     the middle of the arg. For example, `uploaded_by=*pablo` or `uploaded_by=pa*blo`
 
     All tags and filters may be prefixed with a "-" sign to indicate the search for that
-    token should be inverted. For example a token of `-uploaded_by=pablo` would return
-    any posts NOT uploaded by the user "pablo".
+    token should be inverted. For example a token of `-uploaded_by=pablo` would exclude
+    any posts uploaded by the user "pablo" in the results.
     """
+
+    valid_arg_relations = "".join([x.value for x in TokenArgRelation])
+    filter_split_pattern = re.compile(r"([" + valid_arg_relations + r"])")
 
     def __init__(
         self,
-        query: str,
+        query: str | QueryDict,
         *,
         exclude_tags: QuerySet[Tag] | None = None,
         max_tags: int = 20,
         max_aliases: int = 20,
     ):
         self.query = query
-        self.tokens: list[NamedToken] = self.parse_query(query)
         self.max_tags = max_tags
         self.max_aliases = max_aliases
         self.exclude_tags = exclude_tags
         self.partial: str = ""
-        query_split = re.split(r"\s+", self.query)
-        if len(query_split) > 0:
-            self.partial = query_split[-1]
+        if isinstance(self.query, QueryDict):
+            self.tokens = self.parse_querydict(self.query)
+        elif isinstance(self.query, str):
+            query_split = re.split(r"\s+", self.query)
+            if len(query_split) > 0:
+                self.partial = query_split[-1]
 
-    @staticmethod
-    def parse_query(query: str) -> list[NamedToken]:  # noqa: C901, PLR0912
-        """Parses a post search query string into named tokens
+            self.tokens: list[NamedToken] = self.parse_query(self.query)
+
+    def parse_token(self, token: str) -> NamedToken | None:
+        """Parses and validates a query token
+
+        Raises: `ValidationError`
+        """
+        # Empty string
+        if token == "":
+            return None
+
+        # Parse named tokens and simple tags
+        token_name, *rest = self.filter_split_pattern.split(token, maxsplit=1)
+        negate: bool = token_name[0] == "-"
+
+        if negate:
+            token_name = token_name[1:]
+
+        if len(rest) == 0:
+            # Anonymous token i.e. tag
+            return NamedToken(TokenCategory.TAG, token_name, token_name, negate=negate)
+
+        if len(rest) == 1:
+            msg = "An invalid query split occurred"
+            raise ValidationError(msg)
+
+        if len(rest) == 2:
+            arg_relation = rest[0]
+            token_arg = rest[1]
+
+            if self.filter_split_pattern.search(token_arg):
+                msg = "Search query filters may only have one operator"
+                raise ValidationError(msg)
+            try:
+                # NamedToken filter with an argument
+                token_category = TokenCategory.select(token_name)
+            except SearchTokenNameError as err:
+                msg = f'The name "{token_name}" is not a valid filter'
+                raise ValidationError(msg) from err
+            else:
+                if arg_relation not in [
+                    x.value for x in token_category.value.allowed_arg_relations
+                ]:
+                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                    raise ValidationError(msg)
+
+            return NamedToken(
+                token_category,
+                name=token_name,
+                arg=token_arg,
+                arg_relation_str=arg_relation,
+                negate=negate,
+            )
+
+        # Invalid token
+        msg = f'The query token "{token}" is invalid'
+        raise ValidationError(msg)
+
+    def parse_querydict(self, querydict: QueryDict) -> list[NamedToken]:
+        """Parses a post search query submitted via form instead of a query string.
+
+        Each parameter should match an existing `TokenCategory` with the exception of
+        tags which are submitted as a list of tag IDs in the `tagset` parameter.
+
+        Raises: `ValidationError`
+        """
+
+        parsed_tokens: list[NamedToken] = []
+
+        # Parse tag tokens
+        tagset = querydict.getlist("tagset")
+        for tag_id in tagset:
+            tag_token = NamedToken(
+                TokenCategory.TAG_ID, TokenCategory.TAG_ID.value.name, tag_id
+            )
+
+            tag_token.is_arg_valid()
+            parsed_tokens.append(tag_token)
+
+        # Parse other tokens
+        for key, value in querydict.items():
+            try:
+                token_category = TokenCategory.select(key)
+
+                arg_relation = querydict.get(
+                    f"{key}_relation", token_category.value.allowed_arg_relations[0]
+                )
+
+                if arg_relation not in [
+                    x.value for x in token_category.value.allowed_arg_relations
+                ]:
+                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                    raise ValidationError(msg)
+
+                negate = bool(querydict.get(f"{key}_negate", False))
+
+                named_token = NamedToken(
+                    token_category,
+                    name=key,
+                    arg=str(value),
+                    arg_relation_str=str(arg_relation),
+                    negate=negate,
+                )
+
+                named_token.is_arg_valid()
+                parsed_tokens.append(named_token)
+
+            except SearchTokenNameError:
+                # Bad tokens are ignored
+                pass
+
+        return parsed_tokens
+
+    def parse_query(self, query: str) -> list[NamedToken]:
+        """Parses a post search query into named tokens.
 
         Arguments:
             query: str, a query string containing space-delimited search tokens
@@ -451,70 +566,15 @@ class PostSearch:
         if query == "":
             return []
         tokens = re.split(r"\s+", query)
-        valid_arg_relations = "".join([x.value for x in TokenArgRelation])
-        filter_split_pattern = re.compile(r"([" + valid_arg_relations + r"])")
         parsed_tokens: list[NamedToken] = []
         for token in tokens:
-            # Empty string
-            if token == "":
-                continue
-
-            # Parse named tokens and simple tags
-            token_name, *rest = filter_split_pattern.split(token, maxsplit=1)
-
-            try:
-                negate: bool = token_name[0] == "-"
-            except IndexError:
-                negate = False
-
-            if negate:
-                token_name = token_name[1:]
-            if len(rest) == 0:
-                # Anonymous token i.e. tag
-                named_token = NamedToken(
-                    TokenCategory.TAG, token_name, token_name, negate=negate
-                )
-            elif len(rest) == 1:
-                msg = "An invalid query split occurred"
-                raise ValidationError(msg)
-            elif len(rest) == 2:
-                arg_relation = rest[0]
-                token_arg = rest[1]
-
-                if filter_split_pattern.search(token_arg):
-                    msg = "Search query filters may only have one operator"
-                    raise ValidationError(msg)
-                try:
-                    # NamedToken filter with an argument
-                    token_category = TokenCategory.select(token_name)
-                except SearchTokenNameError as err:
-                    msg = f'The name "{token_name}" is not a valid filter'
-                    raise ValidationError(msg) from err
-                else:
-                    if arg_relation not in [
-                        x.value for x in token_category.value.allowed_arg_relations
-                    ]:
-                        msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
-                        raise ValidationError(msg)
-
-                named_token = NamedToken(
-                    token_category,
-                    name=token_name,
-                    arg=token_arg,
-                    arg_relation_str=arg_relation,
-                    negate=negate,
-                )
-            else:
-                # Invalid query
-                msg = f'The query token "{token}" is invalid'
-                raise ValidationError(msg)
-
-            named_token.is_arg_valid()
-            parsed_tokens.append(named_token)
+            if named_token := self.parse_token(token):
+                named_token.is_arg_valid()
+                parsed_tokens.append(named_token)
 
         return parsed_tokens
 
-    def get_search_expr(self) -> Q | None:  # noqa: C901, PLR0912, PLR0915
+    def get_search_conditions(self) -> list[Q] | None:  # noqa: C901, PLR0912, PLR0915
         """Builds a Post filter expression based on the provided `tokens`
 
         Note: tokens are validated when parsing the query string, so
@@ -524,9 +584,9 @@ class PostSearch:
             tokens: parsed tokens from a query string
         """
         if self.exclude_tags is not None:
-            search_filter_expr = ~Q(tags__in=self.exclude_tags)
+            search_conditions = [~Q(tags__in=self.exclude_tags)]
         else:
-            search_filter_expr = Q()
+            search_conditions: list[Q] = []
         for token in self.tokens:
             match token.category:
                 case TokenCategory.TAG:
@@ -537,7 +597,7 @@ class PostSearch:
                 case TokenCategory.TAG_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
-                            token_expr = Q(tags__pk=token.arg)
+                            token_expr = Q(tags__pk=int(token.arg))
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
@@ -656,9 +716,9 @@ class PostSearch:
             if token.negate:
                 token_expr = ~token_expr
 
-            search_filter_expr = search_filter_expr & token_expr
+            search_conditions.append(token_expr)
 
-        return search_filter_expr
+        return search_conditions
 
     def get_posts(self) -> QuerySet[Post]:
         token_categories = [x.category for x in self.tokens]
@@ -669,8 +729,10 @@ class PostSearch:
             posts = posts.annotate_fav_count()
         if TokenCategory.TAG_COUNT in token_categories:
             posts = posts.annotate_tag_count()
-        if search_expr := self.get_search_expr():
-            return posts.filter(search_expr).distinct()
+        if search_conditions := self.get_search_conditions():
+            for condition in search_conditions:
+                posts = posts.filter(condition)
+            return posts.distinct()
         return Post.objects.all()
 
     def autocomplete(
