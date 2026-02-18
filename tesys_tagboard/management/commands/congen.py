@@ -28,6 +28,7 @@ from tesys_tagboard.enums import SupportedMediaTypes
 from tesys_tagboard.models import Audio
 from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
+from tesys_tagboard.models import Favorite
 from tesys_tagboard.models import Image
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
@@ -98,10 +99,16 @@ def main(  # noqa: PLR0913
             help="The maximum number of collections to randomly generate.",
         ),
     ] = 50,
-    max__posts_per_collection: Annotated[
+    max_posts_per_collection: Annotated[
         int,
         typer.Option(
             help="The maximum number of posts to link to any single collection"
+        ),
+    ] = 50,
+    max_favorites_per_user: Annotated[
+        int,
+        typer.Option(
+            help="The maximum number of favorited posts to link to any single user"
         ),
     ] = 50,
 ):
@@ -140,7 +147,7 @@ def main(  # noqa: PLR0913
         uploads_dir = media_root / "uploads"
         delete_recursively(uploads_dir)
 
-    print("Old data deleted.")
+    console.print("Old data deleted.")
 
     # Create default users
     default_users = User.objects.bulk_create(
@@ -166,7 +173,13 @@ def main(  # noqa: PLR0913
     media_files = get_media_files_from_disk(media_dir_path, max_files=max_posts)
     create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
 
-    create_random_post_collections(Post.objects.all(), max_collections=50)
+    create_random_post_collections(Post.objects.all(), max_collections=max_collections)
+
+    create_random_user_favorites(
+        Post.objects.all(),
+        User.objects.all(),
+        max_favorites_per_user=max_favorites_per_user,
+    )
 
 
 def create_random_users(n: int = 50):
@@ -193,7 +206,7 @@ def create_random_users(n: int = 50):
             user.save()
         DEFAULT_USER_GROUP.user_set.add(*random_users)
 
-    print(f"Created {len(users)} users.")
+    console.print(f"Created {len(users)} users.")
 
 
 def create_random_tags(n: int = 500):
@@ -220,7 +233,7 @@ def create_random_tags(n: int = 500):
         ]
         Tag.objects.bulk_create(simple_tags, ignore_conflicts=True)
         Tag.objects.bulk_create(tags_with_categories, ignore_conflicts=True)
-    print(f"Created {len(tags_with_categories)} tags.")
+    console.print(f"Created {len(tags_with_categories)} tags.")
 
 
 def create_random_tag_aliases(tags: QuerySet[Tag], percent: float = 0.1):
@@ -240,7 +253,7 @@ def create_random_tag_aliases(tags: QuerySet[Tag], percent: float = 0.1):
             for i, tag in enumerate(picked_tags)
         ]
         TagAlias.objects.bulk_create(tag_aliases, ignore_conflicts=True)
-    print(f"Created {len(tag_aliases)} tag aliases.")
+    console.print(f"Created {len(tag_aliases)} tag aliases.")
 
 
 def create_random_post_collections(
@@ -269,7 +282,7 @@ def create_random_post_collections(
         progress.add_task(description="Creating collections...", total=None)
         created_collections = Collection.objects.bulk_create(collections)
 
-    print(f"Created {len(created_collections)} collections.")
+    console.print(f"Created {len(created_collections)} collections.")
 
     with Progress(
         SpinnerColumn(),
@@ -281,7 +294,10 @@ def create_random_post_collections(
         def get_random_post_ids():
             return [
                 s.pk
-                for s in sample(post_options, k=randint(0, max_posts_per_collection))
+                for s in sample(
+                    post_options,
+                    k=randint(0, min(max_posts_per_collection, len(post_options))),
+                )
             ]
 
         collection_posts = []
@@ -298,7 +314,30 @@ def create_random_post_collections(
         created_collection_posts = Collection.posts.through.objects.bulk_create(
             collection_posts
         )
-    print(f"Added {len(created_collection_posts)} posts to collections.")
+    console.print(f"Added {len(created_collection_posts)} posts to collections.")
+
+
+def create_random_user_favorites(
+    posts: QuerySet[Post],
+    users: QuerySet[User],
+    max_favorites_per_user: int = 100,
+):
+    """Create a random set of favorites for the provided Users, choosing from the list
+    of provided Posts"""
+    post_options = list(posts)
+    fav_count = 0
+    favorites = []
+    for user in track(users, description="Creating favorites..."):
+        selected_posts = sample(
+            post_options, k=randint(0, min(max_favorites_per_user, len(post_options)))
+        )
+        for post in selected_posts:
+            fav = Favorite(user=user, post=post)
+            favorites.append(fav)
+            fav_count += 1
+
+    Favorite.objects.bulk_create(favorites)
+    console.print(f"Created {fav_count} favorites for {len(users)} users.")
 
 
 def create_random_posts(  # noqa: C901, PLR0912, PLR0915
@@ -355,8 +394,10 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
                                 file=UploadedFile(fp), orig_name=file.name
                             )
                         except UnidentifiedImageError:
-                            print("The image file couldn't be identified by PIL")
-                            print(f"See the file at {file.resolve()}")
+                            console.print(
+                                "The image file couldn't be identified by PIL"
+                            )
+                            console.print(f"See the file at {file.resolve()}")
                     case MediaCategory.VIDEO:
                         fp = file.open("rb")
                         media_object = Video(
@@ -369,7 +410,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
 
                 posts.append(post)
             else:
-                print(f"The file type of '{file}' is not supported")
+                console.print(f"The file type of '{file}' is not supported")
 
     with Progress(
         SpinnerColumn(),
@@ -378,7 +419,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     ) as progress:
         progress.add_task(description="Creating posts...", total=None)
         created_posts = Post.objects.bulk_create(posts)
-    print(f"Created {len(created_posts)} posts.")
+    console.print(f"Created {len(created_posts)} posts.")
 
     with Progress(
         SpinnerColumn(),
@@ -401,7 +442,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
             )
 
         Post.tags.through.objects.bulk_create(post_tags)
-    print("Tags added to posts.")
+    console.print("Tags added to posts.")
 
     for post in track(created_posts, description="Updating posts' tag histories..."):
         add_tag_history(post.tags.all(), post, post.uploader)
@@ -416,7 +457,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     ) as progress:
         progress.add_task(description="Adding comments to posts...", total=None)
         Comment.objects.bulk_create(comments)
-    print("Comments added to posts.")
+    console.print("Comments added to posts.")
 
     with Progress(
         SpinnerColumn(),
@@ -425,7 +466,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     ) as progress:
         progress.add_task(description="Updating tag post counts", total=None)
         update_tag_post_counts()
-    print("Tag post counts updated.")
+    console.print("Tag post counts updated.")
 
     for post in track(
         created_posts, description="Adding parent and child post links..."
@@ -433,7 +474,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         for child_post in choices(created_posts, k=randint(0, 5)):
             child_post.parent = post
             child_post.save()
-    print("Parent and child post links added.")
+    console.print("Parent and child post links added.")
 
     for obj in track(
         media_objects,
@@ -442,9 +483,9 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         try:
             obj.save()
         except OSError as e:
-            print(e)
+            console.print(e)
             continue
-    print(f"Saved {len(media_objects)} media files.")
+    console.print(f"Saved {len(media_objects)} media files.")
 
 
 def get_media_files_from_disk(
