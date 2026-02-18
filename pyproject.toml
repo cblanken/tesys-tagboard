@@ -186,7 +186,7 @@ dependencies = [
     "django-components>=0.143.1",
     "django-cors-headers==4.9.0",
     "django-crispy-forms==2.5",
-    "django-environ==0.12.1",
+    "django-environ==0.13.0",
     "django-htmx>=1.26.0",
     "django-minify-html>=1.14.0",
     "django-model-utils==5.0.0",
