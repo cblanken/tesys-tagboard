@@ -198,7 +198,7 @@ dependencies = [
     "django-typer>=3.5.1",
     "django-watchfiles>=1.4.0",
     "djangorestframework==3.16.1",
-    "gunicorn==23.0.0",
+    "gunicorn==25.1.0",
     "hiredis==3.3.0",
     "imagehash>=4.3.2",
     "jwt>=1.4.0",
