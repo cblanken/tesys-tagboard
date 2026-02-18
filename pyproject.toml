@@ -180,7 +180,7 @@ dependencies = [
     "crispy-tailwind>=1.0.3",
     "django>=6.0.2",
     "django-allauth[mfa,socialaccount]==65.14.3",
-    "django-anymail[mailgun]==13.1",
+    "django-anymail[mailgun]==14.0",
     "django-browser-reload>=1.21.0",
     "django-colorfield>=0.14.0",
     "django-components>=0.143.1",
