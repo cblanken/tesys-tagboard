@@ -1,11 +1,3 @@
 # Fixtures
 
-This directory contains test data to be used when running automated tests and is the baseline used for conducting manual tests and development.
-
-- All media uploads are in [uploads/](./uploads)
-- All media thumbnails are in [thumbnails/](./thumbnails)
-
-## Media sources
-
-- [Unsplash](https://unsplash.com)
-- [Pixabay](https://pixabay.com)
+This directory contains any test files required for automated testing. Note that the majority of test data should be generated add-hoc via the `faker` library whenever possible. These fixtures are specifically for data that cannot be easily generated on demand such as image, video, or audio files etc. needed for testing.

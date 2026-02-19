@@ -73,10 +73,10 @@ alias tc := type-checking
 type-checking *args:
     @docker compose run --rm django mypy {{args}}
 
-alias pc := pre-commit
-# Pre-commit linting and formatting
-pre-commit *args:
-    uv run pre-commit {{args}}
+alias sh := shell
+# Get an interactive shell to the Django app
+shell *args:
+    @docker compose exec {{args}} django /bin/bash
 
 # Creates db backup in the /backups dir of postgres container
 db-backup:
@@ -132,18 +132,6 @@ make-component name:
     echo "class ${class_name}(Component):" >> "$py_file"
     echo '    template_file = "{{name}}.html"' >> "$py_file"
     echo '    js_file = "{{name}}.js"' >> "$py_file"
-
-# Load the fixture data from demo.json into the database
-load-demo:
-    @echo "Loading demo data..."
-    just manage loaddata demo.json
-    cp -r tesys_tagboard/fixtures/uploads tesys_tagboard/media/
-    cp -r tesys_tagboard/fixtures/thumbnails tesys_tagboard/media/
-
-# Save the current database into the demo.json fixture
-save-demo:
-    @echo "Saving demo fixture..."
-    just manage dumpdata --exclude admin --exclude sessions --exclude auth --exlude silk --indent 2 -o tesys_tagboard/fixtures/demo.json
 
 clean-media:
     @echo "Cleaning out media folder..."
