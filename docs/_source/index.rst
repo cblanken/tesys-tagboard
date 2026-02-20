@@ -10,10 +10,10 @@ Welcome to Tesy's Tagboard's documentation!
    :maxdepth: 3
    :caption: Contents:
 
-   documentation
    DEVELOPMENT
    DEPLOYMENT
    ARCHITECTURE
+   documentation
 
 
 

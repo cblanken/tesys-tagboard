@@ -2020,6 +2020,18 @@ wheels = [
 ]
 
 [[package]]
+name = "sphinx-nefertiti"
+version = "0.9.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/38/85/58f442c6e33281fecb8087c78e3168dcb38c83ad1723f4664e5059264774/sphinx_nefertiti-0.9.5.tar.gz", hash = "sha256:9a12614d7b2b7aec6c7a2ff8cb97f8b215bf41908415348f582c7cb64b432928", size = 9485032, upload-time = "2026-02-18T08:43:42.946Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/a1/93ab15fa5ce6b5e0b2c2ff558106d305ca96cc83960bb38bae06ea7f0960/sphinx_nefertiti-0.9.5-py3-none-any.whl", hash = "sha256:4d49036bd74f92439bd9a66d5ac04f59fd4ed83091fbbdb56f20155d1f5e57f4", size = 9515598, upload-time = "2026-02-18T08:43:40.642Z" },
+]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2187,6 +2199,7 @@ dev = [
     { name = "ruff" },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
+    { name = "sphinx-nefertiti" },
     { name = "watchfiles" },
     { name = "werkzeug", extra = ["watchdog"] },
 ]
@@ -2258,6 +2271,7 @@ dev = [
     { name = "ruff", specifier = "==0.15.1" },
     { name = "sphinx", specifier = "==8.2.3" },
     { name = "sphinx-autobuild", specifier = "==2025.8.25" },
+    { name = "sphinx-nefertiti", specifier = ">=0.9.5" },
     { name = "watchfiles", specifier = "==1.1.1" },
     { name = "werkzeug", extras = ["watchdog"], specifier = "==3.1.5" },
 ]
