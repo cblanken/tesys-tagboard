@@ -1,4 +1,4 @@
-How To - Project Documentation
+Project Documentation
 ======================================================================
 
 Get Started
