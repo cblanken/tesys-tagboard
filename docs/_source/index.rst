@@ -13,6 +13,7 @@ Welcome to Tesy's Tagboard's documentation!
    DEVELOPMENT
    DEPLOYMENT
    ARCHITECTURE
+   SETTINGS
    documentation
 
 

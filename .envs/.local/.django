@@ -6,7 +6,6 @@ DATABASE_URL=postgres://enCYnUAOivjTThocHtrIXHtotxrMebzi:80QVoSIr2GC2HR28VyrYXRQ
 
 # Django
 # ------------------------------------------------------------------------------
-DJANGO_READ_DOT_ENV_FILE=True
 DJANGO_DEBUG=True
 DJANGO_ADMIN_URL="admin/"
 DJANGO_SILKY_PYTHON_PROFILER=False
