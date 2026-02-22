@@ -347,26 +347,10 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 # DaisyUI themes
 THEMES = [
-    "light",  # don't delete this
-    "dark",  # don't delete this (default)
-    "abyss",
-    "acid",
-    "aqua",
-    "autumn",
-    "bumblebee",
-    "cupcake",
-    "coffee",
-    "corporate",
-    "dim",
-    "dracula",
-    "lemonade",
-    "lofi",
-    "nord",
-    "retro",
-    "silk",
-    "synthwave",
-    "valentine",
-    "winter",
+    "light-1",
+    "light-2",
+    "dark-1",
+    "dark-2",
     "wireframe",
 ]
 
