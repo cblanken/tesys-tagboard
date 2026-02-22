@@ -1,3 +1,4 @@
+set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
 export COMPOSE_FILE := "docker-compose.local.yml"
 export COMPOSE_PROFILES := "all"
 
