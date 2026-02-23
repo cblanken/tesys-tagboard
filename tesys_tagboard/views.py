@@ -768,6 +768,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
         tags = Tag.objects.in_tagset(tagset)
         if media_type := SupportedMediaTypes.find(media_file.file.file.content_type):
             post = Post(
+                title=form.cleaned_data.get("title"),
                 uploader=request.user,
                 rating_level=rating_level,
                 src_url=src_url,
@@ -778,7 +779,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
             media_file.save()
             post.save_with_tag_history(post.uploader, tags)
             msg = mark_safe(  # noqa: S308
-                f"Your post was create successfully, Check it out <a href='{reverse('post', args=[post.pk])}'>here</a>"  # noqa: E501
+                f"Your post was created successfully, Check it out <a href='{reverse('post', args=[post.pk])}'>here</a>"  # noqa: E501
             )
             messages.add_message(request, messages.INFO, msg)
 

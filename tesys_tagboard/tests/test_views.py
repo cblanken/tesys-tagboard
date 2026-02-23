@@ -639,7 +639,7 @@ def get_uploaded_test_media_file(
 class TestUploadView:
     url = reverse("upload")
 
-    def test_upload(self, client):
+    def test_upload_anonymous(self, client):
         response = client.get(self.url, follow=True)
         assert response.redirect_chain[0][0] == "/accounts/login/?next=/upload/"
         assert response.status_code == HTTPStatus.OK
@@ -663,6 +663,28 @@ class TestUploadView:
         after_posts = Post.objects.all().count()
 
         assert after_posts == before_posts
+
+    def test_create_post_with_title(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        title_text = "Happy Titley Title Here"
+        data = {"title": title_text, "file": img_file}
+
+        response = client.post(self.url, data)
+        assert response.status_code == HTTPStatus.OK
+        assert Post.objects.filter(title=title_text).exists()
+
+    def test_create_post_with_too_long_title(self, client, user_with_add_post):
+        client.force_login(user_with_add_post)
+
+        img_file = get_uploaded_test_media_file("1x1", "png")
+        title_text = "A " * 501  # 1002 character long title
+        data = {"title": title_text, "file": img_file}
+
+        response = client.post(self.url, data)
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        assert not Post.objects.filter(title=title_text).exists()
 
     def test_create_png_img_post(self, client, user_with_add_post):
         client.force_login(user_with_add_post)

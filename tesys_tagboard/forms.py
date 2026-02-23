@@ -66,6 +66,9 @@ class CreateCollectionForm(forms.ModelForm):
 
 class UploadMedia(forms.Form):
     src_url = forms.URLField(label=_("Source"), required=False, assume_scheme="https")
+    title = forms.CharField(
+        max_length=1000, required=False, validators=[MaxLengthValidator(1000)]
+    )
     file = forms.FileField(label=_("File"), required=True)
     rating_level = forms.ChoiceField(
         choices=RatingLevel.choices,

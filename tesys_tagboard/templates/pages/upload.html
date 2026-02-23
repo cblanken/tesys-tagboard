@@ -27,19 +27,28 @@
           Pick a file<span class="text-warning">*</span>
         </legend>
         <input type="file" name="file" class="w-full file-input file-input-lg" />
-        <label class="label">Supported file types: PNG, JPEG, BMP, GIF, WebP</label>
+        <label for="file" class="label">Supported file types: PNG, JPEG, BMP, GIF, WebP</label>
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Title</legend>
+        <input type="text" name="title" class="w-full input text-input" />
+        <label class="label" for="title">Provide a meaningful title for the post</label>
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Source</legend>
-        <label class="w-full input validator pe-0">
-          {% include "icons/feather.html" with icon="link" %}
+        <span class="relative">
           <input name="src_url"
                  type="url"
                  pattern="(https?:\/\/)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*"
                  placeholder="https://"
                  value=""
-                 title="Must be valid URL" />
-        </label>
+                 title="Must be valid URL"
+                 class="pl-8 w-full input validator" />
+          <div class="grid absolute top-0 left-2 content-center h-full z-5">
+            {% include "icons/feather.html" with icon="link" %}
+          </div>
+        </span>
+        <label for="src_url" class="label">Provide a link to the original work</label>
         <p class="hidden validator-hint">Must be valid URL</p>
       </fieldset>
       <fieldset class="w-full fieldset">
