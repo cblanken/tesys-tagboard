@@ -49,11 +49,14 @@ class MediaCategory(StrEnum):
 class MediaType:
     """A class describing the content type of some media following
     the MIME data convention
-    desc: a string describing the MediaType
-    extensions: a list of valid file extension for the MediaType
-    category: a MediaCategory (AUDIO, IMAGE, or VIDEO)
-    subtype: a Media's subtype (e.g. 'svg' in image/svg, or 'png' in image/png)
-    suffix: an optional suffix to the MediaType definition (e.g. 'xml' in image/svg+xml)
+
+    Args:
+        desc: str = describing the MediaType
+        extensions: list[str] = a list of valid file extension for the MediaType
+        category: MediaCategory = MediaCategory.(AUDIO, IMAGE, or VIDEO)
+        subtype: str  = the subtype (e.g. 'png' in image/png) in the MIME definition
+        suffix: str = an optional suffix to the MediaType definition (e.g. 'xml' in the
+            MIME type 'image/svg+xml')
     """
 
     desc: str
@@ -62,14 +65,14 @@ class MediaType:
     subtype: str
     suffix: str = ""
 
-    def get_template(self):
+    def get_mimetype(self):
         template = f"{self.category.value}/{self.subtype}"
         if self.suffix:
             template += f"+{self.suffix}"
         return template
 
 
-class SupportedMediaTypes(Enum):
+class SupportedMediaType(Enum):
     # Image types
     AVIF = MediaType("AVIF image", ["avif"], MediaCategory.IMAGE, "avif")
     BMP = MediaType("Windows Bitmap Graphics", ["bmp"], MediaCategory.IMAGE, "bmp")
@@ -94,10 +97,10 @@ class SupportedMediaTypes(Enum):
     @classmethod
     def find(cls, template: str) -> Self | None:
         """A function to search the supported media types by
-        template string.
+        the MIME type template string.
         Returns the first matched instance of SupportedMediaTypes"""
         for smt in cls:
-            if template == smt.value.get_template():
+            if template == smt.value.get_mimetype():
                 return smt
 
         return None

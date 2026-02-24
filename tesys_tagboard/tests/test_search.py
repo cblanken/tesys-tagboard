@@ -741,7 +741,16 @@ class TestPostAdvancedSearchFiletype:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchMimetype:
-    def test_mimetype(self):
+    def test_supported_mimetype(self):
+        # TODO
+        pass
+
+    def test_invalid_mimetype(self):
+        # TODO
+        pass
+
+    def test_valid_but_unsupported_mimetype(self):
+        # TODO
         pass
 
 

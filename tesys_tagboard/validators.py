@@ -4,7 +4,7 @@ from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from .enums import RatingLevel
-from .enums import SupportedMediaTypes
+from .enums import SupportedMediaType
 
 rgb_validator = validators.RegexValidator(r"^#[0-9A-F]{6}$")
 md5_validator = validators.RegexValidator(r"^[0-9A-Z]{32}$")
@@ -28,6 +28,10 @@ wildcard_url_validator = validators.RegexValidator(
     r"[ A-Za-z0-9-.,_~:\/#@!$&';%=\*\+\(\)\?\[\]]",
     message=_("Enter a valid URL with wildcards"),
 )
+mimetype_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^[a-z]+[/][a-z]+[+]?[a-z]*$"),
+    message=_("Enter a valid MIME type (e.g. image/jpeg)"),
+)
 
 
 def tagset_validator(tag_ids: list):
@@ -43,7 +47,7 @@ def tagset_validator(tag_ids: list):
 
 
 def media_file_supported_validator(file):
-    if not SupportedMediaTypes.find(file.content_type):
+    if not SupportedMediaType.find(file.content_type):
         msg = f"File with a content type of {file.content_type} is not supported"
         raise ValidationError(msg)
 

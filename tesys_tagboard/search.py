@@ -14,10 +14,12 @@ from django.http import QueryDict
 from more_itertools import take
 
 from .enums import RatingLevel
+from .enums import SupportedMediaType
 from .models import Post
 from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
+from .validators import mimetype_validator
 from .validators import positive_int_validator
 from .validators import rating_label_validator
 from .validators import tag_name_validator
@@ -60,6 +62,18 @@ class InvalidRatingLabelError(Exception):
     def __init__(
         self,
         msg="The provided rating label does not match an existing RatingLevel",
+        *args,
+        **kwargs,
+    ):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidMimetypeError(Exception):
+    mimetypes = ", ".join([smt.value.get_mimetype() for smt in SupportedMediaType])
+
+    def __init__(
+        self,
+        msg=f"The provided mimetype does not match any of the supported mimetypes: {mimetypes}",  # noqa: E501
         *args,
         **kwargs,
     ):
@@ -282,6 +296,13 @@ class TokenCategory(Enum):
         aliases=("up",),
         arg_validator=username_validator,
         wildcard_arg_validator=username_validator,
+    )
+
+    MIMETYPE = SimpleSearchToken(
+        name="mimetype",
+        desc="The MIME type of the post's file",
+        aliases=("mime",),
+        arg_validator=mimetype_validator,
     )
 
     @classmethod
@@ -726,6 +747,17 @@ class PostSearch:
                             token_expr = Q(image__width=int(token.arg))
                         case TokenArgRelation.GREATER_THAN:
                             token_expr = Q(image__width__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.MIMETYPE:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            smt = SupportedMediaType.find(token.arg)
+                            if smt is None:
+                                raise InvalidMimetypeError
+                            token_expr = Q(type=smt.name)
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token

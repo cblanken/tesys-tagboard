@@ -5,7 +5,7 @@ from factory.faker import Faker
 from faker.providers import BaseProvider
 
 from tesys_tagboard.enums import RatingLevel
-from tesys_tagboard.enums import SupportedMediaTypes
+from tesys_tagboard.enums import SupportedMediaType
 from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
 from tesys_tagboard.models import Favorite
@@ -19,7 +19,7 @@ from tesys_tagboard.users.tests.factories import UserFactory
 
 # Add TT-specific providers
 class SupportedMediaTypeProvider(BaseProvider):
-    supported_media_types = [smt.name for smt in SupportedMediaTypes]
+    supported_media_types = [smt.name for smt in SupportedMediaType]
 
     def supported_media_type(self):
         return self.random_element(self.supported_media_types)

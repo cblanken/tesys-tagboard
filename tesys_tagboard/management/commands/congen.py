@@ -24,7 +24,7 @@ from rich.progress import track
 
 from tesys_tagboard.enums import MediaCategory
 from tesys_tagboard.enums import RatingLevel
-from tesys_tagboard.enums import SupportedMediaTypes
+from tesys_tagboard.enums import SupportedMediaType
 from tesys_tagboard.models import Audio
 from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
@@ -359,8 +359,8 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         description="Creating posts from media files...",
     ):
         m = magic.from_file(file, mime=True)
-        if smt := SupportedMediaTypes.find(m):
-            if media_type := SupportedMediaTypes.find(smt.value.get_template()):
+        if smt := SupportedMediaType.find(m):
+            if media_type := SupportedMediaType.find(smt.value.get_mimetype()):
                 post = Post(
                     title=fake.sentence(10),
                     uploader=choice(uploaders),

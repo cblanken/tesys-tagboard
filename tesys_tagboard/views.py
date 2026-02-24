@@ -33,7 +33,7 @@ from .components.favorite_toggle.favorite_toggle import FavoriteToggleComponent
 from .decorators import require
 from .enums import MediaCategory
 from .enums import RatingLevel
-from .enums import SupportedMediaTypes
+from .enums import SupportedMediaType
 from .forms import AddCommentForm
 from .forms import CreateCollectionForm
 from .forms import CreateTagAliasForm
@@ -693,7 +693,7 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
     if file.content_type is None:
         msg = "File missing content type"
         raise ValidationError(msg)
-    if smt := SupportedMediaTypes.find(file.content_type):
+    if smt := SupportedMediaType.find(file.content_type):
         media_file = None
         match smt.value.category:
             case MediaCategory.AUDIO:
@@ -766,13 +766,13 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
             rating_level = RatingLevel.UNRATED.value
         src_url = form.cleaned_data.get("src_url")
         tags = Tag.objects.in_tagset(tagset)
-        if media_type := SupportedMediaTypes.find(media_file.file.file.content_type):
+        if media_type := SupportedMediaType.find(media_file.file.file.content_type):
             post = Post(
                 title=form.cleaned_data.get("title"),
                 uploader=request.user,
                 rating_level=rating_level,
                 src_url=src_url,
-                type=media_type.value.get_template(),
+                type=media_type.name,
             )
             post.save()
             media_file.post = post

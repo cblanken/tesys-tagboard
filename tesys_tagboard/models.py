@@ -28,7 +28,7 @@ from config.settings.base import AUTH_USER_MODEL
 
 from .enums import MediaCategory
 from .enums import RatingLevel
-from .enums import SupportedMediaTypes
+from .enums import SupportedMediaType
 from .validators import dhash_validator
 from .validators import md5_validator
 from .validators import phash_validator
@@ -352,7 +352,7 @@ class Post(models.Model):
     locked_comments = models.BooleanField(default=False, blank=True)
 
     media_choices = (
-        (x.name, x.value.desc) for x in SupportedMediaTypes.__members__.values()
+        (x.name, x.value.desc) for x in SupportedMediaType.__members__.values()
     )
     type = models.CharField(max_length=20, choices=media_choices)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
