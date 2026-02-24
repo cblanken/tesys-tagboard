@@ -1,47 +1,102 @@
-{% extends "account/base_entrance.html" %}
+{% extends 'account/base_entrance.html' %}
 
 {% load allauth i18n %}
 
 {% block head_title %}
-  {% trans "Signup" %}
-{% endblock head_title %}
+  {% trans 'Signup' %}
+{% endblock %}
 {% block content %}
-  {% include "heading.html" with text=_("SIGNUP") %}
+  {% include 'heading.html' with text=_('SIGNUP') %}
+
+  <div class="min-h-screen flex gap-4 justify-center">
+    <form method="post" action="{% url 'account_signup' %}" class="bg-base-300 h-full mt-3 flex flex-col gap-4 p-8 lg:w-1/2 rounded-box sm:min-w-[450px] lg:max-w-[800px] max-w-3xl">
+      {% csrf_token %}
+
+      <h2 class="text-4xl font-bold text-base-accent mb-6 text-center">Create a new account </h2>
+
+      {% if form.errors %}
+        <div class="text-error text-sm">{{ form.errors }}</div>
+      {% endif %}
+
+      <!-- Username -->
+      <div>
+        <label class="block text-sm font-medium mb-1">User name</label>
+        <input required type="text" name="username" class="w-full text-primary-content px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="User name here" />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Email</label>
+        <input required type="email" name="email" class="w-full text-primary-content px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="example@email.com" />
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Password</label>
+        <input required type="password" name="password1" class="w-full text-primary-content px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="••••••••" />
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Confirm Password</label>
+        <input required type="password" name="password2" class="w-full text-primary-content px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="••••••••" />
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="w-full bg-primary hover:bg-primary/80 text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer">Sign Up</button>
+
+      <div class="divider my-6">OR</div>
+
+      <!-- Discord -->
+      <a href="/accounts/discord/login/?process=login" class="btn text-white mx-auto" style="background-color: #5865F2; border-color: #5865F2;">
+        <svg aria-label="Discord logo" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612" />
+        </svg>Discord
+      </a>
+
+      <p class="py-2 text-sm text-center">
+        Already have an account?
+        <a href="{% url 'account_login' %}" class="text-warning hover:text-primary">Log in</a>
+      </p>
+    </form>
+  </div>
+  
+{% comment %} 
   <div class="m-auto md:max-w-xl xl:max-w-3xl">
     {% setvar link %}
     <a href="{{ login_url }}">
+      {% endsetvar %}
+      {% setvar end_link %}
+    </a>
     {% endsetvar %}
-    {% setvar end_link %}
-  </a>
-{% endsetvar %}
-<p class="py-2">
-  {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
-</p>
-{% if not SOCIALACCOUNT_ONLY %}
-  {% url 'account_signup' as action_url %}
-  {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-  {% slot body %}
-  {% csrf_token %}
-  {% element fields form=form unlabeled=True %}
-{% endelement %}
-{{ redirect_field }}
-{% endslot %}
-{% slot actions %}
-{% element button tags="prominent,signup" type="submit" %}
-{% trans "Sign Up" %}
-{% endelement %}
-{% endslot %}
-{% endelement %}
-{% endif %}
-{% if PASSKEY_SIGNUP_ENABLED %}
-  {% element hr %}
-{% endelement %}
-{% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
-{% trans "Sign up using a passkey" %}
-{% endelement %}
-{% endif %}
-{% if SOCIALACCOUNT_ENABLED %}
-  {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-{% endif %}
-</div>
-{% endblock content %}
+    <p class="py-2">
+      {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
+    </p>
+    {% if not SOCIALACCOUNT_ONLY %}
+      {% url 'account_signup' as action_url %}
+      {% element form form=form method='post' action=action_url tags='entrance,signup' %}
+      {% slot body %}
+      {% csrf_token %}
+      {% element fields form=form unlabeled=True %}
+      {% endelement %}
+      {{ redirect_field }}
+      {% endslot %}
+      {% slot actions %}
+      {% element button tags='prominent,signup' type='submit' %}
+      {% trans 'Sign Up' %}
+      {% endelement %}
+      {% endslot %}
+      {% endelement %}
+    {% endif %}
+    {% if PASSKEY_SIGNUP_ENABLED %}
+      {% element hr %}
+      {% endelement %}
+      {% element button href=signup_by_passkey_url tags='prominent,signup,outline,primary' %}
+      {% trans 'Sign up using a passkey' %}
+      {% endelement %}
+    {% endif %}
+    {% if SOCIALACCOUNT_ENABLED %}
+      {% include 'socialaccount/snippets/login.html' with page_layout='entrance' %}
+    {% endif %}
+  </div> {% endcomment %}
+{% endblock %}
