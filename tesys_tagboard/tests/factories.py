@@ -1,7 +1,7 @@
 import factory
-from factory import Faker
-from factory import SubFactory
+from factory.declarations import SubFactory
 from factory.django import DjangoModelFactory
+from factory.faker import Faker
 from faker.providers import BaseProvider
 
 from tesys_tagboard.enums import RatingLevel
@@ -9,6 +9,7 @@ from tesys_tagboard.enums import SupportedMediaTypes
 from tesys_tagboard.models import Collection
 from tesys_tagboard.models import Comment
 from tesys_tagboard.models import Favorite
+from tesys_tagboard.models import Image
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
@@ -24,7 +25,16 @@ class SupportedMediaTypeProvider(BaseProvider):
         return self.random_element(self.supported_media_types)
 
 
+class ImageSizeProvider(BaseProvider):
+    def image_width(self):
+        return self.random_int(50, 1000)
+
+    def image_height(self):
+        return self.random_int(50, 1000)
+
+
 Faker.add_provider(SupportedMediaTypeProvider)
+Faker.add_provider(ImageSizeProvider)
 
 
 class TagCategoryFactory(DjangoModelFactory[TagCategory]):
@@ -66,6 +76,20 @@ class PostFactory(DjangoModelFactory[Post]):
 
     class Meta:
         model = Post
+
+
+class ImageFactory(DjangoModelFactory[Image]):
+    post = SubFactory(PostFactory)
+    orig_name = Faker("file_name", category="image")
+    width = Faker("image_width")
+    height = Faker("image_height")
+    file = factory.django.ImageField(
+        height=factory.SelfAttribute("..height"), width=factory.SelfAttribute("..width")
+    )
+
+    class Meta:
+        model = Image
+        django_get_or_create = ("post",)
 
 
 class CommentFactory(DjangoModelFactory[Comment]):

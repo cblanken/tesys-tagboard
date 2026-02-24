@@ -710,6 +710,30 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.HEIGHT:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(image__height__lt=int(token.arg))
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(image__height=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(image__height__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.WIDTH:
+                    match token.arg_relation:
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(image__width__lt=int(token.arg))
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(image__width=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(image__width__gt=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     continue
 

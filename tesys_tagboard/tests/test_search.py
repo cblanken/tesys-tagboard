@@ -17,6 +17,7 @@ from tesys_tagboard.search import autocomplete_tags
 
 from .factories import CommentFactory
 from .factories import FavoriteFactory
+from .factories import ImageFactory
 from .factories import PostFactory
 from .factories import TagFactory
 from .factories import UserFactory
@@ -746,26 +747,110 @@ class TestPostAdvancedSearchMimetype:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchHeight:
-    def test_height_equal(self):
-        pass
+    def test_image_height_equal(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
 
-    def test_height_greater_than(self):
-        pass
+        ImageFactory(post=post0, height=1000)
+        ImageFactory(post=post1, height=2000)
+        ImageFactory(post=post2, height=3000)
+        ImageFactory(post=post3, height=4000)
 
-    def test_height_less_than(self):
-        pass
+        ps = PostSearch("height=1000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
+
+    def test_image_height_greater_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        ImageFactory(post=post0, height=1000)
+        ImageFactory(post=post1, height=2000)
+        ImageFactory(post=post2, height=3000)
+        ImageFactory(post=post3, height=4000)
+
+        ps = PostSearch("height>2000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk not in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk in post_ids
+
+    def test_image_height_less_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        ImageFactory(post=post0, height=1000)
+        ImageFactory(post=post1, height=2000)
+        ImageFactory(post=post2, height=3000)
+        ImageFactory(post=post3, height=4000)
+
+        ps = PostSearch("height<3000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk in post_ids
+        assert post1.pk in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchWeight:
-    def test_weight_equal(self):
-        pass
+class TestPostAdvancedSearchWidth:
+    def test_image_width_equal(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
 
-    def test_weight_greater_than(self):
-        pass
+        ImageFactory(post=post0, width=1000)
+        ImageFactory(post=post1, width=2000)
+        ImageFactory(post=post2, width=3000)
+        ImageFactory(post=post3, width=4000)
 
-    def test_weight_less_than(self):
-        pass
+        ps = PostSearch("width=1000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
+
+    def test_image_width_greater_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        ImageFactory(post=post0, width=1000)
+        ImageFactory(post=post1, width=2000)
+        ImageFactory(post=post2, width=3000)
+        ImageFactory(post=post3, width=4000)
+
+        ps = PostSearch("width>2000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk not in post_ids
+        assert post1.pk not in post_ids
+        assert post2.pk in post_ids
+        assert post3.pk in post_ids
+
+    def test_image_width_less_than(self):
+        post0, post1, post2, post3 = PostFactory.create_batch(4)
+
+        ImageFactory(post=post0, width=1000)
+        ImageFactory(post=post1, width=2000)
+        ImageFactory(post=post2, width=3000)
+        ImageFactory(post=post3, width=4000)
+
+        ps = PostSearch("width<3000")
+        posts = ps.get_posts()
+
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert post0.pk in post_ids
+        assert post1.pk in post_ids
+        assert post2.pk not in post_ids
+        assert post3.pk not in post_ids
 
 
 @pytest.mark.django_db
