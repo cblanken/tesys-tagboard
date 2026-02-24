@@ -15,14 +15,12 @@ const toggle_advanced_search = () => {
     advanced_search_form.classList.remove(...toggle_advanced_search_off_form_classes);
     edit_advanced_search_btn.classList.add(...toggle_advanced_search_off_btn_classes);
     edit_advanced_search_btn_text.textContent = "SIMPLE"
-    search_submit_btn.setAttribute("form", "advanced-post-search");
   } else {
     // Enable simple search mode (default)
     simple_search_form.classList.remove(...toggle_simple_search_off_form_classes);
     advanced_search_form.classList.add(...toggle_advanced_search_off_form_classes);
     edit_advanced_search_btn.classList.remove(...toggle_advanced_search_off_btn_classes)
     edit_advanced_search_btn_text.textContent = "ADVANCED";
-    search_submit_btn.setAttribute("form", "simple-post-search");
   }
 
   advanced_search_hidden = !advanced_search_hidden;
@@ -32,7 +30,3 @@ edit_advanced_search_btn.addEventListener("click", e => {
   e.preventDefault();
   toggle_advanced_search();
 });
-
-
-search_submit_btn.addEventListener("click", e => {
-})
