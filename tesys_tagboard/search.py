@@ -131,7 +131,7 @@ class TokenArgRelation(Enum):
     GREATER_THAN = ">"
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SearchTokenBase:
     """A base class for modeling search tokens"""
 
@@ -143,22 +143,22 @@ class SearchTokenBase:
     allowed_arg_relations: tuple[TokenArgRelation, ...]
 
 
+@dataclass(kw_only=True)
 class SimpleSearchToken(SearchTokenBase):
     """A dataclass for simple search tokens accepting just the equal (=) operator
-    and no wildcards"""
+    and no wildcards. No aliases are included by default."""
 
-    name: str
     aliases: tuple[str, ...] = ()
-    arg_validator: validators.RegexValidator | Callable
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ComparisonSearchToken(SearchTokenBase):
     """A dataclass for search tokens that allow the following comparison operations
     of the token argument (>, <, and =)"""
 
+    aliases: tuple[str, ...] = ()
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (
         TokenArgRelation.EQUAL,
@@ -167,10 +167,11 @@ class ComparisonSearchToken(SearchTokenBase):
     )
 
 
-@dataclass
+@dataclass(kw_only=True)
 class WildcardSearchToken(SearchTokenBase):
     """A dataclass for search tokens that accepts wildcards (*) in its token argument"""
 
+    aliases: tuple[str, ...] = ()
     allow_wildcard: bool = True
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
     wildcard_arg_validator: RegexValidator | Callable | None = None
@@ -188,103 +189,98 @@ class TokenCategory(Enum):
     """
 
     TAG = WildcardSearchToken(
-        "",
-        "The default (un-named) token. Used for searching tags.",
-        (),
+        name="",
+        desc="The default (un-named) token. Used for searching tags.",
         arg_validator=tag_name_validator,
     )
 
     TAG_ID = SimpleSearchToken(
-        "tag_id",
-        "The ID of a tag.",
-        (),
-        positive_int_validator,
-        allow_wildcard=False,
-        allowed_arg_relations=(TokenArgRelation.EQUAL,),
+        name="tag_id",
+        desc="The ID of a tag.",
+        arg_validator=positive_int_validator,
     )
 
     POST_ID = ComparisonSearchToken(
-        "id", "The ID of a Post", (), positive_int_validator
+        name="id",
+        desc="The ID of a Post",
+        arg_validator=positive_int_validator,
     )
 
     TAG_ALIAS = WildcardSearchToken(
-        "alias",
-        "The name of a TagAlias. Allows wildcards.",
-        ("tag_alias",),
-        tag_name_validator,
+        name="alias",
+        desc="The name of a TagAlias. Allows wildcards.",
+        aliases=("tag_alias",),
+        arg_validator=tag_name_validator,
     )
 
     TAG_COUNT = ComparisonSearchToken(
-        "tag_count",
-        "The number of tags on a Post. Accepts comparison operators =, <, >",
-        ("tc",),
-        positive_int_validator,
+        name="tag_count",
+        desc="The number of tags on a Post. Accepts comparison operators =, <, >",
+        aliases=("tc",),
+        arg_validator=positive_int_validator,
     )
 
     COMMENT_BY = WildcardSearchToken(
-        "comment_by",
-        "The username of a user",
-        ("comment", "cb"),
-        username_validator,
+        name="comment_by",
+        desc="The username of a user",
+        aliases=("comment", "cb"),
+        arg_validator=username_validator,
     )
 
     COMMENT_COUNT = ComparisonSearchToken(
-        "comment_count",
-        "The number of comments on a Post. Accepts comparison operators =, <, >",
-        ("cc",),
-        positive_int_validator,
+        name="comment_count",
+        desc="The number of comments on a Post. Accepts comparison operators =, <, >",
+        aliases=("cc",),
+        arg_validator=positive_int_validator,
     )
 
     FAV_COUNT = ComparisonSearchToken(
-        "favorite_count",
-        "The number of favorites recieved by a Post. Accepts comparison operators =, <, >",  # noqa: E501
-        ("fav_count", "fc"),
-        positive_int_validator,
+        name="favorite_count",
+        desc="The number of favorites recieved by a Post. Accepts comparison operators =, <, >",  # noqa: E501
+        aliases=("fav_count", "fc"),
+        arg_validator=positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchToken(
-        "height",
-        "The height of a Post (only applies to Images and Videos). Accepts comparison operators =, <, >",  # noqa: E501
-        ("h",),
-        validators.integer_validator,
+        name="height",
+        desc="The height of a Post (only applies to Images and Videos). Accepts comparison operators =, <, >",  # noqa: E501
+        aliases=("h",),
+        arg_validator=validators.integer_validator,
     )
 
     WIDTH = ComparisonSearchToken(
-        "width",
-        "The width of a Post (only applies to Images and Videos.  Accepts comparison operators =, <, >",  # noqa: E501
-        ("w",),
-        validators.integer_validator,
+        name="width",
+        desc="The width of a Post (only applies to Images and Videos.  Accepts comparison operators =, <, >",  # noqa: E501
+        aliases=("w",),
+        arg_validator=validators.integer_validator,
     )
 
     RATING_LABEL = SimpleSearchToken(
-        "rating_label",
-        "The rating of a Post. Accepts any current rating level label",
-        ("rate", "r"),
-        rating_label_validator,
-        allow_wildcard=False,
-        allowed_arg_relations=(TokenArgRelation.EQUAL,),
+        name="rating_label",
+        desc="The rating of a Post. Accepts any current rating level label",
+        aliases=("rate", "r"),
+        arg_validator=rating_label_validator,
     )
 
     RATING_NUM = ComparisonSearchToken(
-        "rating_num",
-        "The rating level of a Post. Accepts equality comparison operators =, <, >",
-        (),
-        validators.integer_validator,
+        name="rating_num",
+        desc="The rating level of a Post. Accepts equality comparison operators.",
+        arg_validator=validators.integer_validator,
     )
 
     SOURCE = WildcardSearchToken(
-        "source",
-        "The source url of a Post. Allows wildcards.",
-        ("src",),
-        validators.URLValidator(),
+        name="source",
+        desc="The source url of a Post. Allows wildcards.",
+        aliases=("src",),
+        arg_validator=validators.URLValidator(),
         wildcard_arg_validator=wildcard_url_validator,
     )
 
     UPLOADED_BY = WildcardSearchToken(
-        "uploaded_by",
-        "The username of the uploader of a Post. Allows wildcards",
-        ("up",),
-        username_validator,
+        name="uploaded_by",
+        desc="The username of the uploader of a Post. Allows wildcards.",
+        aliases=("up",),
+        arg_validator=username_validator,
         wildcard_arg_validator=username_validator,
     )
 
