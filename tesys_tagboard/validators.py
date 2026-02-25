@@ -39,6 +39,14 @@ yes_no_validator = validators.RegexValidator(
     _lazy_re_compile(r"^(yes|no)$", re.IGNORECASE),
     message=_('Enter "yes" or "no"'),
 )
+collection_name_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^[a-zA-Z\d_\- ]+\Z"),
+    message=_("Enter a valid collection name."),
+)
+wildcard_collection_name_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^[a-zA-Z\d_\- *]+\Z"),
+    message=_("Enter a valid collection name with wildcards."),
+)
 
 
 def mimetype_validator(mimetype: str):

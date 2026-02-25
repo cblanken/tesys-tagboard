@@ -19,6 +19,7 @@ from .models import Post
 from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
+from .validators import collection_name_validator
 from .validators import file_extension_validator
 from .validators import iso_date_validator
 from .validators import mimetype_validator
@@ -26,6 +27,7 @@ from .validators import positive_int_validator
 from .validators import rating_label_validator
 from .validators import tag_name_validator
 from .validators import username_validator
+from .validators import wildcard_collection_name_validator
 from .validators import wildcard_url_validator
 from .validators import yes_no_validator
 
@@ -334,7 +336,6 @@ class TokenCategory(Enum):
         desc="The username of the uploader of a Post. Allows wildcards.",
         aliases=("uploaded_by",),
         arg_validator=username_validator,
-        wildcard_arg_validator=username_validator,
     )
 
     POSTED_ON = ComparisonSearchToken(
@@ -366,9 +367,16 @@ class TokenCategory(Enum):
 
     COLLECTION = SimpleSearchToken(
         name="collection",
-        desc="Whether not a post is part of a collection (yes/no)",
+        desc="Whether or not a post is part of a collection (yes/no)",
         aliases=("in_collection",),
         arg_validator=yes_no_validator,
+    )
+
+    COLLECTION_NAME = WildcardSearchToken(
+        name="collection_name",
+        desc="A collection's name. Supports wildcards.",
+        arg_validator=collection_name_validator,
+        wildcard_arg_validator=wildcard_collection_name_validator,
     )
 
     @classmethod
@@ -457,7 +465,8 @@ class NamedToken:
             validator(self.arg)
 
     def arg_with_wildcards(self):
-        """Reconstructs original `arg` with wildcards from `wildcard_positions`"""
+        """Reconstructs original `arg` with Postgres compatibale wildcards from the
+        `wildcard_positions`"""
 
         arg = self.arg
         for pos in self.wildcard_positions:
@@ -876,6 +885,19 @@ class PostSearch:
                                 token_expr = Q(collection=None)
                             else:
                                 token_expr = ~Q(collection=None)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.COLLECTION_NAME:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.wildcard_positions:
+                                token_expr = Q(
+                                    collection__name__like=token.arg_with_wildcards()
+                                )
+                            else:
+                                token_expr = Q(collection__name=token.arg)
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token

@@ -1073,3 +1073,11 @@ class TestPostAdvancedSearchCollections:
     def test_posts_not_in_a_collection(self):
         # TODO
         pass
+
+    def test_name(self):
+        # TODO
+        pass
+
+    def test_name_with_wildcard(self):
+        # TODO
+        pass

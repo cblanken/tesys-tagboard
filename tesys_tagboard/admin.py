@@ -160,7 +160,7 @@ class CollectionAdmin(admin.ModelAdmin):
         "public",
     ]
     autocomplete_fields = ["user", "posts"]
-    search_fields = ["user", "name", "desc"]
+    search_fields = ["user__username", "name", "desc"]
 
 
 @admin.register(Favorite)

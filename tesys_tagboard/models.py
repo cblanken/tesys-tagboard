@@ -29,6 +29,7 @@ from config.settings.base import AUTH_USER_MODEL
 from .enums import MediaCategory
 from .enums import RatingLevel
 from .enums import SupportedMediaType
+from .validators import collection_name_validator
 from .validators import dhash_validator
 from .validators import md5_validator
 from .validators import phash_validator
@@ -608,7 +609,7 @@ class Collection(models.Model):
     """Collections of posts saved by users"""
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, validators=[collection_name_validator])
     desc = models.TextField(max_length=1024)
     posts = models.ManyToManyField(Post)
     public = models.BooleanField(default=True, blank=True)
