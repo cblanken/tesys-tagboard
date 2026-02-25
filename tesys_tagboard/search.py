@@ -379,6 +379,31 @@ class TokenCategory(Enum):
         wildcard_arg_validator=wildcard_collection_name_validator,
     )
 
+    PARENT = SimpleSearchToken(
+        name="parent",
+        desc="Whether or not a post has a parent (yes/no)",
+        arg_validator=yes_no_validator,
+    )
+
+    PARENT_ID = SimpleSearchToken(
+        name="parent_id",
+        desc="Whether or not a post has a parent matching the given post ID",
+        arg_validator=positive_int_validator,
+    )
+
+    CHILD = SimpleSearchToken(
+        name="children",
+        desc="Whether or not a post has any children (yes/no)",
+        aliases=("child",),
+        arg_validator=yes_no_validator,
+    )
+
+    CHILD_ID = SimpleSearchToken(
+        name="child_id",
+        desc="Whether or not a post has a child post matching the given post ID",
+        arg_validator=positive_int_validator,
+    )
+
     @classmethod
     def select(cls, name: str) -> TokenCategory:
         """Select token category by name or one of its aliases
@@ -902,6 +927,44 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
+                case TokenCategory.PARENT:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.arg.lower() == "no":
+                                token_expr = Q(parent=None)
+                            else:
+                                token_expr = ~Q(parent=None)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.PARENT_ID:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(parent__pk=int(token.arg))
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.CHILD:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.arg.lower() == "no":
+                                token_expr = Q(child_post_ids=None)
+                            else:
+                                token_expr = ~Q(child_post_ids=None)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.CHILD_ID:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(child_post_ids__contains=[token.arg])
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
                 case _:
                     raise SearchTokenFilterNotImplementedError(token.category.value)
 
@@ -921,6 +984,11 @@ class PostSearch:
             posts = posts.annotate_fav_count()
         if TokenCategory.TAG_COUNT in token_categories:
             posts = posts.annotate_tag_count()
+        if (
+            TokenCategory.CHILD in token_categories
+            or TokenCategory.CHILD_ID in token_categories
+        ):
+            posts = posts.annotate_child_posts()
         if search_conditions := self.get_search_conditions():
             for condition in search_conditions:
                 posts = posts.filter(condition)

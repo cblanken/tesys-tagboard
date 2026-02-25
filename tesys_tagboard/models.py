@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 import imagehash
 from colorfield.fields import ColorField
+from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import HashIndex
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
@@ -260,6 +262,22 @@ class PostQuerySet(models.QuerySet):
                 ),
                 default=Value(value=False),
             )
+        )
+
+    def annotate_child_posts(self):
+        """Adds `child_post_ids` annotation to a QuerySet of Posts which contains a
+        list of post ID's that are linked as children posts.
+        """
+        child_posts_subquery = (
+            Post.objects.filter(parent=OuterRef("pk"))
+            .only("pk")
+            .annotate(child_id_array=ArrayAgg("pk"))
+        ).values("child_id_array")[:1]
+        return self.annotate(
+            child_post_ids=Subquery(
+                child_posts_subquery,
+                output_field=ArrayField(models.PositiveBigIntegerField()),
+            ),
         )
 
     def uploaded_by(self, user):
