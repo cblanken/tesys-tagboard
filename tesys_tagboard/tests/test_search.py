@@ -1081,3 +1081,25 @@ class TestPostAdvancedSearchCollections:
     def test_name_with_wildcard(self):
         # TODO
         pass
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchParent:
+    def test_parent_exists(self):
+        # TODO
+        pass
+
+    def test_parent_id(self):
+        # TODO
+        pass
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchChildren:
+    def test_child_exists(self):
+        # TODO
+        pass
+
+    def test_children_ids(self):
+        # TODO
+        pass
