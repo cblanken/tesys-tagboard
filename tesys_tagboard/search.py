@@ -314,7 +314,7 @@ class TokenCategory(Enum):
     UPLOADED_BY = WildcardSearchToken(
         name="uploaded_by",
         desc="The username of the uploader of a Post. Allows wildcards.",
-        aliases=("up",),
+        aliases=("up", "posted_by"),
         arg_validator=username_validator,
         wildcard_arg_validator=username_validator,
     )
@@ -886,14 +886,28 @@ class PostSearch:
         tag_alias_autocompletions = take(self.max_aliases, tag_alias_autocompletions)
         autocomplete_items = chain(tag_autocompletions, tag_alias_autocompletions)
 
+        matching_items_by_name = (
+            AutocompleteItem(category, category.value.name)
+            for category in TokenCategory
+            if partial in category.value.name
+        )
+
+        matching_items_by_alias = chain(
+            *[
+                [
+                    AutocompleteItem(category, category.value.name, alias=alias)
+                    for alias in category.value.aliases
+                    if partial in alias
+                ]
+                for category in TokenCategory
+            ]
+        )
+
         if show_filters:
             # Add search filters to autocomplete items
             autocomplete_items = chain(
-                (
-                    AutocompleteItem(category, category.value.name)
-                    for category in TokenCategory.__members__.values()
-                    if partial in category.value.name
-                ),
+                matching_items_by_name,
+                matching_items_by_alias,
                 autocomplete_items,
             )
 

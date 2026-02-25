@@ -13,7 +13,7 @@
           style="{% if item.tag_category.bg %}background: {{ item.tag_category.bg }};
                  {% endif %} {% if item.tag_category.fg %}color: {{ item.tag_category.fg }};{% endif %}"
           class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border-1 border-neutral/80 text-tag-content {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}bg-tag-default{% else %}bg-filter-func{% endif %} last:border-b-1 hover:brightness-115 focus:brightness-115">
-        <div class="flex justify-between leading-5 rounded-none">
+        <div class="flex justify-between max-h-8 rounded-none">
           <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10">
             {% if item.alias %}
               <div>{% include "icons/feather.html" with icon="corner-down-right" %}</div>
@@ -22,13 +22,16 @@
             {% else %}
               <div>{% include "icons/feather.html" with icon="filter" %}</div>
             {% endif %}
-            <div>
+            <div class="flex flex-wrap gap-1 items-center leading-none">
               {% if item.alias %}
-                <div class="flex flex-wrap gap-1 items-center leading-2">
-                  <div>{{ item.alias }}</div>
-                  {% include "icons/feather.html" with icon="arrow-right" %}
-                  <div>{{ item.name }}</div>
-                </div>
+                <div>{{ item.alias }}</div>
+                {% include "icons/feather.html" with icon="arrow-right" %}
+                {% if item.token_category.name == "TAG" %}
+                  {% include "icons/feather.html" with icon="tag" %}
+                {% else %}
+                  {% include "icons/feather.html" with icon="filter" %}
+                {% endif %}
+                <div>{{ item.name }}</div>
               {% else %}
                 {{ item.name }}
               {% endif %}
