@@ -341,6 +341,12 @@ class TokenCategory(Enum):
         arg_validator=file_extension_validator,
     )
 
+    COLLECTION_ID = SimpleSearchToken(
+        name="collection_id",
+        desc="The ID of a collection",
+        arg_validator=positive_int_validator,
+    )
+
     @classmethod
     def select(cls, name: str) -> TokenCategory:
         """Select token category by name or one of its aliases
@@ -827,6 +833,14 @@ class PostSearch:
                             if smt is None:
                                 raise InvalidMimetypeError
                             token_expr = Q(type=smt.name)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.COLLECTION_ID:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(collection=int(token.arg))
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token

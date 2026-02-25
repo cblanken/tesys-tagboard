@@ -1052,3 +1052,16 @@ class TestPostAdvancedSearchPostedOn:
     def test_invalid_date_format(self):
         # TODO
         pass
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchCollections:
+    def test_exact_id(self):
+        # TODO
+        pass
+
+    def test_exact_id_multiple(self):
+        # Search returns posts in _both_ collections when using multiple
+        # collection_id tokens
+        # TODO
+        pass
