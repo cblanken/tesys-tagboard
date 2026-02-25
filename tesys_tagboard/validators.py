@@ -30,6 +30,10 @@ wildcard_url_validator = validators.RegexValidator(
     r"[ A-Za-z0-9-.,_~:\/#@!$&';%=\*\+\(\)\?\[\]]",
     message=_("Enter a valid URL with wildcards"),
 )
+iso_date_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^\d{4}-\d{2}-\d{2}$"),
+    message=_("Enter a date of the form: YYYY-MM-DD"),
+)
 
 
 def mimetype_validator(mimetype: str):

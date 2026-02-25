@@ -982,7 +982,7 @@ class TestPostAdvancedSearchSource:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchUploadedBy:
+class TestPostAdvancedSearchPostedBy:
     def test_uploaded_by_exact(self):
         post0, post1, post2, post3 = PostFactory.create_batch(4)
 
@@ -1029,3 +1029,26 @@ class TestPostAdvancedSearchUploadedBy:
         assert u2_post not in posts
         assert nb_post in posts
         assert sb_post in posts
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchPostedOn:
+    def test_date_exact(self):
+        # TODO
+        pass
+
+    def test_date_before(self):
+        # TODO
+        pass
+
+    def test_date_after(self):
+        # TODO
+        pass
+
+    def test_valid_format_invalid_date(self):
+        # TODO
+        pass
+
+    def test_invalid_date_format(self):
+        # TODO
+        pass
