@@ -20,6 +20,7 @@ from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
 from .validators import file_extension_validator
+from .validators import iso_date_validator
 from .validators import mimetype_validator
 from .validators import positive_int_validator
 from .validators import rating_label_validator
@@ -311,12 +312,19 @@ class TokenCategory(Enum):
         wildcard_arg_validator=wildcard_url_validator,
     )
 
-    UPLOADED_BY = WildcardSearchToken(
-        name="uploaded_by",
+    POSTED_BY = WildcardSearchToken(
+        name="posted_by",
         desc="The username of the uploader of a Post. Allows wildcards.",
-        aliases=("up", "posted_by"),
+        aliases=("uploaded_by",),
         arg_validator=username_validator,
         wildcard_arg_validator=username_validator,
+    )
+
+    POSTED_ON = ComparisonSearchToken(
+        name="posted_on",
+        desc="The date the post was posted on",
+        aliases=("uploaded_on",),
+        arg_validator=iso_date_validator,
     )
 
     MIMETYPE = SimpleSearchToken(
@@ -750,7 +758,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.UPLOADED_BY:
+                case TokenCategory.POSTED_BY:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.wildcard_positions:
@@ -759,6 +767,20 @@ class PostSearch:
                                 )
                             else:
                                 token_expr = Q(uploader__username=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.POSTED_ON:
+                    match token.arg_relation:
+                        # TODO: handle arg with valid date format but invalid date value
+                        #     e.g. 2025-02-31
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(post_date__lt=token.arg)
+                        case TokenArgRelation.EQUAL:
+                            token_expr = Q(post_date=token.arg)
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(post_date__gt=token.arg)
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
