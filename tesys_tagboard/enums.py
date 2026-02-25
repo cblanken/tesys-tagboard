@@ -95,12 +95,21 @@ class SupportedMediaType(Enum):
     WEBM = MediaType("WEBM video", ["webm"], MediaCategory.VIDEO, "webm")
 
     @classmethod
-    def find(cls, template: str) -> Self | None:
-        """A function to search the supported media types by
-        the MIME type template string.
-        Returns the first matched instance of SupportedMediaTypes"""
+    def select_by_mime(cls, template: str) -> Self | None:
+        """A function to select the supported media type by the given MIME type template
+        string. Returns the first matched instance of SupportedMediaTypes"""
         for smt in cls:
             if template == smt.value.get_mimetype():
+                return smt
+
+        return None
+
+    @classmethod
+    def select_by_ext(cls, template: str) -> Self | None:
+        """A function to select the supported media type matching the given extension.
+        Returns the first matched instance of SupportedMediaTypes"""
+        for smt in cls:
+            if template in smt.value.extensions:
                 return smt
 
         return None

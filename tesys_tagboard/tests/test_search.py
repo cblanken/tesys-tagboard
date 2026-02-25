@@ -736,6 +736,7 @@ class TestPostAdvancedSearchTagCount:
 @pytest.mark.django_db
 class TestPostAdvancedSearchFiletype:
     def test_filetype_extension(self):
+        # TODO
         pass
 
 

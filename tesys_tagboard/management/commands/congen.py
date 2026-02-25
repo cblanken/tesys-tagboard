@@ -359,58 +359,51 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         description="Creating posts from media files...",
     ):
         m = magic.from_file(file, mime=True)
-        if smt := SupportedMediaType.find(m):
-            if media_type := SupportedMediaType.find(smt.value.get_mimetype()):
-                post = Post(
-                    title=fake.sentence(10),
-                    uploader=choice(uploaders),
-                    rating_level=choice(RatingLevel.choices())[0],
-                    src_url=fake.word() + ".example.com",
-                    type=media_type.name,
-                )
+        if smt := SupportedMediaType.select_by_mime(m):
+            post = Post(
+                title=fake.sentence(10),
+                uploader=choice(uploaders),
+                rating_level=choice(RatingLevel.choices())[0],
+                src_url=fake.word() + ".example.com",
+                type=smt.name,
+            )
 
-                comment_texts = [
-                    " ".join(fake.sentences(4)) for _ in range(randint(0, 10))
+            comment_texts = [" ".join(fake.sentences(4)) for _ in range(randint(0, 10))]
+
+            comments.extend(
+                [
+                    Comment(post=post, user=choice(users), text=text)
+                    for text in comment_texts
                 ]
+            )
 
-                comments.extend(
-                    [
-                        Comment(post=post, user=choice(users), text=text)
-                        for text in comment_texts
-                    ]
-                )
-
-                media_object = None
-                match smt.value.category:
-                    case MediaCategory.AUDIO:
+            media_object = None
+            match smt.value.category:
+                case MediaCategory.AUDIO:
+                    fp = file.open("rb")
+                    media_object = Audio(
+                        file=UploadedFile(UploadedFile(fp)), orig_name=file.name
+                    )
+                case MediaCategory.IMAGE:
+                    try:
                         fp = file.open("rb")
-                        media_object = Audio(
-                            file=UploadedFile(UploadedFile(fp)), orig_name=file.name
-                        )
-                    case MediaCategory.IMAGE:
-                        try:
-                            fp = file.open("rb")
-                            media_object = Image(
-                                file=UploadedFile(fp), orig_name=file.name
-                            )
-                        except UnidentifiedImageError:
-                            console.print(
-                                "The image file couldn't be identified by PIL"
-                            )
-                            console.print(f"See the file at {file.resolve()}")
-                    case MediaCategory.VIDEO:
-                        fp = file.open("rb")
-                        media_object = Video(
-                            file=UploadedFile(UploadedFile(fp)), orig_name=file.name
-                        )
+                        media_object = Image(file=UploadedFile(fp), orig_name=file.name)
+                    except UnidentifiedImageError:
+                        console.print("The image file couldn't be identified by PIL")
+                        console.print(f"See the file at {file.resolve()}")
+                case MediaCategory.VIDEO:
+                    fp = file.open("rb")
+                    media_object = Video(
+                        file=UploadedFile(UploadedFile(fp)), orig_name=file.name
+                    )
 
-                if media_object:
-                    media_object.post = post
-                    media_objects.append(media_object)
+            if media_object:
+                media_object.post = post
+                media_objects.append(media_object)
 
-                posts.append(post)
-            else:
-                console.print(f"The file type of '{file}' is not supported")
+            posts.append(post)
+        else:
+            console.print(f"The file type of '{file}' is not supported")
 
     with Progress(
         SpinnerColumn(),

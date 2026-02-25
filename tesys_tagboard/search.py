@@ -19,6 +19,7 @@ from .models import Post
 from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
+from .validators import file_extension_validator
 from .validators import mimetype_validator
 from .validators import positive_int_validator
 from .validators import rating_label_validator
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
     from tesys_tagboard.users.models import User
 
 
-class SearchTokenNameError(Exception):
+class SearchTokenNameError(ValidationError):
     message = "The provided name does not match an existing TokenCategory"
 
     def __init__(
@@ -48,7 +49,7 @@ class SearchTokenNameError(Exception):
         super().__init__(msg, *args, **kwargs)
 
 
-class UnsupportedSearchOperatorError(Exception):
+class UnsupportedSearchOperatorError(ValidationError):
     message = "Unsupported search operator provided"
 
     def __init__(
@@ -62,7 +63,7 @@ class UnsupportedSearchOperatorError(Exception):
         super().__init__(msg, *args, **kwargs)
 
 
-class InvalidRatingLabelError(Exception):
+class InvalidRatingLabelError(ValidationError):
     message = "The provided rating label does not match an existing RatingLevel"
 
     def __init__(
@@ -74,13 +75,26 @@ class InvalidRatingLabelError(Exception):
         super().__init__(msg, *args, **kwargs)
 
 
-class InvalidMimetypeError(Exception):
+class InvalidMimetypeError(ValidationError):
     mimetypes = ", ".join([smt.value.get_mimetype() for smt in SupportedMediaType])
-    message = "The provided mimetype does not match any of the supported mimetypes."
+    message = f"The provided mimetype does not match any of the supported mimetypes: {mimetypes}."  # noqa: E501
 
     def __init__(
         self,
-        msg=f"The provided mimetype does not match any of the supported mimetypes: {mimetypes}.",  # noqa: E501
+        msg=message,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(msg, *args, **kwargs)
+
+
+class InvalidFileExtensionError(ValidationError):
+    extensions = ", ".join(chain(*[smt.value.extensions for smt in SupportedMediaType]))
+    message = f"The provided file extension does not match any of the supported extensions: {extensions}"  # noqa: E501
+
+    def __init__(
+        self,
+        msg=message,
         *args,
         **kwargs,
     ):
@@ -310,6 +324,13 @@ class TokenCategory(Enum):
         desc="The MIME type of the post's file",
         aliases=("mime",),
         arg_validator=mimetype_validator,
+    )
+
+    FILE_EXTENSION = SimpleSearchToken(
+        name="extension",
+        desc="The file extension of the post's related file",
+        aliases=("ext",),
+        arg_validator=file_extension_validator,
     )
 
     @classmethod
@@ -769,7 +790,18 @@ class PostSearch:
                 case TokenCategory.MIMETYPE:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
-                            smt = SupportedMediaType.find(token.arg)
+                            smt = SupportedMediaType.select_by_mime(token.arg)
+                            if smt is None:
+                                raise InvalidMimetypeError
+                            token_expr = Q(type=smt.name)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
+                case TokenCategory.FILE_EXTENSION:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            smt = SupportedMediaType.select_by_ext(token.arg)
                             if smt is None:
                                 raise InvalidMimetypeError
                             token_expr = Q(type=smt.name)

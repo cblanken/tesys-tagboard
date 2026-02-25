@@ -54,10 +54,7 @@ from .models import TagAlias
 from .models import TagCategory
 from .models import Video
 from .models import csv_to_tag_ids
-from .search import InvalidMimetypeError
-from .search import InvalidRatingLabelError
 from .search import PostSearch
-from .search import UnsupportedSearchOperatorError
 from .search import autocomplete_tag_aliases
 from .search import autocomplete_tags
 from .validators import media_file_supported_validator
@@ -305,12 +302,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
                 tags = Tag.objects.in_tagset(tagset)
             else:
                 posts = ps.get_posts()
-    except (
-        InvalidMimetypeError,
-        InvalidRatingLabelError,
-        UnsupportedSearchOperatorError,
-        ValidationError,
-    ) as err:
+    except ValidationError as err:
         messages.add_message(request, messages.ERROR, err.message)
 
     pager = Paginator(posts, 36, 4)
@@ -704,7 +696,7 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
     if file.content_type is None:
         msg = "File missing content type"
         raise ValidationError(msg)
-    if smt := SupportedMediaType.find(file.content_type):
+    if smt := SupportedMediaType.select_by_mime(file.content_type):
         media_file = None
         match smt.value.category:
             case MediaCategory.AUDIO:
@@ -777,7 +769,9 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
             rating_level = RatingLevel.UNRATED.value
         src_url = form.cleaned_data.get("src_url")
         tags = Tag.objects.in_tagset(tagset)
-        if media_type := SupportedMediaType.find(media_file.file.file.content_type):
+        if media_type := SupportedMediaType.select_by_mime(
+            media_file.file.file.content_type
+        ):
             post = Post(
                 title=form.cleaned_data.get("title"),
                 uploader=request.user,

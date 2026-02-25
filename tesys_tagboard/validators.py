@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.regex_helper import _lazy_re_compile
@@ -39,6 +41,15 @@ def mimetype_validator(mimetype: str):
         raise ValidationError(msg)
 
 
+def file_extension_validator(ext: str):
+    extensions = list(chain(*[smt.value.extensions for smt in SupportedMediaType]))
+    if ext not in extensions:
+        msg = _(
+            "The file extension argument must match a supported file extension: %s"
+        ) % ", ".join(extensions)
+        raise ValidationError(msg)
+
+
 def tagset_validator(tag_ids: list):
     """Validates a tagset. A Sequence of positive integers."""
     msg = _("A tagset may only contain positive integers")
@@ -52,7 +63,7 @@ def tagset_validator(tag_ids: list):
 
 
 def media_file_supported_validator(file):
-    if not SupportedMediaType.find(file.content_type):
+    if not SupportedMediaType.select_by_mime(file.content_type):
         msg = f"File with a content type of {file.content_type} is not supported"
         raise ValidationError(msg)
 
