@@ -11,10 +11,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import QueryDict
+from django.utils.safestring import SafeString
 from more_itertools import take
 
 from .enums import RatingLevel
 from .enums import SupportedMediaType
+from .enums import TokenArgRelation
 from .models import Post
 from .models import Tag
 from .models import TagAlias
@@ -40,6 +42,11 @@ if TYPE_CHECKING:
 
     from tesys_tagboard.users.models import User
 
+TAG_CATEGORY_DELIMITER = ":"
+MAX_TAG_CATEGORY_DEPTH = 4
+VALID_ARG_RELATIONS = "".join([x.value for x in TokenArgRelation])
+FILTER_SPLIT_PATTERN = re.compile(r"([" + VALID_ARG_RELATIONS + r"])")
+
 
 class SearchTokenFilterNotImplementedError(Exception):
     """Raised when a SearchToken is defined as a TokenCategory but does not have
@@ -55,6 +62,18 @@ class SearchTokenFilterNotImplementedError(Exception):
     ):
         self.message = f'The provided search filter type: "{search_token.name}" has not been implemented yet.'  # noqa: E501
         super().__init__(self.message, *args, **kwargs)
+
+
+class SearchTagTokenError(ValidationError):
+    message = "The provided tag token is invalid"
+
+    def __init__(
+        self,
+        msg=message,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(msg, *args, **kwargs)
 
 
 class SearchTokenNameError(ValidationError):
@@ -129,7 +148,10 @@ def autocomplete_tags(
     exclude_tags: QuerySet[Tag] | None = None,
 ) -> Generator[AutocompleteItem]:
     if include_partial is not None:
-        tags = tags.filter(name__icontains=include_partial)
+        if named_token := NamedToken.from_token_string(include_partial):
+            tag_token = TagToken(named_token)
+            tag_filter_expr = tag_token.get_tag_filter_autocomplete_expr()
+            tags = tags.filter(tag_filter_expr)
     if exclude_partial is not None:
         tags = tags.exclude(name__contains=exclude_partial)
     if exclude_tag_names is not None:
@@ -176,14 +198,6 @@ def autocomplete_tag_aliases(
         )
         for alias in aliases
     )
-
-
-class TokenArgRelation(Enum):
-    """Enum for identifying how a token's arg should be interpreted"""
-
-    EQUAL = "="
-    LESS_THAN = "<"
-    GREATER_THAN = ">"
 
 
 @dataclass(kw_only=True)
@@ -417,6 +431,116 @@ class PostSearchTokenCategory(Enum):
         raise SearchTokenNameError
 
 
+class TagToken:
+    """A search token identified as a tag token.
+
+    The input string requires additional parsing to identify any categories in a tag
+    token and it's name. Categories are delimited by a colon ":" with the final element
+    corresponding the tag's `name`
+
+    For example `country:territory:city` results in:
+    ```python
+    categories [0] = country
+    categories [1] = territory
+    categories [2] = city
+    ```
+    where "country" is the parent category, "territory" a sub category, and "city"
+    is the name of the tag.
+
+    Note: TagToken objects should only be created from a NamedToken since the majority
+    of token validation is done by the NamedToken initialization..
+
+    Args:
+        named_token: NamedToken
+
+    Raises:
+        `ValueError`
+        `SearchTagTokenError`
+    """
+
+    def __init__(self, named_token: NamedToken) -> None:
+        if named_token.category is not PostSearchTokenCategory.TAG:
+            msg = f"A TagToken cannot be created from a NamedToken of type {named_token.category}. Only NamedTokens of type {PostSearchTokenCategory.TAG} are allowed"  # noqa: E501
+            raise ValueError(msg)
+
+        self.named_token = named_token
+        self.has_wildcards: bool = bool(self.named_token.wildcard_positions)
+
+        if self.has_wildcards:
+            self.partial = named_token.arg_with_wildcards()
+        else:
+            self.partial = named_token.arg
+
+        split = self.partial.split(TAG_CATEGORY_DELIMITER)
+        if split:
+            self.categories = split[:-1]
+            self.name = split[-1]
+        else:
+            self.categories = []
+            self.name = self.partial
+
+        for category in self.categories:
+            if "*" in category or "%" in category:
+                msg = "Tag categories may not contain wildcards"
+                raise SearchTagTokenError(msg)
+
+    def get_post_filter_expr(self) -> Q:
+        """Get a Post model filter expression for filtering Post results by a tag's
+        name and categories. The query expression is intended to only return posts
+        with tags where all the categories match, but the tag name is handled as a
+        partial name or may contain wildcards.
+
+        Note: categories may not contain wildcards, only tag name
+        """
+
+        if self.has_wildcards:
+            expr = Q(tags__name__like=self.name)
+        else:
+            expr = Q(tags__name=self.name)
+
+        # Tag categories expr(s)
+        categories_search_dict = {}
+        for i, category in enumerate(reversed(self.categories)):
+            parent_str = "__parent"
+            filter_str = f"tags__category{parent_str * i}__name"
+            categories_search_dict[filter_str] = category
+
+        return expr & Q(**categories_search_dict)
+
+    def get_tag_filter_autocomplete_expr(self) -> Q:
+        """Get a Tag model filter expression for filtering autocomplete results by a
+        tag's name and categories treating `tag_str` as a potentially incomplete
+        partial"""
+
+        # Tag name expr
+        if self.has_wildcards:
+            expr = Q(name__like=self.name)
+        else:
+            expr = Q(name__icontains=self.name)
+
+        # Tag categories expr(s)
+        if self.categories:
+            # Parsed categories, so check tag exactly matches the parent categories
+            categories_search_dict = {}
+            for i, category in enumerate(reversed(self.categories)):
+                parent_str = "__parent"
+                filter_str = f"category{parent_str * i}__name"
+                categories_search_dict[filter_str] = category
+
+            return expr & Q(**categories_search_dict)
+
+        # No parsed categories, so check tag parent categories up to a maximum
+        # of `MAX_TAG_CATEGORY_DEPTH` parents for matching names treating the
+        # `tag_str` as a partial.
+        categories_search_dict = {}
+        for i in range(MAX_TAG_CATEGORY_DEPTH):
+            parent_str = "__parent"
+            filter_str = f"category{parent_str * i}__name__icontains"
+            categories_search_dict[filter_str] = self.partial
+            expr = expr | Q(**categories_search_dict)
+        return expr
+
+
 @dataclass
 class NamedToken:
     """A parsed token for Post search
@@ -430,7 +554,8 @@ class NamedToken:
 
     Attributes:
         category: TokenCategory
-        name: str, the name of a tag or filter category
+        name: str, the readable name of the NamedToken used in search queries to specify
+            a particular token in search queries
         arg: str,  an argument value for filter tokens
         arg_relation_str: str, a character defining the relationship between the arg
             and its value e.g. an exact match (=), less than (<), or greater than (>).
@@ -468,6 +593,73 @@ class NamedToken:
             self.wildcard_positions = array("I", [])
         self.arg = self.arg.replace("*", "")
 
+    @classmethod
+    def from_token_string(cls, token: str) -> NamedToken | None:
+        """Parses and validates a query token from a string.
+
+        The `token` input should not contain any space characters.
+
+        Args:
+            token: str
+
+        Raises: `ValidationError`
+        """
+        # Empty string
+        if token == "":
+            return None
+
+        # Parse named tokens and simple tags
+        token_name, *rest = FILTER_SPLIT_PATTERN.split(token, maxsplit=1)
+        negate: bool = token_name[0] == "-"
+
+        if negate:
+            token_name = token_name[1:]
+
+        if len(rest) == 0:
+            # Anonymous token i.e. tag
+            return NamedToken(
+                PostSearchTokenCategory.TAG, token_name, token_name, negate=negate
+            )
+
+        if len(rest) == 1:
+            msg = "An invalid query split occurred"
+            raise ValidationError(msg)
+
+        if len(rest) == 2:
+            arg_relation = rest[0]
+            token_arg = rest[1]
+
+            if FILTER_SPLIT_PATTERN.search(token_arg):
+                msg = "Search query filters may only have one operator"
+                raise ValidationError(msg)
+            try:
+                # NamedToken filter with an argument
+                token_category = PostSearchTokenCategory.select(token_name)
+            except SearchTokenNameError as err:
+                msg = f'The name "{token_name}" is not a valid filter'
+                raise ValidationError(msg) from err
+            else:
+                if arg_relation not in [
+                    x.value for x in token_category.value.allowed_arg_relations
+                ]:
+                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                    raise ValidationError(msg)
+
+            named_token = cls(
+                token_category,
+                name=token_name,
+                arg=token_arg,
+                arg_relation_str=arg_relation,
+                negate=negate,
+            )
+
+            named_token.is_arg_valid()
+            return named_token
+
+        # Invalid token
+        msg = f'The query token "{token}" is invalid'
+        raise ValidationError(msg)
+
     def is_arg_valid(self):
         """Checks the validity of a Token's argument (arg) value
 
@@ -487,7 +679,7 @@ class NamedToken:
             validator(self.arg)
 
     def arg_with_wildcards(self):
-        """Reconstructs original `arg` with Postgres compatibale wildcards from the
+        """Reconstructs original `arg` with Postgres compatible wildcards from the
         `wildcard_positions`"""
 
         arg = self.arg
@@ -505,6 +697,41 @@ class AutocompleteItem:
     tag_id: int | None = None
     alias: str = ""
     extra: str = ""
+
+    def get_tag_label(self) -> SafeString:
+        """Build and return an AutocompleteItem's label to be used for rendering
+        tag and their category chains"""
+        if self.tag_category:
+            categories = [self.tag_category]
+            for _ in range(MAX_TAG_CATEGORY_DEPTH):
+                if categories[-1].parent is None:
+                    break
+                categories.append(categories[-1].parent)
+
+            return SafeString(
+                TAG_CATEGORY_DELIMITER.join(
+                    [cat.name for cat in reversed(categories)] + [self.name]
+                )
+            )
+
+        return SafeString(self.name)
+
+    def get_search_token_string(self) -> SafeString:
+        """Build and return an a valid search token string for this AutocompleteItem"""
+        if self.tag_category:
+            categories = [self.tag_category]
+            for _ in range(MAX_TAG_CATEGORY_DEPTH):
+                if categories[-1].parent is None:
+                    break
+                categories.append(categories[-1].parent)
+
+            return SafeString(
+                TAG_CATEGORY_DELIMITER.join(
+                    [cat.name for cat in reversed(categories)] + [self.name]
+                )
+            )
+
+        return SafeString(self.name)
 
 
 class PostSearch:
@@ -532,10 +759,6 @@ class PostSearch:
     any posts uploaded by the user "pablo" in the results.
     """
 
-    valid_arg_relations = "".join([x.value for x in TokenArgRelation])
-    filter_split_pattern = re.compile(r"([" + valid_arg_relations + r"])")
-    tag_category_delimiter = ":"
-
     def __init__(
         self,
         query: str | QueryDict,
@@ -557,66 +780,6 @@ class PostSearch:
                 self.partial = query_split[-1]
 
             self.tokens: list[NamedToken] = self.parse_query(self.query)
-
-    def parse_token(self, token: str) -> NamedToken | None:
-        """Parses and validates a query token
-
-        Raises: `ValidationError`
-        """
-        # Empty string
-        if token == "":
-            return None
-
-        # Parse named tokens and simple tags
-        token_name, *rest = self.filter_split_pattern.split(token, maxsplit=1)
-        negate: bool = token_name[0] == "-"
-
-        if negate:
-            token_name = token_name[1:]
-
-        if len(rest) == 0:
-            # Anonymous token i.e. tag
-            return NamedToken(
-                PostSearchTokenCategory.TAG, token_name, token_name, negate=negate
-            )
-        if len(rest) == 1:
-            msg = "An invalid query split occurred"
-            raise ValidationError(msg)
-
-        if len(rest) == 2:
-            arg_relation = rest[0]
-            token_arg = rest[1]
-
-            if self.filter_split_pattern.search(token_arg):
-                msg = "Search query filters may only have one operator"
-                raise ValidationError(msg)
-            try:
-                # NamedToken filter with an argument
-                token_category = PostSearchTokenCategory.select(token_name)
-            except SearchTokenNameError as err:
-                msg = f'The name "{token_name}" is not a valid filter'
-                raise ValidationError(msg) from err
-            else:
-                if arg_relation not in [
-                    x.value for x in token_category.value.allowed_arg_relations
-                ]:
-                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
-                    raise ValidationError(msg)
-
-            named_token = NamedToken(
-                token_category,
-                name=token_name,
-                arg=token_arg,
-                arg_relation_str=arg_relation,
-                negate=negate,
-            )
-
-            named_token.is_arg_valid()
-            return named_token
-
-        # Invalid token
-        msg = f'The query token "{token}" is invalid'
-        raise ValidationError(msg)
 
     def parse_querydict(self, querydict: QueryDict) -> list[NamedToken]:
         """Parses a post search query submitted via form instead of a query string.
@@ -689,7 +852,7 @@ class PostSearch:
         tokens = re.split(r"\s+", query)
         parsed_tokens: list[NamedToken] = []
         for token in tokens:
-            if named_token := self.parse_token(token):
+            if named_token := NamedToken.from_token_string(token):
                 named_token.is_arg_valid()
                 parsed_tokens.append(named_token)
 
@@ -716,10 +879,9 @@ class PostSearch:
         for token in self.tokens:
             match token.category:
                 case PostSearchTokenCategory.TAG:
-                    if token.wildcard_positions:
-                        token_expr = Q(tags__name__like=token.arg_with_wildcards())
-                    else:
-                        token_expr = Q(tags__name=token.arg)
+                    tag_token = TagToken(token)
+                    token_expr = tag_token.get_post_filter_expr()
+
                 case PostSearchTokenCategory.TAG_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
@@ -1030,7 +1192,9 @@ class PostSearch:
 
         if user:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.for_user(user), partial, exclude_tag_names=tag_token_names
+                Tag.objects.for_user(user),
+                partial,
+                exclude_tag_names=tag_token_names,
             )
             tag_alias_autocompletions = autocomplete_tag_aliases(
                 TagAlias.objects.for_user(user),
@@ -1039,7 +1203,9 @@ class PostSearch:
             )
         else:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.all(), partial, exclude_tag_names=tag_token_names
+                Tag.objects.all(),
+                partial,
+                exclude_tag_names=tag_token_names,
             )
 
             tag_alias_autocompletions = autocomplete_tag_aliases(

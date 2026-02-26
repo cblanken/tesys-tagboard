@@ -113,3 +113,12 @@ class SupportedMediaType(Enum):
                 return smt
 
         return None
+
+
+class TokenArgRelation(Enum):
+    """Enum for all valid token arg delimiters and used to decide how a
+    token's argument should be interpreted"""
+
+    EQUAL = "="
+    LESS_THAN = "<"
+    GREATER_THAN = ">"

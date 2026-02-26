@@ -79,6 +79,7 @@ class TagCategory(models.Model):
     fg = ColorField(format="hex", null=True)
 
     class Meta:
+        verbose_name_plural = "tag categories"
         ordering = ["name"]
         indexes = [
             models.Index("name", name="tag_category_name_idx"),
