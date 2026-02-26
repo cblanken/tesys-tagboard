@@ -10,8 +10,8 @@ from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
 from tesys_tagboard.models import TagCategory
 from tesys_tagboard.search import PostSearch
+from tesys_tagboard.search import PostSearchTokenCategory
 from tesys_tagboard.search import TokenArgRelation
-from tesys_tagboard.search import TokenCategory
 from tesys_tagboard.search import autocomplete_tag_aliases
 from tesys_tagboard.search import autocomplete_tags
 
@@ -26,7 +26,9 @@ from .factories import UserFactory
 class TestSearchTokenCategories:
     def test_no_duplicate_aliases(self):
         """Ensure available TokenCategory types don't have any duplicate aliases"""
-        token_aliases = list(chain(*[tok.value.aliases for tok in TokenCategory]))
+        token_aliases = list(
+            chain(*[tok.value.aliases for tok in PostSearchTokenCategory])
+        )
         assert len(token_aliases) == len(set(token_aliases))
 
 
@@ -132,28 +134,28 @@ class TestPostAdvancedSearchQueryParsing:
         ps = PostSearch("tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
     def test_parse_single_negated_tag(self):
         ps = PostSearch("-tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert ps.tokens[0].negate
 
     def test_parse_single_tag_with_wildcard(self):
         ps = PostSearch("tag1*")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1*"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
     def test_parse_single_negated_tag_with_wildcard(self):
         ps = PostSearch("-*negated_tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "*negated_tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert ps.tokens[0].negate
 
     def test_parse_multiple_tags(self):
@@ -161,7 +163,7 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
             assert not tok.negate
 
     def test_parse_multiple_negated_tags(self):
@@ -169,7 +171,7 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
             assert tok.negate
 
     def test_parse_negated_and_non_negated_tags(self):
@@ -177,14 +179,14 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
 
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
-        assert ps.tokens[1].category == TokenCategory.TAG
+        assert ps.tokens[1].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[1].negate
 
         # Last tag is negated
-        assert ps.tokens[2].category == TokenCategory.TAG
+        assert ps.tokens[2].category == PostSearchTokenCategory.TAG
         assert ps.tokens[2].negate
 
     def test_parse_extra_space_between_tokens(self):
@@ -192,18 +194,18 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
 
     def test_parse_extra_space_start_and_end(self):
         ps = PostSearch("    -tag1 tag2 -tag3\t ")
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
 
-    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
     def test_correctly_identify_tag_categories_by_name(
-        self, token_category: TokenCategory
+        self, token_category: PostSearchTokenCategory
     ):
         if token_category.value.name:
             # This test does not test validation, only token identification
@@ -211,9 +213,9 @@ class TestPostAdvancedSearchQueryParsing:
                 ps = PostSearch(f"{token_category.value.name}=100")
                 assert ps.tokens[0].category == token_category
 
-    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
     def test_correctly_identify_tag_categories_by_alias(
-        self, token_category: TokenCategory
+        self, token_category: PostSearchTokenCategory
     ):
         for alias in token_category.value.aliases:
             # This test does not test validation, only token identification
@@ -246,7 +248,9 @@ class TestPostAdvancedSearchAutocomplete:
 
         # Tags
         tag_names = [
-            item.name for item in items if item.token_category == TokenCategory.TAG
+            item.name
+            for item in items
+            if item.token_category == PostSearchTokenCategory.TAG
         ]
         assert "red" in tag_names
         assert "red_vs._blue" in tag_names
@@ -255,7 +259,7 @@ class TestPostAdvancedSearchAutocomplete:
         alias_names = [
             item.alias
             for item in items
-            if item.token_category == TokenCategory.TAG_ALIAS
+            if item.token_category == PostSearchTokenCategory.TAG_ALIAS
         ]
         assert "red_v._blue" in alias_names
         assert "red_vs_blue" in alias_names
@@ -273,16 +277,16 @@ class TestPostAdvancedSearchAutocomplete:
         ps = PostSearch("")
         items = list(ps.autocomplete(show_filters=True))
         item_categories = {item.token_category for item in items}
-        for tc in TokenCategory:
+        for tc in PostSearchTokenCategory:
             assert tc in item_categories
 
     def test_no_filters(self):
         ps = PostSearch("")
         items = ps.autocomplete(show_filters=False)
         item_categories = {item.token_category for item in items}
-        item_categories.remove(TokenCategory.TAG)
-        item_categories.remove(TokenCategory.TAG_ALIAS)
-        for tc in TokenCategory:
+        item_categories.remove(PostSearchTokenCategory.TAG)
+        item_categories.remove(PostSearchTokenCategory.TAG_ALIAS)
+        for tc in PostSearchTokenCategory:
             assert tc not in item_categories
 
     def test_complete_with_leading_negation(self):
