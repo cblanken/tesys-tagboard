@@ -73,7 +73,7 @@ class TagCategory(models.Model):
         fg: ColorField the foreground color for the category
     """
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     bg = ColorField(format="hex", null=True)
     fg = ColorField(format="hex", null=True)
@@ -81,8 +81,13 @@ class TagCategory(models.Model):
     class Meta:
         verbose_name_plural = "tag categories"
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "parent"], name="unique_name_parent"
+            ),
+        ]
         indexes = [
-            models.Index("name", name="tag_category_name_idx"),
+            models.Index(fields=["name"], name="tag_category_name_idx"),
         ]
 
     def __str__(self) -> str:
