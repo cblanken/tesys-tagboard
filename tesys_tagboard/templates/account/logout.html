@@ -1,25 +1,41 @@
-{% extends "account/base_manage.html" %}
+{% extends 'account/base_manage.html' %}
 
 {% load allauth i18n %}
 
 {% block head_title %}
-  {% trans "Sign Out" %}
-{% endblock head_title %}
+  {% trans 'Sign Out' %}
+{% endblock %}
 {% block content %}
-  {% include "heading.html" with text=_("SIGN OUT") %}
-  <section class="flex flex-col gap-4">
-    <p class="text-xl">{% trans 'Are you sure you want to sign out?' %}</p>
+  {% include 'heading.html' with text=_('LOG OUT') %}
+  <div class="flex justify-center items-center">
+    <form method="post"
+          action="{% url 'account_logout' %}"
+          class="flex flex-col gap-4 p-8 mt-3 max-w-3xl h-full lg:w-1/2 bg-base-300 rounded-box sm:min-w-[450px] lg:max-w-[500px]">
+      {% csrf_token %}
+      {{ redirect_field }}
+      <h2 class="text-3xl font-bold text-center text-base-accent">Confirm Log Out?</h2>
+      <p class="py-2 text-center text-m">Are you sure you want to log out?</p>
+      <button type="submit"
+              class="py-2.5 w-full font-medium text-white rounded-lg transition-colors cursor-pointer bg-error hover:bg-error/80">
+        Log Out
+      </button>
+    </form>
+  </div>
+  {% comment %} <section class="flex flex-col gap-4">
+    <p class="text-xl">
+      {% trans 'Are you sure you want to sign out?' %}
+    </p>
     {% url 'account_logout' as action_url %}
-    {% element form method="post" action=action_url no_visible_fields=True %}
+    {% element form method='post' action=action_url no_visible_fields=True %}
     {% slot body %}
     {% csrf_token %}
     {{ redirect_field }}
-  {% endslot %}
-  {% slot actions %}
-  {% element button type="submit" tags="warning" %}
-  {% trans 'Sign Out' %}
-{% endelement %}
-{% endslot %}
-{% endelement %}
-</section>
-{% endblock content %}
+    {% endslot %}
+    {% slot actions %}
+    {% element button type='submit' tags='warning' %}
+    {% trans 'Sign Out' %}
+    {% endelement %}
+    {% endslot %}
+    {% endelement %}
+  </section> {% endcomment %}
+{% endblock %}

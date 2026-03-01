@@ -1,63 +1,122 @@
-{% extends "account/base_entrance.html" %}
+{% extends 'account/base_entrance.html' %}
 
 {% load i18n %}
 {% load allauth account %}
 
 {% block head_title %}
-  {% trans "Sign In" %}
-{% endblock head_title %}
+  {% trans 'Sign In' %}
+{% endblock %}
 {% block content %}
-  {% include "heading.html" with text=_("LOGIN") %}
-  <div class="m-auto md:max-w-xl xl:max-w-3xl">
+  {% include 'heading.html' with text=_('LOGIN') %}
+  <div class="flex gap-4 justify-center min-h-screen">
+    <form method="post"
+          action="{% url 'account_login' %}"
+          class="flex flex-col gap-4 p-8 mt-3 max-w-3xl h-full lg:w-1/2 bg-base-300 rounded-box bg-base-300 sm:min-w-[450px] lg:max-w-[800px]">
+      {% csrf_token %}
+      {% if form.errors %}<div class="text-error">{{ form.errors }}</div>{% endif %}
+      <h2 class="mb-6 text-4xl font-bold text-center text-base-accent">Log In to your account</h2>
+      <!-- username -->
+      <div class="mb-5">
+        <label class="block mb-1 text-sm font-medium">User name</label>
+        <input required
+               type="text"
+               name="login"
+               class="py-2 px-4 w-full rounded-lg border border-gray-300 transition-all outline-none focus:ring-2 text-primary-content focus:ring-primary focus:border-primary"
+               placeholder="User name here" />
+      </div>
+      <!-- password -->
+      <div>
+        <label class="block mb-1 text-sm font-medium">Password</label>
+        <input required
+               type="password"
+               name="password"
+               class="py-2 px-4 w-full rounded-lg border border-gray-300 transition-all outline-none focus:ring-2 text-primary-content focus:ring-primary focus:border-primary"
+               placeholder="••••••••" />
+      </div>
+      <!-- Remember me and forgot password -->
+      <div class="flex justify-between items-center">
+        <label class="flex items-center">
+          <input type="checkbox" class="rounded border-gray-300" />
+          <span class="ml-2 text-sm" name="remember">Remember me</span>
+        </label>
+        <a href="{% url 'account_reset_password' %}"
+           class="text-sm text-warning hover:text-primary">Forgot password?</a>
+      </div>
+      <!-- submit -->
+      <button type="submit"
+              class="py-2.5 w-full font-medium text-white rounded-lg transition-colors cursor-pointer bg-primary hover:bg-primary/80">
+        Log In
+      </button>
+      <div class="my-6 divider">OR</div>
+      <!-- Discord -->
+      <a href="/accounts/discord/login/?process=login"
+         class="mx-auto text-white btn"
+         style="background-color: #5865F2;
+                border-color: #5865F2">
+        <svg aria-label="Discord logo"
+             height="16"
+             xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 16 16"
+             fill="currentColor">
+          <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612" />
+        </svg>
+        Discord
+      </a>
+      <p class="py-2 text-sm text-center">
+        If you haven't created an account yet, then please <a href="{% url 'account_signup' %}">sign up</a> first.
+      </p>
+    </form>
+  </div>
+  {% comment %} <div class="m-auto md:max-w-xl xl:max-w-3xl">
     {% if not SOCIALACCOUNT_ONLY %}
       {% setvar link %}
       <a href="{{ signup_url }}">
+        {% endsetvar %}
+        {% setvar end_link %}
+      </a>
       {% endsetvar %}
-      {% setvar end_link %}
-    </a>
-  {% endsetvar %}
-  <p class="py-2">
-    {% blocktranslate %}If you haven't created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
-  </p>
-  {% url 'account_login' as login_url %}
-  {% element form form=form method="post" action=login_url tags="entrance,login" %}
-  {% slot body %}
-  {% csrf_token %}
-  {% element fields form=form unlabeled=True %}
-{% endelement %}
-{{ redirect_field }}
-{% endslot %}
-{% slot actions %}
-{% element button type="submit" tags="prominent,login" %}
-{% trans "Sign In" %}
-{% endelement %}
-{% endslot %}
-{% endelement %}
-{% endif %}
-{% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-  {% element hr %}
-{% endelement %}
-{% element button_group vertical=True %}
-{% if PASSKEY_LOGIN_ENABLED %}
-  {% element button type="submit" form="mfa_login" id="passkey_login" tags="prominent,login,outline,primary" %}
-  {% trans "Sign in with a passkey" %}
-{% endelement %}
-{% endif %}
-{% if LOGIN_BY_CODE_ENABLED %}
-  {% element button href=request_login_code_url tags="prominent,login,outline,primary" %}
-  {% trans "Send me a sign-in code" %}
-{% endelement %}
-{% endif %}
-{% endelement %}
-{% endif %}
-{% if SOCIALACCOUNT_ENABLED %}
-  {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-{% endif %}
-</div>
-{% endblock content %}
+      <p class="py-2">
+        {% blocktranslate %}If you haven't created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
+      </p>
+      {% url 'account_login' as login_url %}
+      {% element form form=form method='post' action=login_url tags='entrance,login' %}
+      {% slot body %}
+      {% csrf_token %}
+      {% element fields form=form unlabeled=True %}
+      {% endelement %}
+      {{ redirect_field }}
+      {% endslot %}
+      {% slot actions %}
+      {% element button type='submit' tags='prominent,login' %}
+      {% trans 'Sign In' %}
+      {% endelement %}
+      {% endslot %}
+      {% endelement %}
+    {% endif %}
+    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
+      {% element hr %}
+      {% endelement %}
+      {% element button_group vertical=True %}
+      {% if PASSKEY_LOGIN_ENABLED %}
+        {% element button type='submit' form='mfa_login' id='passkey_login' tags='prominent,login,outline,primary' %}
+        {% trans 'Sign in with a passkey' %}
+        {% endelement %}
+      {% endif %}
+      {% if LOGIN_BY_CODE_ENABLED %}
+        {% element button href=request_login_code_url tags='prominent,login,outline,primary' %}
+        {% trans 'Send me a sign-in code' %}
+        {% endelement %}
+      {% endif %}
+      {% endelement %}
+    {% endif %}
+    {% if SOCIALACCOUNT_ENABLED %}
+      {% include 'socialaccount/snippets/login.html' with page_layout='entrance' %}
+    {% endif %}
+  </div> {% endcomment %}
+{% endblock %}
 {% block extra_body %}
   {{ block.super }}
   {% if PASSKEY_LOGIN_ENABLED %}
-    {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+    {% include 'mfa/webauthn/snippets/login_script.html' with button_id='passkey_login' %}
   {% endif %}
-{% endblock extra_body %}
+{% endblock %}
