@@ -13,6 +13,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.db.models import OrderBy
+from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -322,18 +324,39 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
 @require(["GET", "POST"], login=False)
 def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    categories = TagCategory.objects.filter(parent=None).all()
+    categories = TagCategory.objects.order_by("-parent", "name")
     try:
-        tag_query = request.GET.get("q", "")
-        tags_by_cat = {
-            cat: Tag.objects.select_related("category").filter(
-                category=cat, name__icontains=tag_query
-            )
-            for cat in categories
-        }
+        query = request.GET.get("q", "")
         uncategorized_tags = Tag.objects.select_related("category").filter(
-            category=None, name__icontains=tag_query
+            category=None, name__icontains=query
         )
+
+        select_related_expr = ["category"]
+        select_related_expr.extend(
+            [
+                "category" + "__parent" * x
+                for x in range(1, settings.MAX_TAG_CATEGORY_DEPTH)
+            ]
+        )
+
+        order_by_expr: list[str | F | OrderBy] = [
+            F("category" + "__parent" * x + "__name")
+            for x in reversed(range(settings.MAX_TAG_CATEGORY_DEPTH))
+        ]
+        order_by_expr.append("name")
+
+        categorized_tags = (
+            Tag.objects.select_related(*select_related_expr)
+            .filter(Q(category__name__icontains=query) | Q(name__icontains=query))
+            .filter(~Q(category=None))
+            .order_by(*order_by_expr)
+        )
+
+        tags_by_cat: dict[str, list[Tag]] = {}
+        for tag in categorized_tags:
+            path = tag.category.get_full_path()
+            tags_by_cat.setdefault(path, [])
+            tags_by_cat[path].append(tag)
 
         alias_query = request.GET.get("aliases", "")
         aliases = (
@@ -347,7 +370,7 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     context = {
         "uncategorized_tags": uncategorized_tags,
         "tags_by_cat": tags_by_cat,
-        "tag_name": tag_query,
+        "tag_name": query,
         "aliases": aliases,
         "categories": categories,
     }

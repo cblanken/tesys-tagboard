@@ -1,4 +1,5 @@
 import sys
+from itertools import chain
 from itertools import islice
 from pathlib import Path
 from random import choice
@@ -13,6 +14,7 @@ import typer
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import UploadedFile
+from django.db.models import Q
 from django_typer.management import Typer
 from faker import Faker
 from PIL import UnidentifiedImageError
@@ -75,6 +77,13 @@ def main(  # noqa: PLR0913
             "--max-tags", "-t", help="The maximum number of tags to randomly generate."
         ),
     ] = 500,
+    max_tag_categories: Annotated[
+        int,
+        typer.Option(
+            "--max-tag-categories",
+            help="The maximum number of tag categories to randomly generate",
+        ),
+    ] = 500,
     max_users: Annotated[
         int,
         typer.Option(
@@ -134,6 +143,7 @@ def main(  # noqa: PLR0913
         transient=True,
     ) as progress:
         progress.add_task(description="Deleting old DB data...", total=None)
+        TagCategory.objects.filter(~Q(name="artist") & ~Q(name="copyright")).delete()
         Tag.objects.all().delete()
         TagAlias.objects.all().delete()
         Post.objects.all().delete()
@@ -165,6 +175,8 @@ def main(  # noqa: PLR0913
     DEFAULT_MOD_GROUP.user_set.set(default_mods)
 
     create_random_users(max_users)
+
+    create_random_tag_categories(max_tag_categories)
 
     create_random_tags(max_tags)
 
@@ -207,6 +219,41 @@ def create_random_users(n: int = 50):
         DEFAULT_USER_GROUP.user_set.add(*random_users)
 
     console.print(f"Created {len(users)} users.")
+
+
+def create_random_tag_categories(max_categories: int = 100, max_branches: int = 5):
+    """Create `max_categories` randomized tag categories with a maximum depth
+     and branching factor.
+
+    Args:
+        max_categories: int = the number of categories to create in total
+        max_depth: int = the maximum depth of any category hierarchy
+        max_branches: int = the maximum number of sub-categories a category may have
+    """
+    max_categories = min(max_categories, 1000)
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        transient=True,
+    ) as progress:
+        progress.add_task(description="Creating random tag categories...", total=None)
+
+        tag_category_hierarchy = [
+            [TagCategory(name=fake.word()) for _ in range(randint(1, max_branches))]
+            for _ in range(settings.MAX_TAG_CATEGORY_DEPTH)
+        ]
+
+        TagCategory.objects.bulk_create(chain(*tag_category_hierarchy))
+
+        # Populate category parents from children categories upwards
+        for i, level in enumerate(tag_category_hierarchy[1:], start=1):
+            for category in level:
+                category.parent = choice(tag_category_hierarchy[i - 1])
+
+        tag_categories = list(chain(*tag_category_hierarchy))
+        TagCategory.objects.bulk_update(tag_categories, fields=["parent"])
+    console.print(f"Created {len(tag_categories)} tag categories.")
 
 
 def create_random_tags(n: int = 500):

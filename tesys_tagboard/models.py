@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import imagehash
 from colorfield.fields import ColorField
+from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import HashIndex
@@ -83,7 +84,9 @@ class TagCategory(models.Model):
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "parent"], name="unique_name_parent"
+                fields=["name", "parent"],
+                name="unique_name_parent",
+                nulls_distinct=False,
             ),
         ]
         indexes = [
@@ -92,6 +95,19 @@ class TagCategory(models.Model):
 
     def __str__(self) -> str:
         return f"<TagCategory - {self.name}, bg: {self.bg}, fg: {self.fg}, parent: {self.parent}>"  # noqa: E501
+
+    def get_full_path(self, max_depth: int = 5) -> str:
+        """Return the category chain up to the root or up to `max_depth` categories"""
+        category = self
+        path = self.name
+        for _ in range(max_depth):
+            if category.parent is None:
+                break
+
+            path = f"{category.parent.name}{settings.TAG_CATEGORY_DELIMITER}{path}"
+            category = category.parent
+
+        return path
 
 
 class TagQuerySet(models.QuerySet):

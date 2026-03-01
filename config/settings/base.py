@@ -363,3 +363,6 @@ HOMEPAGE_LINKS = env.list(
         ("Collections", "/collections"),
     ],
 )
+
+TAG_CATEGORY_DELIMITER = ":"
+MAX_TAG_CATEGORY_DEPTH = 4

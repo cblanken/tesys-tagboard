@@ -6,6 +6,7 @@ from enum import Enum
 from itertools import chain
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -42,8 +43,8 @@ if TYPE_CHECKING:
 
     from tesys_tagboard.users.models import User
 
-TAG_CATEGORY_DELIMITER = ":"
-MAX_TAG_CATEGORY_DEPTH = 4
+TAG_CATEGORY_DELIMITER = settings.TAG_CATEGORY_DELIMITER
+MAX_TAG_CATEGORY_DEPTH = settings.MAX_TAG_CATEGORY_DEPTH
 VALID_ARG_RELATIONS = "".join([x.value for x in TokenArgRelation])
 FILTER_SPLIT_PATTERN = re.compile(r"([" + VALID_ARG_RELATIONS + r"])")
 
