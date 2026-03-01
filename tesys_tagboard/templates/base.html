@@ -39,7 +39,7 @@
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
   </head>
-  <nav class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm !h-6">
+  <nav id="#top" class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm !h-6">
     <div class="flex">
       <div class="text-left dropdown">
         <div tabindex="0" role="button" class="lg:hidden btn btn-ghost">
@@ -68,6 +68,8 @@
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
         class="max-w-screen overflow-x-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
     <!-- Form for global search from tag widget popup -->
+    {% comment %} need to add main.relative container for back-to-top btn {% endcomment %}
+    <main class="relative">
     <input id="tagSearchForm"
            class="hidden"
            type="hidden"
@@ -100,12 +102,14 @@
     {% endblock modal %}
     {% block inline_javascript %}
     {% endblock inline_javascript %}
-    <a id="back-to-top-btn"
-       href="#top"
-       class="hidden fixed bottom-2 left-2 z-50 rounded-full border-2 lg:hidden btn btn-xl btn-secondary bg-secondary/90 btn-square">
-      {% include "icons/feather.html" with icon="arrow-up" %}
-    </a>
-    <div id="bottom-of-screen-threshold"
-         class="absolute top-0 w-full h-[250dvh] -z-1"></div>
+    <div class="back-to-top-wrapper">
+      <a id="back-to-top-btn"
+        href="#top"
+        class="back-to-top-link z-50 rounded-full border-2 lg:hidden btn btn-xl btn-secondary bg-secondary/90 btn-square">
+        {% include "icons/feather.html" with icon="arrow-up" %}
+      </a>
+    </div>
+  </div>
+  </main>
   </body>
 </html>
