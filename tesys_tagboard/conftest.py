@@ -128,6 +128,38 @@ def django_db_setup(django_db_setup, django_db_blocker):
         artist_category = TagCategory.objects.get(name__icontains="artist")
         copyright_category = TagCategory.objects.get(name__icontains="copyright")
 
+        continent_category = TagCategory.objects.create(name="continent")
+        north_america_category = TagCategory.objects.create(
+            name="North_America", parent=continent_category
+        )
+        south_america_category = TagCategory.objects.create(
+            name="South_America", parent=continent_category
+        )
+        canada_category = TagCategory.objects.create(
+            name="Canada", parent=north_america_category
+        )
+        mexico_category = TagCategory.objects.create(
+            name="México", parent=north_america_category
+        )
+        peru_category = TagCategory.objects.create(
+            name="Peru", parent=south_america_category
+        )
+        brazil_category = TagCategory.objects.create(
+            name="Brazil", parent=south_america_category
+        )
+        lima_territory_category = TagCategory.objects.create(
+            name="Lima", parent=brazil_category
+        )
+        lima_city_category = TagCategory.objects.create(
+            name="Lima", parent=lima_territory_category
+        )
+        cusco_territory_category = TagCategory.objects.create(
+            name="Cusco", parent=brazil_category
+        )
+        cusco_city_category = TagCategory.objects.create(
+            name="Cusco", parent=cusco_territory_category
+        )
+
         Tag.objects.bulk_create(
             [
                 Tag(name="alabaster"),
@@ -175,6 +207,19 @@ def django_db_setup(django_db_setup, django_db_blocker):
                 Tag(name="MIT", category=copyright_category),
                 Tag(name="Public_Domain", category=copyright_category),
                 Tag(name="Unlicense", category=copyright_category),
+                # Location tags
+                Tag(name="Québec", category=canada_category),
+                Tag(name="Ontario", category=canada_category),
+                Tag(name="Ciudad_de_México", category=mexico_category),
+                Tag(name="Monterrey", category=mexico_category),
+                Tag(name="Huarez", category=peru_category),
+                Tag(name="Pallasca", category=peru_category),
+                Tag(name="Dos_de_Mayo", category=peru_category),
+                Tag(name="La_Convención", category=cusco_territory_category),
+                Tag(name="Qoricancha_Temple", category=cusco_city_category),
+                Tag(name="Cristo_Blanco", category=cusco_city_category),
+                Tag(name="La_Marina_Lighthouse", category=lima_city_category),
+                Tag(name="Basilica_of_Santo_Domingo", category=lima_city_category),
             ]
         )
 
