@@ -4,7 +4,7 @@
 
 {% block head_title %}
   {% trans 'Signup' %}
-{% endblock %}
+{% endblock head_title %}
 {% block content %}
   {% include 'heading.html' with text=_('SIGNUP') %}
   <div class="flex gap-4 justify-center min-h-screen">
@@ -57,10 +57,10 @@
       </button>
       <div class="my-6 divider">OR</div>
       <!-- Discord -->
-      <a href="/accounts/discord/login/?process=login"
-         class="mx-auto text-white btn"
-         style="background-color: #5865F2;
-                border-color: #5865F2">
+      {% load socialaccount %}
+
+      <a href="{% provider_login_url 'discord' process='login' %}"
+         class="mx-auto text-white btn bg-[#5865F2] border-[#5865F2]">
         <svg aria-label="Discord logo"
              height="16"
              xmlns="http://www.w3.org/2000/svg"
@@ -115,4 +115,4 @@
       {% include 'socialaccount/snippets/login.html' with page_layout='entrance' %}
     {% endif %}
   </div> {% endcomment %}
-{% endblock %}
+{% endblock content %}

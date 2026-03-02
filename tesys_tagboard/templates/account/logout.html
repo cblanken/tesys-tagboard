@@ -4,10 +4,10 @@
 
 {% block head_title %}
   {% trans 'Sign Out' %}
-{% endblock %}
+{% endblock head_title %}
 {% block content %}
   {% include 'heading.html' with text=_('LOG OUT') %}
-  <div class="flex justify-center items-center">
+  <div class="flex justify-center min-h-screen pt-[20vh]">
     <form method="post"
           action="{% url 'account_logout' %}"
           class="flex flex-col gap-4 p-8 mt-3 max-w-3xl h-full lg:w-1/2 bg-base-300 rounded-box sm:min-w-[450px] lg:max-w-[500px]">
@@ -38,4 +38,4 @@
     {% endslot %}
     {% endelement %}
   </section> {% endcomment %}
-{% endblock %}
+{% endblock content %}
