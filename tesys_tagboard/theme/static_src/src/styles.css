@@ -248,6 +248,8 @@
   --color-user: #121212;
   --color-user-content: #ddd;
 
+  --color-discord: #5865F2;
+  --color-discord-content: oklch(0.9162 0 139.549);
 
   /* Keyframes */
   @keyframes fade_in {

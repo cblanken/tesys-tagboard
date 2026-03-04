@@ -4,12 +4,7 @@
 
 {% get_providers as socialaccount_providers %}
 {% if socialaccount_providers %}
-  {% if not SOCIALACCOUNT_ONLY %}
-    <div class="divider">OR</div>
-    {% element h2 %}
-    {% translate "Use a third-party" %}
-  {% endelement %}
-{% endif %}
-{% include "socialaccount/snippets/provider_list.html" with process="login" %}
-{% include "socialaccount/snippets/login_extra.html" %}
+  {% if not SOCIALACCOUNT_ONLY %}<div class="divider">OR</div>{% endif %}
+  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+  {% include "socialaccount/snippets/login_extra.html" %}
 {% endif %}
