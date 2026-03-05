@@ -354,6 +354,8 @@ THEMES = [
     "wireframe",
 ]
 
+TITLE = env.str("DJANGO_TITLE", default=" Tagboard")
+
 HOMEPAGE_LINKS = env.list(
     "DJANGO_HOMEPAGE_LINKS",
     default=[
