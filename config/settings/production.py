@@ -89,6 +89,11 @@ EMAIL_SUBJECT_PREFIX = env(
     default="[Tesy's Tagboard] ",
 )
 ACCOUNT_EMAIL_SUBJECT_PREFIX = EMAIL_SUBJECT_PREFIX
+EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", "tesys_tagboard_local_mailpit")
+EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER")
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", 1025)
+
 
 # ADMIN
 # ------------------------------------------------------------------------------

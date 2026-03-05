@@ -6,11 +6,9 @@ Most settings are defined by environment variables. They may be set in an `.env`
 
 See their usage details below.
 
-### Django App Settings
+### General App Settings
 
 These environment variables are read by the Django app and thus have a corresponding value in Django accessible via `django.conf.settings`.
-
-These environment variables affect both production and development deployments.
 
 | Environment Variable | Django Setting | Production Default | Development Default |
 | --- | --- | --- | --- |
@@ -22,11 +20,6 @@ These environment variables affect both production and development deployments.
 | `DJANGO_ALLOWED_HOSTS` | `ALLOWED_HOSTS` |  |  |
 | `DJANGO_DEBUG_TOOLBAR` | `DEBUG_TOOLBAR` | True |  |
 | `DJANGO_DEBUG` | `DEBUG` | False | True |
-| `DJANGO_DISCORD_CLIENT_ID` |  |  |  |
-| `DJANGO_DISCORD_CLIENT_SECRET` |  |  |  |
-| `DJANGO_DISCORD_PUBLIC_KEY` |  |  |  |
-| `DJANGO_EMAIL_BACKEND` | `EMAIL_BACKEND` | ... |  |
-| `DJANGO_EMAIL_HOST` | `EMAIL_HOST` |  | tesys_tagboard_local_mailpit |
 | `DJANGO_HOMEPAGE_LINKS` | `HOMEPAGE_LINKS` | ... | ... |
 | `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF` | `SECURE_CONTENT_TYPE_NOSNIFF` |  | True |
 | `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS` | `SECURE_HSTS_INCLUDE_SUBDOMAINS` |  | True |
@@ -38,6 +31,18 @@ These environment variables affect both production and development deployments.
 | `DJANGO_TITLE` | `TITLE` | Tesy's Tagboard | Tesy's Tagboard |
 | `USE_DOCKER` |  | yes | yes |
 
+### Email Settings
+
+| Environment Variable | Django Setting | Production Default | Development Default |
+| --- | --- | --- | --- |
+| `DJANGO_DEFAULT_FROM_EMAIL` | `DEFAULT_FROM_EMAIL` |  |  |
+| `DJANGO_EMAIL_BACKEND` | `EMAIL_BACKEND` | ... |  |
+| `DJANGO_EMAIL_HOST_PASSWORD` | `EMAIL_HOST_PASSWORD` |  | tesys_tagboard_local_mailpit |
+| `DJANGO_EMAIL_HOST_USER` | `EMAIL_HOST_USER` |  |  |
+| `DJANGO_EMAIL_HOST` | `EMAIL_HOST` |  | tesys_tagboard_local_mailpit |
+| `DJANGO_EMAIL_PORT` | `EMAIL_PORT` |  | 1025 |
+| `DJANGO_SERVER_EMAIL` | `SERVER_EMAIL` | `DJANGO_DEFAULT_FROM_EMAIL` |  |
+
 ### Database Settings
 
 | Environment Variable | Default        |
@@ -46,3 +51,11 @@ These environment variables affect both production and development deployments.
 | `POSTGRES_PASSWORD`  |                |
 | `POSTGRES_PORT`      | 5432           |
 | `POSTGRES_USER`      |                |
+
+### Third-party Authentication
+
+| Environment Variable | Django Setting | Production Default | Development Default |
+| --- | --- | --- | --- |
+| `DJANGO_DISCORD_CLIENT_ID` |  |  |  |
+| `DJANGO_DISCORD_CLIENT_SECRET` |  |  |  |
+| `DJANGO_DISCORD_PUBLIC_KEY` |  |  |  |
