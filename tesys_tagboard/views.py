@@ -538,9 +538,8 @@ def add_post_to_collection(
             context={"collection": collection, "post": post, "checked": True},
             status=200,
         )
-    except Post.DoesNotExist, Collection.DoesNotExist:
+    except (Post.DoesNotExist, Collection.DoesNotExist):
         return HttpResponse("That post and/or collection doesn't exist", status=404)
-    return HttpResponse("Not allowed", status=403)
 
 
 @require(["POST"])

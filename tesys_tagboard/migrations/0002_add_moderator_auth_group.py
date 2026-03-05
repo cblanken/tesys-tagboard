@@ -31,6 +31,9 @@ def add_default_groups(apps, schema_editor):
         "view_tag",
         "view_tagalias",
         "view_video",
+        # Custom perms
+        "add_post_to_collection",
+        "remove_post_from_collection",
     ])
     user_group.save()
     user_group.permissions.set(user_permissions)
@@ -72,6 +75,8 @@ def add_default_groups(apps, schema_editor):
         "view_video",
         # Custom perms
         "lock_comments",
+        "add_post_to_collection",
+        "remove_post_from_collection",
     ])
     mod_group.save()
     mod_group.permissions.set(mod_permissions)
