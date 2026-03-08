@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=tesys_tagboard
+POSTGRES_USER=enCYnUAOivjTThocHtrIXHtotxrMebzi
+POSTGRES_PASSWORD=80QVoSIr2GC2HR28VyrYXRQ2CmJ2nFk26fPu4sOCxcvV2oS45GckjZVDx8N7BeOD
