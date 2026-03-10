@@ -390,7 +390,17 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     create_tag_form = CreateTagForm(request.POST)
     if create_tag_form.is_valid():
-        create_tag_form.save()
+        try:
+            tag_category = TagCategory.objects.get(
+                pk=create_tag_form.cleaned_data.get("category")
+            )
+        except TagCategory.DoesNotExist:
+            tag_category = None
+        Tag.objects.create(
+            name=create_tag_form.cleaned_data.get("name"),
+            category=tag_category,
+            rating_level=create_tag_form.cleaned_data.get("rating_level"),
+        )
     else:
         msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
         messages.add_message(request, messages.WARNING, msg)
@@ -538,7 +548,7 @@ def add_post_to_collection(
             context={"collection": collection, "post": post, "checked": True},
             status=200,
         )
-    except (Post.DoesNotExist, Collection.DoesNotExist):
+    except Post.DoesNotExist, Collection.DoesNotExist:
         return HttpResponse("That post and/or collection doesn't exist", status=404)
 
 

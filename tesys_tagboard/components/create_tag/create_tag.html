@@ -1,5 +1,7 @@
+{% load i18n %}
+
 <div class="p-4 w-full rounded-box bg-base-300 lg:w-125">
-  <h2>Create a tag</h2>
+  <h2>{% translate 'Create a tag' %}</h2>
   <form class="flex flex-wrap gap-2 w-full"
         id="create-tag"
         action="{% url "create-tag" %}"
@@ -7,25 +9,28 @@
     {% csrf_token %}
     <fieldset class="w-full fieldset">
       <legend class="fieldset-legend">
-        Tag name<span class="text-warning">*</span>
+        {% translate 'Tag name' %}<span class="text-warning">*</span>
       </legend>
-      <input type="text" class="w-full input" name="name" placeholder="Tag name" />
+      <input type="text"
+             class="w-full input"
+             name="name"
+             placeholder="{% translate 'Tag name' %}" />
     </fieldset>
     <fieldset class="w-full fieldset">
-      <legend class="fieldset-legend">Category</legend>
+      <legend class="fieldset-legend">{% translate 'Category' %}</legend>
       <select class="w-full select" name="category">
-        <option disabled selected>Pick a category</option>
+        <option disabled selected>{% translate 'Pick a category' %}</option>
         {% for category in categories %}<option value="{{ category.pk }}">{{ category.name|capfirst }}</option>{% endfor %}
       </select>
     </fieldset>
     <fieldset class="w-full fieldset">
-      <legend class="fieldset-legend">Rating level (0-255)</legend>
-      <input type="number"
-             min="0"
-             max="255"
-             class="w-full input"
-             name="rating_level"
-             placeholder="0" />
+      <legend class="fieldset-legend">{% translate 'Rating (optional)' %}</legend>
+      <select class="w-full select" name="rating_level">
+        <option disabled selected>{% translate 'Pick a rating level' %}</option>
+        {% for rating_level in rating_levels %}
+          <option value="{{ rating_level.value }}">{{ rating_level.name }} ({{ rating_level.value }})</option>
+        {% endfor %}
+      </select>
     </fieldset>
     <input type="submit"
            value="Post"
