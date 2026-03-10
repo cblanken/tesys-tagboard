@@ -13,6 +13,7 @@ from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import QueryDict
 from django.utils.safestring import SafeString
+from django.utils.translation import gettext as _
 from more_itertools import take
 
 from .enums import RatingLevel
@@ -257,162 +258,168 @@ class PostSearchTokenCategory(Enum):
 
     TAG = WildcardSearchTokenCategory(
         name="",
-        desc="The default (un-named) token. Used for searching tags.",
+        desc=_(
+            "The default (un-named) token. When a plain string without any operator "
+            "is given it will be interpreted as a tag."
+        ),
         arg_validator=tag_name_validator,
     )
 
     TAG_ID = SimpleSearchTokenCategory(
-        name="tag_id",
-        desc="The ID of a tag.",
+        name=_("tag_id"),
+        desc=_("The ID of a tag."),
         arg_validator=positive_int_validator,
     )
 
     POST_ID = ComparisonSearchTokenCategory(
-        name="id",
-        desc="The ID of a Post",
+        name=_("id"),
+        desc=_("The ID of a Post."),
         arg_validator=positive_int_validator,
     )
 
     TAG_ALIAS = WildcardSearchTokenCategory(
-        name="alias",
-        desc="The name of a TagAlias. Allows wildcards.",
+        name=_("alias"),
+        desc=_("The name of a TagAlias."),
         aliases=("tag_alias",),
         arg_validator=tag_name_validator,
     )
 
     TAG_COUNT = ComparisonSearchTokenCategory(
-        name="tag_count",
-        desc="The number of tags on a Post. Accepts comparison operators =, <, >",
+        name=_("tag_count"),
+        desc=_("The number of tags on a Post."),
         aliases=("tc",),
         arg_validator=positive_int_validator,
     )
 
     COMMENT_BY = WildcardSearchTokenCategory(
-        name="comment_by",
-        desc="The username of a user",
+        name=_("comment_by"),
+        desc=_("The username of a user that has commented on a Post"),
         aliases=("comment", "cb"),
         arg_validator=username_validator,
     )
 
     COMMENT_COUNT = ComparisonSearchTokenCategory(
-        name="comment_count",
-        desc="The number of comments on a Post. Accepts comparison operators =, <, >",
+        name=_("comment_count"),
+        desc=_("The number of comments on a Post."),
         aliases=("cc",),
         arg_validator=positive_int_validator,
     )
 
     FAV_COUNT = ComparisonSearchTokenCategory(
-        name="favorite_count",
-        desc="The number of favorites recieved by a Post. Accepts comparison operators =, <, >",  # noqa: E501
+        name=_("favorite_count"),
+        desc=_("The number of favorites recieved by a Post."),
         aliases=("fav_count", "fc"),
         arg_validator=positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchTokenCategory(
-        name="height",
-        desc="The height of a Post (only applies to Images and Videos). Accepts comparison operators =, <, >",  # noqa: E501
+        name=_("height"),
+        desc=_("The height of a Post (only applies to Images and Videos)."),
         aliases=("h",),
         arg_validator=validators.integer_validator,
     )
 
     WIDTH = ComparisonSearchTokenCategory(
-        name="width",
-        desc="The width of a Post (only applies to Images and Videos.  Accepts comparison operators =, <, >",  # noqa: E501
+        name=_("width"),
+        desc=_("The width of a Post (only applies to Images and Videos."),
         aliases=("w",),
         arg_validator=validators.integer_validator,
     )
 
     RATING_LABEL = SimpleSearchTokenCategory(
-        name="rating_label",
-        desc="The rating of a Post. Accepts any current rating level label",
+        name=_("rating_label"),
+        desc=_(
+            "The rating of a Post. Accepts one of safe, unrated, questionable, "
+            "and explicit."
+        ),
         aliases=("rate", "r"),
         arg_validator=rating_label_validator,
     )
 
     RATING_NUM = ComparisonSearchTokenCategory(
-        name="rating_num",
-        desc="The rating level of a Post. Accepts equality comparison operators.",
+        name=_("rating_num"),
+        desc=_("The rating level of a Post."),
         arg_validator=validators.integer_validator,
     )
 
     SOURCE = WildcardSearchTokenCategory(
-        name="source",
-        desc="The source url of a Post. Allows wildcards.",
+        name=_("source"),
+        desc=_("The source url of a Post."),
         aliases=("src",),
         arg_validator=validators.URLValidator(),
         wildcard_arg_validator=wildcard_url_validator,
     )
 
     POSTED_BY = WildcardSearchTokenCategory(
-        name="posted_by",
-        desc="The username of the uploader of a Post. Allows wildcards.",
+        name=_("posted_by"),
+        desc=_("The username of the uploader of a Post."),
         aliases=("uploaded_by",),
         arg_validator=username_validator,
     )
 
     POSTED_ON = ComparisonSearchTokenCategory(
-        name="posted_on",
-        desc="The date the post was posted on",
+        name=_("posted_on"),
+        desc=_("The date the post was posted on."),
         aliases=("uploaded_on",),
         arg_validator=iso_date_validator,
     )
 
     MIMETYPE = SimpleSearchTokenCategory(
-        name="mimetype",
-        desc="The MIME type of the post's file",
+        name=_("mimetype"),
+        desc=_("The MIME type of the post's file."),
         aliases=("mime",),
         arg_validator=mimetype_validator,
     )
 
     FILE_EXTENSION = SimpleSearchTokenCategory(
-        name="extension",
-        desc="The file extension of the post's related file",
+        name=_("extension"),
+        desc=_("The file extension of the post's related file."),
         aliases=("ext",),
         arg_validator=file_extension_validator,
     )
 
     COLLECTION_ID = SimpleSearchTokenCategory(
-        name="collection_id",
-        desc="The ID of a collection",
+        name=_("collection_id"),
+        desc=_("The ID of a collection."),
         arg_validator=positive_int_validator,
     )
 
     COLLECTION = SimpleSearchTokenCategory(
-        name="collection",
-        desc="Whether or not a post is part of a collection (yes/no)",
+        name=_("collection"),
+        desc=_("Whether or not a post is part of a collection (yes/no)."),
         aliases=("in_collection",),
         arg_validator=yes_no_validator,
     )
 
     COLLECTION_NAME = WildcardSearchTokenCategory(
-        name="collection_name",
-        desc="A collection's name. Supports wildcards.",
+        name=_("collection_name"),
+        desc=_("A collection's name."),
         arg_validator=collection_name_validator,
         wildcard_arg_validator=wildcard_collection_name_validator,
     )
 
     PARENT = SimpleSearchTokenCategory(
-        name="parent",
-        desc="Whether or not a post has a parent (yes/no)",
+        name=_("parent"),
+        desc=_("Whether or not a post has a parent (yes/no)."),
         arg_validator=yes_no_validator,
     )
 
     PARENT_ID = SimpleSearchTokenCategory(
-        name="parent_id",
-        desc="Whether or not a post has a parent matching the given post ID",
+        name=_("parent_id"),
+        desc=_("Whether or not a post has a parent matching the given post ID."),
         arg_validator=positive_int_validator,
     )
 
     CHILD = SimpleSearchTokenCategory(
-        name="children",
-        desc="Whether or not a post has any children (yes/no)",
+        name=_("children"),
+        desc=_("Whether or not a post has any children (yes/no)."),
         aliases=("child",),
         arg_validator=yes_no_validator,
     )
 
     CHILD_ID = SimpleSearchTokenCategory(
-        name="child_id",
-        desc="Whether or not a post has a child post matching the given post ID",
+        name=_("child_id"),
+        desc=_("Whether or not a post has a child post matching the given post ID."),
         arg_validator=positive_int_validator,
     )
 

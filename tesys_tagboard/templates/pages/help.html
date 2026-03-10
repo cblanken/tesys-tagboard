@@ -19,7 +19,7 @@
       {% partialdef search-token-link-button %}
       <div class="grid justify-center content-center w-full">
         <a href="#{{ operator_name }}-info"
-           class="btn p-1 aspect-square w-6 h-6 rounded-field {% if is_modifier %}bg-secondary text-secondary-content{% else %}bg-info{% endif %} font-bold text-base">{{ token_link_character }}</a>
+           class="btn p-1 aspect-square w-6 h-6 rounded-field {% if is_modifier %}bg-secondary text-secondary-content{% else %}bg-info text-info-content{% endif %} font-bold text-base">{{ token_link_character }}</a>
       </div>
     {% endpartialdef search-token-link-button %}
     <table class="table table-zebra">
@@ -75,7 +75,7 @@
         </tr>
       </tbody>
     </table>
-    <h2>Search Tokens</h2>
+    <h2>Filter Tokens</h2>
     <div class="overflow-auto">
       <table class="table table-zebra">
         <thead>
@@ -115,7 +115,7 @@
         <p>Here are a few simple queries to get you started.</p>
         <p>This query will return all posts with the <em>blue</em> tag that have more than 5 tags total and have been added to a collection.</p>
         <code class="p-3 px-4 bg-info text-info-content w-fit rounded-field">blue tag_count&lt;5 collection=yes</code>
-        <p>This query will return all posts with a height of exatly 400 pixels and more than 3 comments.</p>
+        <p>This query will return all posts with a height of exactly 400 pixels and more than 3 comments.</p>
         <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">height=400 comment_count>3</code>
         <p>This query will return all posts with a source URL on <code>discord.com</code> that have not yet been rated. Note the wildcard at the end of the source value that allows the source to match any URL originating from Discord.</p>
         <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">source=https://discord.com* rating_label=unrated</code>
