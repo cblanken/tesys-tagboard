@@ -58,6 +58,24 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 #
 html_theme = "sphinx_nefertiti"
 
+html_show_sourcelink = True
+html_theme_options = {
+    "repository_url": "https://github.com/cblanken/tesys-tagboard",
+    "repository_name": "Tesy's Tagboard",
+    "docs_repository_url": "https://github.com/cblanken/tesys-tagboard/tree/dev/docs/_source/",
+    "documentation_font_size": "1.2rem",
+    "monospace_font_size": "1.1rem",
+    "show_colorset_choices": True,
+    "style": "teal",
+    "header_links": [
+        {
+            "text": "Deployment Guide",
+            "link": "deployment",
+            "match": "/deployment/*",
+        },
+    ],
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
