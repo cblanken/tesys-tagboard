@@ -1,8 +1,126 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% block title %}
   {{ block.super }} — Help
 {% endblock title %}
 {% block content %}
   {% include "heading.html" with text="HELP" %}
+  <div class="w-full md:grid md:justify-center">
+    <section class="mb-20 w-full md:max-w-2xl xl:max-w-4xl">
+      <p class="mb-6">
+        {% translate 'The advanced post search uses a set of tokens separated by spaces to filter and sort the results. Below you will find a list of all the available tokens and some examples of how to build a search query.' %}
+      </p>
+      <p class="mb-6">
+        {% translate "Each token may accept different operators and values. A token's supported operators will be listed with the following search operator icons." %}
+      </p>
+      <h2>Search Operators</h2>
+      {% partialdef search-token-link-button %}
+      <div class="grid justify-center content-center w-full">
+        <a href="#{{ operator_name }}-info"
+           class="btn p-1 aspect-square w-6 h-6 rounded-field {% if is_modifier %}bg-secondary text-secondary-content{% else %}bg-info{% endif %} font-bold text-base">{{ token_link_character }}</a>
+      </div>
+    {% endpartialdef search-token-link-button %}
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th class="text-center">Operator</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% with token_link_character="=" operator_name="equal" %}
+            <td id="equal-info">{% partial search-token-link-button %}</td>
+            <td>
+              {% translate 'The equality operator which indicates that returned posts will have the same value as the token. Or, if the token supports wildcards, that all posts will match the wildcard expression.' %}
+            </td>
+          {% endwith %}
+        </tr>
+        <tr>
+          {% with token_link_character="<" operator_name="less-than" %}
+            <td id="less_than-info">{% partial search-token-link-button %}</td>
+            <td>
+              {% translate "The less than operator which indicates that returned posts will have a value <em>less than</em> the token's value." %}
+            </td>
+          {% endwith %}
+        </tr>
+        <tr>
+          {% with token_link_character=">" operator_name="greater-than" %}
+            <td id="greater_than-info">{% partial search-token-link-button %}</td>
+            <td>
+              {% translate "The greater than operator which indicates that returned posts will have a value <em>greater than</em> the token's value." %}
+            </td>
+          {% endwith %}
+        </tr>
+      </tbody>
+    </table>
+    <h2>Value Modifiers</h2>
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th class="text-center">Modifier</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% with token_link_character="*" operator_name="equal" is_modifier=True %}
+            <td id="wildcard-info">{% partial search-token-link-button %}</td>
+            <td>
+              {% translate 'Some search tokens may accept wildcards in the specified search value. These will make the filter more permissive, allowing resulting posts that match where the wildcard(s) may be replaced with any value.' %}
+            </td>
+          {% endwith %}
+        </tr>
+      </tbody>
+    </table>
+    <h2>Search Tokens</h2>
+    <div class="overflow-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>{% translate 'Token' %}</th>
+            <th>{% translate 'Operators and Modifiers' %}</th>
+            <th class="min-w-svw max-w-svw sm:min-w-50 sm:max-w-200">{% translate 'Details' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for token_category in token_categories %}
+            <tr>
+              <td>{{ token_category.value.name }}</td>
+              <td>
+                <div class="flex gap-2 justify-center items-center">
+                  {% for operator in token_category.value.allowed_arg_relations %}
+                    {% with token_link_character=operator.value operator_name=operator.name|lower %}
+                      <div>{% partial search-token-link-button %}</div>
+                    {% endwith %}
+                  {% endfor %}
+                  {% if token_category.value.allow_wildcard %}
+                    {% with token_link_character="*" operator_name="wildcard" is_modifier=True %}
+                      <div>{% partial search-token-link-button %}</div>
+                    {% endwith %}
+                  {% endif %}
+                </div>
+              </td>
+              <td>{{ token_category.value.desc }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h2 class="mt-10">Examples</h2>
+    <div class="flex flex-col gap-4">
+      {% blocktranslate %}
+        <p>Here are a few simple queries to get you started.</p>
+        <p>This query will return all posts with the <em>blue</em> tag that have more than 5 tags total and have been added to a collection.</p>
+        <code class="p-3 px-4 bg-info text-info-content w-fit rounded-field">blue tag_count&lt;5 collection=yes</code>
+        <p>This query will return all posts with a height of exatly 400 pixels and more than 3 comments.</p>
+        <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">height=400 comment_count>3</code>
+        <p>This query will return all posts with a source URL on <code>discord.com</code> that have not yet been rated. Note the wildcard at the end of the source value that allows the source to match any URL originating from Discord.</p>
+        <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">source=https://discord.com* rating_label=unrated</code>
+      {% endblocktranslate %}
+    </div>
+  </section>
+</div>
 {% endblock content %}

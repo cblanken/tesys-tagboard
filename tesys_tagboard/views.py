@@ -57,6 +57,7 @@ from .models import TagCategory
 from .models import Video
 from .models import csv_to_tag_ids
 from .search import PostSearch
+from .search import PostSearchTokenCategory
 from .search import SearchTokenFilterNotImplementedError
 from .search import autocomplete_tag_aliases
 from .search import autocomplete_tags
@@ -832,5 +833,5 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
 
 @require(["GET"], login=False)
 def search_help(request: HtmxHttpRequest) -> TemplateResponse:
-    context = {}
+    context = {"token_categories": list(PostSearchTokenCategory)}
     return TemplateResponse(request, "pages/help.html", context)
