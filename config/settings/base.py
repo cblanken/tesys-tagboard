@@ -1,10 +1,10 @@
-# ruff: noqa: ERA001, E501
+# ruff: noqa: E501
 """Base settings to build other settings files upon."""
 
-import os
 from pathlib import Path
 
 import environ
+from django.utils.translation import gettext_lazy as _
 from environ.environ import NoValue
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -26,12 +26,12 @@ TIME_ZONE = "UTC"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#languages
-# from django.utils.translation import gettext_lazy as _
-# LANGUAGES = [
-#     ('en', _('English')),
-#     ('fr-fr', _('French')),
-#     ('pt-br', _('Portuguese')),
-# ]
+LANGUAGES = [
+    ("en", _("English")),
+    ("fr-fr", _("French")),
+    ("de-de", _("German")),
+    ("es-mx", _("Spanish")),
+]
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
@@ -45,7 +45,7 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 if db_config := env.db("DATABASE_URL"):
-    DATABASES = { "default": db_config }
+    DATABASES = {"default": db_config}
 elif (
     (postgres_host := env.str("POSTGRES_HOST")) != NoValue
     and (postgres_port := env.str("POSTGRES_PORT")) != NoValue
@@ -64,7 +64,7 @@ elif (
         },
         "OPTIONS": {
             "pool": True,
-        }
+        },
     }
     DATABASES["default"]["ATOMIC_REQUESTS"] = True
 else:
