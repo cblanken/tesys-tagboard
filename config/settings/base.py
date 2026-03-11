@@ -44,22 +44,33 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-if (
+if db_config := env.db("DATABASE_URL"):
+    DATABASES = { "default": db_config }
+elif (
     (postgres_host := env.str("POSTGRES_HOST")) != NoValue
     and (postgres_port := env.str("POSTGRES_PORT")) != NoValue
     and (postgres_db := env.str("POSTGRES_DB")) != NoValue
     and (postgres_user := env.str("POSTGRES_USER")) != NoValue
     and (postgres_pass := env.str("POSTGRES_PASSWORD")) != NoValue
 ):
-    os.environ["DATABASE_URL"] = (
-        f"postgres://{postgres_user}:{postgres_pass}@{postgres_host}:{postgres_port}/{postgres_db}"
-    )
-    DATABASES = {"default": env.db("DATABASE_URL")}
+    DATABASES: dict[str, dict] = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "tesys_tagboard",
+            "USER": postgres_user,
+            "PASSWORD": postgres_pass,
+            "HOST": postgres_host,
+            "PORT": postgres_port,
+        },
+        "OPTIONS": {
+            "pool": True,
+        }
+    }
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True
 else:
     msg = "The DATABASE_URL or it's required components (POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD) were not available in the provided environment."
     raise environ.ImproperlyConfigured(msg)
 
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
