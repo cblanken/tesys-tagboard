@@ -29,7 +29,8 @@ up-debug:
     # Note when exiting (Ctrl-C) the debugger, the other docker services
     # will remain up until brought down with `just down`
 
-# Start up docs container
+alias whats-up-doc := up-docs
+# Start up docs container 🐇
 up-docs *args:
     @echo "Starting up docs container..."
     COMPOSE_FILE=docker-compose.docs.yml docker compose up -d {{args}}
