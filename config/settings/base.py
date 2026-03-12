@@ -1,11 +1,11 @@
 # ruff: noqa: E501
 """Base settings to build other settings files upon."""
 
+import os
 from pathlib import Path
 
 import environ
 from django.utils.translation import gettext_lazy as _
-from environ.environ import NoValue
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # tesys_tagboard/
@@ -17,7 +17,7 @@ env.read_env(str(BASE_DIR / ".env"))
 # ------------------------------------------------------------------------------
 PRODUCTION = False
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool("DJANGO_DEBUG", False)
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -44,14 +44,14 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-if db_config := env.db("DATABASE_URL"):
-    DATABASES = {"default": db_config}
+if db_url := env.str("DATABASE_URL", default=""):
+    DATABASES = {"default": env.db_url("DATABASE_URL")}
 elif (
-    (postgres_host := env.str("POSTGRES_HOST")) != NoValue
-    and (postgres_port := env.str("POSTGRES_PORT")) != NoValue
-    and (postgres_db := env.str("POSTGRES_DB")) != NoValue
-    and (postgres_user := env.str("POSTGRES_USER")) != NoValue
-    and (postgres_pass := env.str("POSTGRES_PASSWORD")) != NoValue
+    (postgres_host := env.str("POSTGRES_HOST", default=""))
+    and (postgres_port := env.str("POSTGRES_PORT", default=""))
+    and (postgres_db := env.str("POSTGRES_DB", default=""))
+    and (postgres_user := env.str("POSTGRES_USER", default=""))
+    and (postgres_pass := env.str("POSTGRES_PASSWORD", default=""))
 ):
     DATABASES: dict[str, dict] = {
         "default": {
@@ -67,9 +67,14 @@ elif (
         },
     }
     DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+    os.environ["DATABASE_URL"] = (
+        f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
+    )
 else:
     msg = "The DATABASE_URL or it's required components (POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD) were not available in the provided environment."
     raise environ.ImproperlyConfigured(msg)
+
 
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -83,8 +88,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # PROFILING
 # ------------------------------------------------------------------------------
-SILKY_PYTHON_PROFILER = env.bool("DJANGO_SILKY_PYTHON_PROFILER", False)
-SILKY_PYTHON_PROFILER_BINARY = env.bool("DJANGO_SILKY_PYTHON_PROFILER_BINARY", False)
+SILKY_PYTHON_PROFILER = env.bool("DJANGO_SILKY_PYTHON_PROFILER", default=False)
+SILKY_PYTHON_PROFILER_BINARY = env.bool(
+    "DJANGO_SILKY_PYTHON_PROFILER_BINARY", default=False
+)
 
 # APPS
 # ------------------------------------------------------------------------------
@@ -290,7 +297,7 @@ X_FRAME_OPTIONS = "DENY"
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
+EMAIL_BACKEND = env.str(
     "DJANGO_EMAIL_BACKEND",
     default="django.core.mail.backends.smtp.EmailBackend",
 )
@@ -302,7 +309,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Cameron Blankenbuehler""", "cameron-blankenbuehler@example.com")]
+ADMINS = env.list("DJANGO_ADMINS", default=[])
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 # https://cookiecutter-django.readthedocs.io/en/latest/settings.html#other-environment-settings
@@ -332,7 +339,7 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
+REDIS_URL = env.url("REDIS_URL", default="redis://redis:6379/0").geturl()
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
 
@@ -346,7 +353,11 @@ ACCOUNT_SIGNUP_FIELDS = ["username*", "email", "password1*", "password2*"]
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "name"
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = env.str("DJANGO_EMAIL_VERIFICATION", default="optional")
+ACCOUNT_EMAIL_VERIFICATION = env.str(
+    "DJANGO_EMAIL_VERIFICATION",
+    default="optional",
+    choices=["optional", "mandatory", "none"],
+)
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_ADAPTER = "tesys_tagboard.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html

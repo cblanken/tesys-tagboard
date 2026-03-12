@@ -23,6 +23,7 @@ Environment Variable                        Django Setting                      
 `DATABASE_URL`_                             ``DATABASES["default"]``
 `DJANGOADMIN_FORCE_ALLAUTH`_                ``DJANGO_ADMIN_FORCE_ALLAUTH``       False                  False
 `DJANGO_ACCOUNT_ALLOW_REGISTRATION`_        ``ACCOUNT_ALLOW_REGISTRATION``       True                   True
+`DJANGO_ADMINS`_                            ``ADMINS``                           []                     []
 `DJANGO_ADMIN_URL`_                         ``ADMIN_URL``                        ``/admin``
 `DJANGO_ALLOWED_HOSTS`_                     ``ALLOWED_HOSTS``
 `DJANGO_DEBUG_TOOLBAR`_                     ``DEBUG_TOOLBAR``                    True
@@ -115,6 +116,12 @@ TODO
 
 :code:`DJANGO_ACCOUNT_ALLOW_REGISTRATION`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TODO
+
+.. _DJANGO_ADMIN:
+
+:code:`DJANGO_ADMINS`
+~~~~~~~~~~~~~~~~~~~~~~~~
 TODO
 
 .. _DJANGO_ADMIN_URL:
