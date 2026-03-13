@@ -9,10 +9,10 @@
   {% include "heading.html" with text="HELP" %}
   <div class="w-full md:grid md:justify-center">
     <section class="mb-20 w-full md:max-w-2xl xl:max-w-4xl">
-      <p class="mb-6">
+      <p>
         {% translate 'The advanced post search uses a set of tokens separated by spaces to filter and sort the results. Below you will find a list of all the available tokens and some examples of how to build a search query.' %}
       </p>
-      <p class="mb-6">
+      <p>
         {% translate "Each token may accept different operators and values. A token's supported operators will be listed with the following search operator icons." %}
       </p>
       <h2>Search Operators</h2>
@@ -112,12 +112,11 @@
     <h2 class="mt-10">Examples</h2>
     <div class="flex flex-col gap-4">
       {% blocktranslate %}
-        <p>Here are a few simple queries to get you started.</p>
-        <p>This query will return all posts with the <em>blue</em> tag that have more than 5 tags total and have been added to a collection.</p>
+        <p class="mb-0">Here are a few simple queries to get you started. This query will return all posts with the <em>blue</em> tag that have more than 5 tags total and have been added to a collection.</p>
         <code class="p-3 px-4 bg-info text-info-content w-fit rounded-field">blue tag_count&lt;5 collection=yes</code>
-        <p>This query will return all posts with a height of exactly 400 pixels and more than 3 comments.</p>
+        <p class="mb-0">This query will return all posts with a height of exactly 400 pixels and more than 3 comments.</p>
         <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">height=400 comment_count>3</code>
-        <p>This query will return all posts with a source URL on <code>discord.com</code> that have not yet been rated. Note the wildcard at the end of the source value that allows the source to match any URL originating from Discord.</p>
+        <p class="mb-0">This query will return all posts with a source URL on <code>discord.com</code> that have not yet been rated. Note the wildcard at the end of the source value that allows the source to match any URL originating from Discord.</p>
         <code class="py-3 px-4 bg-info text-info-content w-fit rounded-field">source=https://discord.com* rating_label=unrated</code>
       {% endblocktranslate %}
     </div>

@@ -8,15 +8,13 @@
 {% endblock head_title %}
 {% block content %}
   {% if not SOCIALACCOUNT_ONLY %}
-    <form method="post"
-          action="{% url 'account_login' %}"
-          class="flex flex-col gap-4 p-8 w-full max-w-3xl h-full md:max-w-xl xl:max-w-3xl bg-base-300 rounded-box">
+    <form method="post" action="{% url 'account_login' %}" class="form">
       {% csrf_token %}
       {% if form.errors %}<div class="text-error">{{ form.errors }}</div>{% endif %}
-      <h2 class="mb-6 text-4xl font-bold text-center text-base-accent">{% translate 'Log In to your account' %}</h2>
+      <h1 class="text-center">{% translate 'Log In to your account' %}</h1>
       <!-- username -->
-      <div class="mb-5">
-        <label class="block mb-1 text-sm font-medium">{% translate 'Username' %}</label>
+      <div>
+        <label>{% translate 'Username' %}</label>
         <input required
                type="text"
                name="login"
@@ -25,7 +23,7 @@
       </div>
       <!-- password -->
       <div>
-        <label class="block mb-1 text-sm font-medium">{% translate 'Password' %}</label>
+        <label>{% translate 'Password' %}</label>
         <input required
                type="password"
                name="password"
@@ -35,7 +33,7 @@
       <!-- Remember me and forgot password -->
       <div class="flex justify-between items-center">
         <label class="flex items-center">
-          <input type="checkbox" class="rounded border-gray-300" />
+          <input type="checkbox" />
           <span class="ml-2 text-sm" name="remember">{% translate 'Remember me' %}</span>
         </label>
         <a href="{% url 'account_reset_password' %}" class="text-sm">{% translate 'Forgot password?' %}</a>
@@ -45,7 +43,7 @@
       {% if SOCIALACCOUNT_ENABLED %}
         {% include 'socialaccount/snippets/login.html' with page_layout='entrance' %}
       {% endif %}
-      <p class="py-2 text-center text-md">
+      <p class="text-sm text-center">
         {% url "account_signup" as account_signup_url %}
         {% blocktranslate %}
         If you haven't created an account yet, then please <a href={{ account_signup_url }}>sign up</a> first.
