@@ -19,7 +19,7 @@
     <form action="{% url 'upload' %}"
           method="post"
           enctype="multipart/form-data"
-          class="flex flex-col gap-4 p-8 w-full lg:w-1/2 rounded-box bg-base-300 sm:min-w-[450px] lg:max-w-[800px]">
+          class="max-w-2xl form">
       {% csrf_token %}
       {{ form.non_field_errors }}
       <fieldset class="fieldset">
@@ -60,9 +60,7 @@
           {% endfor %}
         </select>
       </fieldset>
-      <div id="all-posts-tagset" class="flex">
-        {% component "add_tagset" autocomplete_url="tag-autocomplete" add_tag_enabled=True tags=default_tags / %}
-      </div>
+      <div id="all-posts-tagset" class="flex">{% component "add_tagset" add_tag_enabled=True tags=default_tags / %}</div>
       <input type="submit" value="Post" class="text-xl btn btn-primary" />
       {% if form.errors %}
         <div role="alert" class="alert alert-error">

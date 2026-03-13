@@ -8,7 +8,6 @@ from tesys_tagboard.users.models import User
 
 from .enums import RatingLevel
 from .models import Collection
-from .models import Tag
 from .models import TagAlias
 from .validators import rating_level_validator
 from .validators import tagset_name_validator
@@ -33,13 +32,14 @@ class TagsetField(forms.Field):
         return tagset_to_array(value)
 
 
-class CreateTagForm(forms.ModelForm):
-    rating_level = forms.IntegerField(initial=0, required=False)
+class CreateTagForm(forms.Form):
+    name = forms.CharField(
+        max_length=100, required=True, validators=[MaxLengthValidator(100)]
+    )
+    rating_level = forms.IntegerField(
+        initial=0, required=False, validators=[rating_level_validator]
+    )
     category = forms.IntegerField(initial=None, required=False)
-
-    class Meta:
-        model = Tag
-        fields = ["name", "category", "rating_level"]
 
     def clean_rating_level(self):
         if not self.cleaned_data.get("rating_level"):

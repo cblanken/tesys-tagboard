@@ -6,15 +6,19 @@ from enum import Enum
 from itertools import chain
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import QueryDict
+from django.utils.safestring import SafeString
+from django.utils.translation import gettext as _
 from more_itertools import take
 
 from .enums import RatingLevel
 from .enums import SupportedMediaType
+from .enums import TokenArgRelation
 from .models import Post
 from .models import Tag
 from .models import TagAlias
@@ -40,6 +44,11 @@ if TYPE_CHECKING:
 
     from tesys_tagboard.users.models import User
 
+TAG_CATEGORY_DELIMITER = settings.TAG_CATEGORY_DELIMITER
+MAX_TAG_CATEGORY_DEPTH = settings.MAX_TAG_CATEGORY_DEPTH
+VALID_ARG_RELATIONS = "".join([x.value for x in TokenArgRelation])
+FILTER_SPLIT_PATTERN = re.compile(r"([" + VALID_ARG_RELATIONS + r"])")
+
 
 class SearchTokenFilterNotImplementedError(Exception):
     """Raised when a SearchToken is defined as a TokenCategory but does not have
@@ -49,12 +58,24 @@ class SearchTokenFilterNotImplementedError(Exception):
 
     def __init__(
         self,
-        search_token: SearchTokenBase,
+        search_token: SearchTokenBaseCategory,
         *args,
         **kwargs,
     ):
         self.message = f'The provided search filter type: "{search_token.name}" has not been implemented yet.'  # noqa: E501
         super().__init__(self.message, *args, **kwargs)
+
+
+class SearchTagTokenError(ValidationError):
+    message = "The provided tag token is invalid"
+
+    def __init__(
+        self,
+        msg=message,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(msg, *args, **kwargs)
 
 
 class SearchTokenNameError(ValidationError):
@@ -129,7 +150,10 @@ def autocomplete_tags(
     exclude_tags: QuerySet[Tag] | None = None,
 ) -> Generator[AutocompleteItem]:
     if include_partial is not None:
-        tags = tags.filter(name__icontains=include_partial)
+        if named_token := NamedToken.from_token_string(include_partial):
+            tag_token = TagToken(named_token)
+            tag_filter_expr = tag_token.get_tag_filter_autocomplete_expr()
+            tags = tags.filter(tag_filter_expr)
     if exclude_partial is not None:
         tags = tags.exclude(name__contains=exclude_partial)
     if exclude_tag_names is not None:
@@ -139,7 +163,7 @@ def autocomplete_tags(
 
     return (
         AutocompleteItem(
-            TokenCategory.TAG,
+            PostSearchTokenCategory.TAG,
             tag.name,
             tag.category,
             tag.pk,
@@ -167,7 +191,7 @@ def autocomplete_tag_aliases(
 
     return (
         AutocompleteItem(
-            TokenCategory.TAG_ALIAS,
+            PostSearchTokenCategory.TAG_ALIAS,
             alias.tag.name,
             alias.tag.category,
             alias.tag.pk,
@@ -178,16 +202,8 @@ def autocomplete_tag_aliases(
     )
 
 
-class TokenArgRelation(Enum):
-    """Enum for identifying how a token's arg should be interpreted"""
-
-    EQUAL = "="
-    LESS_THAN = "<"
-    GREATER_THAN = ">"
-
-
 @dataclass(kw_only=True)
-class SearchTokenBase:
+class SearchTokenBaseCategory:
     """A base class for modeling search tokens"""
 
     name: str
@@ -199,9 +215,9 @@ class SearchTokenBase:
 
 
 @dataclass(kw_only=True)
-class SimpleSearchToken(SearchTokenBase):
-    """A dataclass for simple search tokens accepting just the equal (=) operator
-    and no wildcards. No aliases are included by default."""
+class SimpleSearchTokenCategory(SearchTokenBaseCategory):
+    """A dataclass for defining simple search tokens categories accepting just the
+    equal (=) operator and no wildcards. No aliases are included by default."""
 
     aliases: tuple[str, ...] = ()
     allow_wildcard: bool = False
@@ -209,9 +225,9 @@ class SimpleSearchToken(SearchTokenBase):
 
 
 @dataclass(kw_only=True)
-class ComparisonSearchToken(SearchTokenBase):
-    """A dataclass for search tokens that allow the following comparison operations
-    of the token argument (>, <, and =)"""
+class ComparisonSearchTokenCategory(SearchTokenBaseCategory):
+    """A dataclass for defining search token categories that allow the following
+    comparison operations of the token argument (>, <, and =)"""
 
     aliases: tuple[str, ...] = ()
     allow_wildcard: bool = False
@@ -223,8 +239,9 @@ class ComparisonSearchToken(SearchTokenBase):
 
 
 @dataclass(kw_only=True)
-class WildcardSearchToken(SearchTokenBase):
-    """A dataclass for search tokens that accepts wildcards (*) in its token argument"""
+class WildcardSearchTokenCategory(SearchTokenBaseCategory):
+    """A dataclass for defining search token categories that accept wildcards (*) in
+    its token argument"""
 
     aliases: tuple[str, ...] = ()
     allow_wildcard: bool = True
@@ -236,188 +253,300 @@ class WildcardSearchToken(SearchTokenBase):
             self.wildcard_arg_validator = self.arg_validator
 
 
-class TokenCategory(Enum):
-    """Enum for categorizing tokens in Post search queries
-    Note that these prefixes (besides the default `tag`)
-    will be shadowed by any conflicting Tag prefixes since
-    Tags take precendence when searching.
-    """
+class PostSearchTokenCategory(Enum):
+    """Enum for all the supported post search token categories"""
 
-    TAG = WildcardSearchToken(
+    TAG = WildcardSearchTokenCategory(
         name="",
-        desc="The default (un-named) token. Used for searching tags.",
+        desc=_(
+            "The default (un-named) token. When a plain string without any operator "
+            "is given it will be interpreted as a tag."
+        ),
         arg_validator=tag_name_validator,
     )
 
-    TAG_ID = SimpleSearchToken(
-        name="tag_id",
-        desc="The ID of a tag.",
+    TAG_ID = SimpleSearchTokenCategory(
+        name=_("tag_id"),
+        desc=_("The ID of a tag."),
         arg_validator=positive_int_validator,
     )
 
-    POST_ID = ComparisonSearchToken(
-        name="id",
-        desc="The ID of a Post",
+    POST_ID = ComparisonSearchTokenCategory(
+        name=_("id"),
+        desc=_("The ID of a Post."),
         arg_validator=positive_int_validator,
     )
 
-    TAG_ALIAS = WildcardSearchToken(
-        name="alias",
-        desc="The name of a TagAlias. Allows wildcards.",
+    TAG_ALIAS = WildcardSearchTokenCategory(
+        name=_("alias"),
+        desc=_("The name of a TagAlias."),
         aliases=("tag_alias",),
         arg_validator=tag_name_validator,
     )
 
-    TAG_COUNT = ComparisonSearchToken(
-        name="tag_count",
-        desc="The number of tags on a Post. Accepts comparison operators =, <, >",
+    TAG_COUNT = ComparisonSearchTokenCategory(
+        name=_("tag_count"),
+        desc=_("The number of tags on a Post."),
         aliases=("tc",),
         arg_validator=positive_int_validator,
     )
 
-    COMMENT_BY = WildcardSearchToken(
-        name="comment_by",
-        desc="The username of a user",
+    COMMENT_BY = WildcardSearchTokenCategory(
+        name=_("comment_by"),
+        desc=_("The username of a user that has commented on a Post"),
         aliases=("comment", "cb"),
         arg_validator=username_validator,
     )
 
-    COMMENT_COUNT = ComparisonSearchToken(
-        name="comment_count",
-        desc="The number of comments on a Post. Accepts comparison operators =, <, >",
+    COMMENT_COUNT = ComparisonSearchTokenCategory(
+        name=_("comment_count"),
+        desc=_("The number of comments on a Post."),
         aliases=("cc",),
         arg_validator=positive_int_validator,
     )
 
-    FAV_COUNT = ComparisonSearchToken(
-        name="favorite_count",
-        desc="The number of favorites recieved by a Post. Accepts comparison operators =, <, >",  # noqa: E501
+    FAV_COUNT = ComparisonSearchTokenCategory(
+        name=_("favorite_count"),
+        desc=_("The number of favorites recieved by a Post."),
         aliases=("fav_count", "fc"),
         arg_validator=positive_int_validator,
     )
 
-    HEIGHT = ComparisonSearchToken(
-        name="height",
-        desc="The height of a Post (only applies to Images and Videos). Accepts comparison operators =, <, >",  # noqa: E501
+    HEIGHT = ComparisonSearchTokenCategory(
+        name=_("height"),
+        desc=_("The height of a Post (only applies to Images and Videos)."),
         aliases=("h",),
         arg_validator=validators.integer_validator,
     )
 
-    WIDTH = ComparisonSearchToken(
-        name="width",
-        desc="The width of a Post (only applies to Images and Videos.  Accepts comparison operators =, <, >",  # noqa: E501
+    WIDTH = ComparisonSearchTokenCategory(
+        name=_("width"),
+        desc=_("The width of a Post (only applies to Images and Videos."),
         aliases=("w",),
         arg_validator=validators.integer_validator,
     )
 
-    RATING_LABEL = SimpleSearchToken(
-        name="rating_label",
-        desc="The rating of a Post. Accepts any current rating level label",
+    RATING_LABEL = SimpleSearchTokenCategory(
+        name=_("rating_label"),
+        desc=_(
+            "The rating of a Post. Accepts one of safe, unrated, questionable, "
+            "and explicit."
+        ),
         aliases=("rate", "r"),
         arg_validator=rating_label_validator,
     )
 
-    RATING_NUM = ComparisonSearchToken(
-        name="rating_num",
-        desc="The rating level of a Post. Accepts equality comparison operators.",
+    RATING_NUM = ComparisonSearchTokenCategory(
+        name=_("rating_num"),
+        desc=_("The rating level of a Post."),
         arg_validator=validators.integer_validator,
     )
 
-    SOURCE = WildcardSearchToken(
-        name="source",
-        desc="The source url of a Post. Allows wildcards.",
+    SOURCE = WildcardSearchTokenCategory(
+        name=_("source"),
+        desc=_("The source url of a Post."),
         aliases=("src",),
         arg_validator=validators.URLValidator(),
         wildcard_arg_validator=wildcard_url_validator,
     )
 
-    POSTED_BY = WildcardSearchToken(
-        name="posted_by",
-        desc="The username of the uploader of a Post. Allows wildcards.",
+    POSTED_BY = WildcardSearchTokenCategory(
+        name=_("posted_by"),
+        desc=_("The username of the uploader of a Post."),
         aliases=("uploaded_by",),
         arg_validator=username_validator,
     )
 
-    POSTED_ON = ComparisonSearchToken(
-        name="posted_on",
-        desc="The date the post was posted on",
+    POSTED_ON = ComparisonSearchTokenCategory(
+        name=_("posted_on"),
+        desc=_("The date the post was posted on."),
         aliases=("uploaded_on",),
         arg_validator=iso_date_validator,
     )
 
-    MIMETYPE = SimpleSearchToken(
-        name="mimetype",
-        desc="The MIME type of the post's file",
+    MIMETYPE = SimpleSearchTokenCategory(
+        name=_("mimetype"),
+        desc=_("The MIME type of the post's file."),
         aliases=("mime",),
         arg_validator=mimetype_validator,
     )
 
-    FILE_EXTENSION = SimpleSearchToken(
-        name="extension",
-        desc="The file extension of the post's related file",
+    FILE_EXTENSION = SimpleSearchTokenCategory(
+        name=_("extension"),
+        desc=_("The file extension of the post's related file."),
         aliases=("ext",),
         arg_validator=file_extension_validator,
     )
 
-    COLLECTION_ID = SimpleSearchToken(
-        name="collection_id",
-        desc="The ID of a collection",
+    COLLECTION_ID = SimpleSearchTokenCategory(
+        name=_("collection_id"),
+        desc=_("The ID of a collection."),
         arg_validator=positive_int_validator,
     )
 
-    COLLECTION = SimpleSearchToken(
-        name="collection",
-        desc="Whether or not a post is part of a collection (yes/no)",
+    COLLECTION = SimpleSearchTokenCategory(
+        name=_("collection"),
+        desc=_("Whether or not a post is part of a collection (yes/no)."),
         aliases=("in_collection",),
         arg_validator=yes_no_validator,
     )
 
-    COLLECTION_NAME = WildcardSearchToken(
-        name="collection_name",
-        desc="A collection's name. Supports wildcards.",
+    COLLECTION_NAME = WildcardSearchTokenCategory(
+        name=_("collection_name"),
+        desc=_("A collection's name."),
         arg_validator=collection_name_validator,
         wildcard_arg_validator=wildcard_collection_name_validator,
     )
 
-    PARENT = SimpleSearchToken(
-        name="parent",
-        desc="Whether or not a post has a parent (yes/no)",
+    PARENT = SimpleSearchTokenCategory(
+        name=_("parent"),
+        desc=_("Whether or not a post has a parent (yes/no)."),
         arg_validator=yes_no_validator,
     )
 
-    PARENT_ID = SimpleSearchToken(
-        name="parent_id",
-        desc="Whether or not a post has a parent matching the given post ID",
+    PARENT_ID = SimpleSearchTokenCategory(
+        name=_("parent_id"),
+        desc=_("Whether or not a post has a parent matching the given post ID."),
         arg_validator=positive_int_validator,
     )
 
-    CHILD = SimpleSearchToken(
-        name="children",
-        desc="Whether or not a post has any children (yes/no)",
+    CHILD = SimpleSearchTokenCategory(
+        name=_("children"),
+        desc=_("Whether or not a post has any children (yes/no)."),
         aliases=("child",),
         arg_validator=yes_no_validator,
     )
 
-    CHILD_ID = SimpleSearchToken(
-        name="child_id",
-        desc="Whether or not a post has a child post matching the given post ID",
+    CHILD_ID = SimpleSearchTokenCategory(
+        name=_("child_id"),
+        desc=_("Whether or not a post has a child post matching the given post ID."),
         arg_validator=positive_int_validator,
     )
 
     @classmethod
-    def select(cls, name: str) -> TokenCategory:
+    def select(cls, name: str) -> PostSearchTokenCategory:
         """Select token category by name or one of its aliases
 
         Raises: `SearchTokenNameError`
         """
         for tc, name_and_aliases in [
             (tc, [tc.value.name, *tc.value.aliases])
-            for tc in TokenCategory.__members__.values()
+            for tc in PostSearchTokenCategory.__members__.values()
         ]:
             if name in name_and_aliases:
                 return tc
 
         raise SearchTokenNameError
+
+
+class TagToken:
+    """A search token identified as a tag token.
+
+    The input string requires additional parsing to identify any categories in a tag
+    token and it's name. Categories are delimited by a colon ":" with the final element
+    corresponding the tag's `name`
+
+    For example `country:territory:city` results in:
+    ```python
+    categories [0] = country
+    categories [1] = territory
+    categories [2] = city
+    ```
+    where "country" is the parent category, "territory" a sub category, and "city"
+    is the name of the tag.
+
+    Note: TagToken objects should only be created from a NamedToken since the majority
+    of token validation is done by the NamedToken initialization..
+
+    Args:
+        named_token: NamedToken
+
+    Raises:
+        `ValueError`
+        `SearchTagTokenError`
+    """
+
+    def __init__(self, named_token: NamedToken) -> None:
+        if named_token.category is not PostSearchTokenCategory.TAG:
+            msg = f"A TagToken cannot be created from a NamedToken of type {named_token.category}. Only NamedTokens of type {PostSearchTokenCategory.TAG} are allowed"  # noqa: E501
+            raise ValueError(msg)
+
+        self.named_token = named_token
+        self.has_wildcards: bool = bool(self.named_token.wildcard_positions)
+
+        if self.has_wildcards:
+            self.partial = named_token.arg_with_wildcards()
+        else:
+            self.partial = named_token.arg
+
+        split = self.partial.split(TAG_CATEGORY_DELIMITER)
+        if split:
+            self.categories = split[:-1]
+            self.name = split[-1]
+        else:
+            self.categories = []
+            self.name = self.partial
+
+        for category in self.categories:
+            if "*" in category or "%" in category:
+                msg = "Tag categories may not contain wildcards"
+                raise SearchTagTokenError(msg)
+
+    def get_post_filter_expr(self) -> Q:
+        """Get a Post model filter expression for filtering Post results by a tag's
+        name and categories. The query expression is intended to only return posts
+        with tags where all the categories match, but the tag name is handled as a
+        partial name or may contain wildcards.
+
+        Note: categories may not contain wildcards, only tag name
+        """
+
+        if self.has_wildcards:
+            expr = Q(tags__name__like=self.name)
+        else:
+            expr = Q(tags__name=self.name)
+
+        # Tag categories expr(s)
+        categories_search_dict = {}
+        for i, category in enumerate(reversed(self.categories)):
+            parent_str = "__parent"
+            filter_str = f"tags__category{parent_str * i}__name"
+            categories_search_dict[filter_str] = category
+
+        return expr & Q(**categories_search_dict)
+
+    def get_tag_filter_autocomplete_expr(self) -> Q:
+        """Get a Tag model filter expression for filtering autocomplete results by a
+        tag's name and categories treating `tag_str` as a potentially incomplete
+        partial"""
+
+        # Tag name expr
+        if self.has_wildcards:
+            expr = Q(name__like=self.name)
+        else:
+            expr = Q(name__icontains=self.name)
+
+        # Tag categories expr(s)
+        if self.categories:
+            # Parsed categories, so check tag exactly matches the parent categories
+            categories_search_dict = {}
+            for i, category in enumerate(reversed(self.categories)):
+                parent_str = "__parent"
+                filter_str = f"category{parent_str * i}__name"
+                categories_search_dict[filter_str] = category
+
+            return expr & Q(**categories_search_dict)
+
+        # No parsed categories, so check tag parent categories up to a maximum
+        # of `MAX_TAG_CATEGORY_DEPTH` parents for matching names treating the
+        # `tag_str` as a partial.
+        categories_search_dict = {}
+        for i in range(MAX_TAG_CATEGORY_DEPTH):
+            parent_str = "__parent"
+            filter_str = f"category{parent_str * i}__name__icontains"
+            categories_search_dict[filter_str] = self.partial
+            expr = expr | Q(**categories_search_dict)
+        return expr
 
 
 @dataclass
@@ -433,7 +562,8 @@ class NamedToken:
 
     Attributes:
         category: TokenCategory
-        name: str, the name of a tag or filter category
+        name: str, the readable name of the NamedToken used in search queries to specify
+            a particular token in search queries
         arg: str,  an argument value for filter tokens
         arg_relation_str: str, a character defining the relationship between the arg
             and its value e.g. an exact match (=), less than (<), or greater than (>).
@@ -444,7 +574,7 @@ class NamedToken:
         negate: bool, Posts matching this token should NOT be returned
     """
 
-    category: TokenCategory
+    category: PostSearchTokenCategory
     name: str
     arg: str = ""
     arg_relation_str: str = TokenArgRelation.EQUAL.value
@@ -471,6 +601,73 @@ class NamedToken:
             self.wildcard_positions = array("I", [])
         self.arg = self.arg.replace("*", "")
 
+    @classmethod
+    def from_token_string(cls, token: str) -> NamedToken | None:
+        """Parses and validates a query token from a string.
+
+        The `token` input should not contain any space characters.
+
+        Args:
+            token: str
+
+        Raises: `ValidationError`
+        """
+        # Empty string
+        if token == "":
+            return None
+
+        # Parse named tokens and simple tags
+        token_name, *rest = FILTER_SPLIT_PATTERN.split(token, maxsplit=1)
+        negate: bool = token_name[0] == "-"
+
+        if negate:
+            token_name = token_name[1:]
+
+        if len(rest) == 0:
+            # Anonymous token i.e. tag
+            return NamedToken(
+                PostSearchTokenCategory.TAG, token_name, token_name, negate=negate
+            )
+
+        if len(rest) == 1:
+            msg = "An invalid query split occurred"
+            raise ValidationError(msg)
+
+        if len(rest) == 2:
+            arg_relation = rest[0]
+            token_arg = rest[1]
+
+            if FILTER_SPLIT_PATTERN.search(token_arg):
+                msg = "Search query filters may only have one operator"
+                raise ValidationError(msg)
+            try:
+                # NamedToken filter with an argument
+                token_category = PostSearchTokenCategory.select(token_name)
+            except SearchTokenNameError as err:
+                msg = f'The name "{token_name}" is not a valid filter'
+                raise ValidationError(msg) from err
+            else:
+                if arg_relation not in [
+                    x.value for x in token_category.value.allowed_arg_relations
+                ]:
+                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                    raise ValidationError(msg)
+
+            named_token = cls(
+                token_category,
+                name=token_name,
+                arg=token_arg,
+                arg_relation_str=arg_relation,
+                negate=negate,
+            )
+
+            named_token.is_arg_valid()
+            return named_token
+
+        # Invalid token
+        msg = f'The query token "{token}" is invalid'
+        raise ValidationError(msg)
+
     def is_arg_valid(self):
         """Checks the validity of a Token's argument (arg) value
 
@@ -481,7 +678,7 @@ class NamedToken:
 
         Raises: `ValidationError`
         """
-        if isinstance(self.category.value, WildcardSearchToken):
+        if isinstance(self.category.value, WildcardSearchTokenCategory):
             validator = self.category.value.wildcard_arg_validator
         else:
             validator = self.category.value.arg_validator
@@ -490,7 +687,7 @@ class NamedToken:
             validator(self.arg)
 
     def arg_with_wildcards(self):
-        """Reconstructs original `arg` with Postgres compatibale wildcards from the
+        """Reconstructs original `arg` with Postgres compatible wildcards from the
         `wildcard_positions`"""
 
         arg = self.arg
@@ -502,12 +699,47 @@ class NamedToken:
 
 @dataclass
 class AutocompleteItem:
-    token_category: TokenCategory
+    token_category: PostSearchTokenCategory
     name: str
     tag_category: TagCategory | None = None
     tag_id: int | None = None
     alias: str = ""
     extra: str = ""
+
+    def get_tag_label(self) -> SafeString:
+        """Build and return an AutocompleteItem's label to be used for rendering
+        tag and their category chains"""
+        if self.tag_category:
+            categories = [self.tag_category]
+            for _ in range(MAX_TAG_CATEGORY_DEPTH):
+                if categories[-1].parent is None:
+                    break
+                categories.append(categories[-1].parent)
+
+            return SafeString(
+                TAG_CATEGORY_DELIMITER.join(
+                    [cat.name for cat in reversed(categories)] + [self.name]
+                )
+            )
+
+        return SafeString(self.name)
+
+    def get_search_token_string(self) -> SafeString:
+        """Build and return an a valid search token string for this AutocompleteItem"""
+        if self.tag_category:
+            categories = [self.tag_category]
+            for _ in range(MAX_TAG_CATEGORY_DEPTH):
+                if categories[-1].parent is None:
+                    break
+                categories.append(categories[-1].parent)
+
+            return SafeString(
+                TAG_CATEGORY_DELIMITER.join(
+                    [cat.name for cat in reversed(categories)] + [self.name]
+                )
+            )
+
+        return SafeString(self.name)
 
 
 class PostSearch:
@@ -535,9 +767,6 @@ class PostSearch:
     any posts uploaded by the user "pablo" in the results.
     """
 
-    valid_arg_relations = "".join([x.value for x in TokenArgRelation])
-    filter_split_pattern = re.compile(r"([" + valid_arg_relations + r"])")
-
     def __init__(
         self,
         query: str | QueryDict,
@@ -560,65 +789,6 @@ class PostSearch:
 
             self.tokens: list[NamedToken] = self.parse_query(self.query)
 
-    def parse_token(self, token: str) -> NamedToken | None:
-        """Parses and validates a query token
-
-        Raises: `ValidationError`
-        """
-        # Empty string
-        if token == "":
-            return None
-
-        # Parse named tokens and simple tags
-        token_name, *rest = self.filter_split_pattern.split(token, maxsplit=1)
-        negate: bool = token_name[0] == "-"
-
-        if negate:
-            token_name = token_name[1:]
-
-        if len(rest) == 0:
-            # Anonymous token i.e. tag
-            return NamedToken(TokenCategory.TAG, token_name, token_name, negate=negate)
-
-        if len(rest) == 1:
-            msg = "An invalid query split occurred"
-            raise ValidationError(msg)
-
-        if len(rest) == 2:
-            arg_relation = rest[0]
-            token_arg = rest[1]
-
-            if self.filter_split_pattern.search(token_arg):
-                msg = "Search query filters may only have one operator"
-                raise ValidationError(msg)
-            try:
-                # NamedToken filter with an argument
-                token_category = TokenCategory.select(token_name)
-            except SearchTokenNameError as err:
-                msg = f'The name "{token_name}" is not a valid filter'
-                raise ValidationError(msg) from err
-            else:
-                if arg_relation not in [
-                    x.value for x in token_category.value.allowed_arg_relations
-                ]:
-                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
-                    raise ValidationError(msg)
-
-            named_token = NamedToken(
-                token_category,
-                name=token_name,
-                arg=token_arg,
-                arg_relation_str=arg_relation,
-                negate=negate,
-            )
-
-            named_token.is_arg_valid()
-            return named_token
-
-        # Invalid token
-        msg = f'The query token "{token}" is invalid'
-        raise ValidationError(msg)
-
     def parse_querydict(self, querydict: QueryDict) -> list[NamedToken]:
         """Parses a post search query submitted via form instead of a query string.
 
@@ -634,7 +804,9 @@ class PostSearch:
         tagset = querydict.getlist("tagset")
         for tag_id in tagset:
             tag_token = NamedToken(
-                TokenCategory.TAG_ID, TokenCategory.TAG_ID.value.name, tag_id
+                PostSearchTokenCategory.TAG_ID,
+                PostSearchTokenCategory.TAG_ID.value.name,
+                tag_id,
             )
 
             tag_token.is_arg_valid()
@@ -643,7 +815,7 @@ class PostSearch:
         # Parse other tokens
         for key, value in querydict.items():
             try:
-                token_category = TokenCategory.select(key)
+                token_category = PostSearchTokenCategory.select(key)
 
                 arg_relation = querydict.get(
                     f"{key}_relation", token_category.value.allowed_arg_relations[0]
@@ -688,7 +860,7 @@ class PostSearch:
         tokens = re.split(r"\s+", query)
         parsed_tokens: list[NamedToken] = []
         for token in tokens:
-            if named_token := self.parse_token(token):
+            if named_token := NamedToken.from_token_string(token):
                 named_token.is_arg_valid()
                 parsed_tokens.append(named_token)
 
@@ -714,12 +886,11 @@ class PostSearch:
             search_conditions: list[Q] = []
         for token in self.tokens:
             match token.category:
-                case TokenCategory.TAG:
-                    if token.wildcard_positions:
-                        token_expr = Q(tags__name__like=token.arg_with_wildcards())
-                    else:
-                        token_expr = Q(tags__name=token.arg)
-                case TokenCategory.TAG_ID:
+                case PostSearchTokenCategory.TAG:
+                    tag_token = TagToken(token)
+                    token_expr = tag_token.get_post_filter_expr()
+
+                case PostSearchTokenCategory.TAG_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             token_expr = Q(tags__pk=int(token.arg))
@@ -727,7 +898,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.POST_ID:
+                case PostSearchTokenCategory.POST_ID:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(pk__lt=token.arg)
@@ -739,7 +910,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COMMENT_COUNT:
+                case PostSearchTokenCategory.COMMENT_COUNT:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(comment_count__lt=token.arg)
@@ -751,7 +922,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COMMENT_BY:
+                case PostSearchTokenCategory.COMMENT_BY:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.wildcard_positions:
@@ -764,7 +935,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.FAV_COUNT:
+                case PostSearchTokenCategory.FAV_COUNT:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(fav_count__lt=int(token.arg))
@@ -776,7 +947,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.TAG_COUNT:
+                case PostSearchTokenCategory.TAG_COUNT:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(tag_count__lt=int(token.arg))
@@ -788,7 +959,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.RATING_NUM:
+                case PostSearchTokenCategory.RATING_NUM:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(rating_level__lt=int(token.arg))
@@ -800,7 +971,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.RATING_LABEL:
+                case PostSearchTokenCategory.RATING_LABEL:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             rating = RatingLevel.select(token.arg)
@@ -811,7 +982,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.SOURCE:
+                case PostSearchTokenCategory.SOURCE:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.wildcard_positions:
@@ -822,7 +993,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.POSTED_BY:
+                case PostSearchTokenCategory.POSTED_BY:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.wildcard_positions:
@@ -835,7 +1006,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.POSTED_ON:
+                case PostSearchTokenCategory.POSTED_ON:
                     match token.arg_relation:
                         # TODO: handle arg with valid date format but invalid date value
                         #     e.g. 2025-02-31
@@ -849,7 +1020,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.HEIGHT:
+                case PostSearchTokenCategory.HEIGHT:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(image__height__lt=int(token.arg))
@@ -861,7 +1032,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.WIDTH:
+                case PostSearchTokenCategory.WIDTH:
                     match token.arg_relation:
                         case TokenArgRelation.LESS_THAN:
                             token_expr = Q(image__width__lt=int(token.arg))
@@ -873,7 +1044,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.MIMETYPE:
+                case PostSearchTokenCategory.MIMETYPE:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             smt = SupportedMediaType.select_by_mime(token.arg)
@@ -884,7 +1055,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.FILE_EXTENSION:
+                case PostSearchTokenCategory.FILE_EXTENSION:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             smt = SupportedMediaType.select_by_ext(token.arg)
@@ -895,7 +1066,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COLLECTION_ID:
+                case PostSearchTokenCategory.COLLECTION_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             token_expr = Q(collection=int(token.arg))
@@ -903,7 +1074,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COLLECTION:
+                case PostSearchTokenCategory.COLLECTION:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.arg.lower() == "no":
@@ -914,7 +1085,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.COLLECTION_NAME:
+                case PostSearchTokenCategory.COLLECTION_NAME:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.wildcard_positions:
@@ -927,7 +1098,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.PARENT:
+                case PostSearchTokenCategory.PARENT:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.arg.lower() == "no":
@@ -938,7 +1109,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.PARENT_ID:
+                case PostSearchTokenCategory.PARENT_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             token_expr = Q(parent__pk=int(token.arg))
@@ -946,7 +1117,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.CHILD:
+                case PostSearchTokenCategory.CHILD:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             if token.arg.lower() == "no":
@@ -957,7 +1128,7 @@ class PostSearch:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token
                             )
-                case TokenCategory.CHILD_ID:
+                case PostSearchTokenCategory.CHILD_ID:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             token_expr = Q(child_post_ids__contains=[token.arg])
@@ -978,15 +1149,15 @@ class PostSearch:
     def get_posts(self) -> QuerySet[Post]:
         token_categories = [x.category for x in self.tokens]
         posts = Post.objects.all()
-        if TokenCategory.COMMENT_COUNT in token_categories:
+        if PostSearchTokenCategory.COMMENT_COUNT in token_categories:
             posts = posts.annotate_comment_count()
-        if TokenCategory.FAV_COUNT in token_categories:
+        if PostSearchTokenCategory.FAV_COUNT in token_categories:
             posts = posts.annotate_fav_count()
-        if TokenCategory.TAG_COUNT in token_categories:
+        if PostSearchTokenCategory.TAG_COUNT in token_categories:
             posts = posts.annotate_tag_count()
         if (
-            TokenCategory.CHILD in token_categories
-            or TokenCategory.CHILD_ID in token_categories
+            PostSearchTokenCategory.CHILD in token_categories
+            or PostSearchTokenCategory.CHILD_ID in token_categories
         ):
             posts = posts.annotate_child_posts()
         if search_conditions := self.get_search_conditions():
@@ -1015,19 +1186,23 @@ class PostSearch:
         # Don't yield autocompletion for duplicate filter or tag
         if len(list(filter(lambda tok: tok.name == partial, self.tokens))) > 1:
             tag_token_names = [
-                tok.name for tok in self.tokens if tok.category is TokenCategory.TAG
+                tok.name
+                for tok in self.tokens
+                if tok.category is PostSearchTokenCategory.TAG
             ]
         else:
             tag_token_names = [
                 tok.name
                 for tok in self.tokens
                 # Yield autocomplete item if name matches partial exactly
-                if tok.category is TokenCategory.TAG and tok.name != partial
+                if tok.category is PostSearchTokenCategory.TAG and tok.name != partial
             ]
 
         if user:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.for_user(user), partial, exclude_tag_names=tag_token_names
+                Tag.objects.for_user(user),
+                partial,
+                exclude_tag_names=tag_token_names,
             )
             tag_alias_autocompletions = autocomplete_tag_aliases(
                 TagAlias.objects.for_user(user),
@@ -1036,7 +1211,9 @@ class PostSearch:
             )
         else:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.all(), partial, exclude_tag_names=tag_token_names
+                Tag.objects.all(),
+                partial,
+                exclude_tag_names=tag_token_names,
             )
 
             tag_alias_autocompletions = autocomplete_tag_aliases(
@@ -1049,7 +1226,7 @@ class PostSearch:
 
         matching_items_by_name = (
             AutocompleteItem(category, category.value.name)
-            for category in TokenCategory
+            for category in PostSearchTokenCategory
             if partial in category.value.name
         )
 
@@ -1060,7 +1237,7 @@ class PostSearch:
                     for alias in category.value.aliases
                     if partial in alias
                 ]
-                for category in TokenCategory
+                for category in PostSearchTokenCategory
             ]
         )
 

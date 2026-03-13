@@ -1,5 +1,5 @@
 set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
-export COMPOSE_FILE := "docker-compose.local.yml"
+export COMPOSE_FILE := env("COMPOSE_FILE", "docker-compose.local.yml")
 export COMPOSE_PROFILES := "all"
 
 ## Just does not yet manage signals for subprocesses reliably, which can lead to unexpected behavior.
@@ -29,7 +29,8 @@ up-debug:
     # Note when exiting (Ctrl-C) the debugger, the other docker services
     # will remain up until brought down with `just down`
 
-# Start up docs container
+alias whats-up-doc := up-docs
+# Start up docs container 🐇
 up-docs *args:
     @echo "Starting up docs container..."
     COMPOSE_FILE=docker-compose.docs.yml docker compose up -d {{args}}

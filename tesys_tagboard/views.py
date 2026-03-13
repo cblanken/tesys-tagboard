@@ -13,6 +13,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.db.models import OrderBy
+from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -55,6 +57,7 @@ from .models import TagCategory
 from .models import Video
 from .models import csv_to_tag_ids
 from .search import PostSearch
+from .search import PostSearchTokenCategory
 from .search import SearchTokenFilterNotImplementedError
 from .search import autocomplete_tag_aliases
 from .search import autocomplete_tags
@@ -322,18 +325,39 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
 @require(["GET", "POST"], login=False)
 def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    categories = TagCategory.objects.filter(parent=None).all()
+    categories = TagCategory.objects.order_by("-parent", "name")
     try:
-        tag_query = request.GET.get("q", "")
-        tags_by_cat = {
-            cat: Tag.objects.select_related("category").filter(
-                category=cat, name__icontains=tag_query
-            )
-            for cat in categories
-        }
+        query = request.GET.get("q", "")
         uncategorized_tags = Tag.objects.select_related("category").filter(
-            category=None, name__icontains=tag_query
+            category=None, name__icontains=query
         )
+
+        select_related_expr = ["category"]
+        select_related_expr.extend(
+            [
+                "category" + "__parent" * x
+                for x in range(1, settings.MAX_TAG_CATEGORY_DEPTH)
+            ]
+        )
+
+        order_by_expr: list[str | F | OrderBy] = [
+            F("category" + "__parent" * x + "__name")
+            for x in reversed(range(settings.MAX_TAG_CATEGORY_DEPTH))
+        ]
+        order_by_expr.append("name")
+
+        categorized_tags = (
+            Tag.objects.select_related(*select_related_expr)
+            .filter(Q(category__name__icontains=query) | Q(name__icontains=query))
+            .filter(~Q(category=None))
+            .order_by(*order_by_expr)
+        )
+
+        tags_by_cat: dict[str, list[Tag]] = {}
+        for tag in categorized_tags:
+            path = tag.category.get_full_path()
+            tags_by_cat.setdefault(path, [])
+            tags_by_cat[path].append(tag)
 
         alias_query = request.GET.get("aliases", "")
         aliases = (
@@ -347,7 +371,7 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     context = {
         "uncategorized_tags": uncategorized_tags,
         "tags_by_cat": tags_by_cat,
-        "tag_name": tag_query,
+        "tag_name": query,
         "aliases": aliases,
         "categories": categories,
     }
@@ -367,7 +391,17 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     create_tag_form = CreateTagForm(request.POST)
     if create_tag_form.is_valid():
-        create_tag_form.save()
+        try:
+            tag_category = TagCategory.objects.get(
+                pk=create_tag_form.cleaned_data.get("category")
+            )
+        except TagCategory.DoesNotExist:
+            tag_category = None
+        Tag.objects.create(
+            name=create_tag_form.cleaned_data.get("name"),
+            category=tag_category,
+            rating_level=create_tag_form.cleaned_data.get("rating_level"),
+        )
     else:
         msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
         messages.add_message(request, messages.WARNING, msg)
@@ -517,7 +551,6 @@ def add_post_to_collection(
         )
     except Post.DoesNotExist, Collection.DoesNotExist:
         return HttpResponse("That post and/or collection doesn't exist", status=404)
-    return HttpResponse("Not allowed", status=403)
 
 
 @require(["POST"])
@@ -800,5 +833,5 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
 
 @require(["GET"], login=False)
 def search_help(request: HtmxHttpRequest) -> TemplateResponse:
-    context = {}
+    context = {"token_categories": list(PostSearchTokenCategory)}
     return TemplateResponse(request, "pages/help.html", context)

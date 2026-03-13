@@ -10,10 +10,10 @@ Welcome to Tesy's Tagboard's documentation!
    :maxdepth: 3
    :caption: Contents:
 
-   DEVELOPMENT
-   DEPLOYMENT
-   ARCHITECTURE
-   SETTINGS
+   development
+   deployment
+   architecture
+   settings
    documentation
 
 

@@ -9,9 +9,10 @@ from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
 from tesys_tagboard.models import TagCategory
+from tesys_tagboard.search import TAG_CATEGORY_DELIMITER
 from tesys_tagboard.search import PostSearch
+from tesys_tagboard.search import PostSearchTokenCategory
 from tesys_tagboard.search import TokenArgRelation
-from tesys_tagboard.search import TokenCategory
 from tesys_tagboard.search import autocomplete_tag_aliases
 from tesys_tagboard.search import autocomplete_tags
 
@@ -19,6 +20,7 @@ from .factories import CommentFactory
 from .factories import FavoriteFactory
 from .factories import ImageFactory
 from .factories import PostFactory
+from .factories import TagCategoryFactory
 from .factories import TagFactory
 from .factories import UserFactory
 
@@ -26,7 +28,9 @@ from .factories import UserFactory
 class TestSearchTokenCategories:
     def test_no_duplicate_aliases(self):
         """Ensure available TokenCategory types don't have any duplicate aliases"""
-        token_aliases = list(chain(*[tok.value.aliases for tok in TokenCategory]))
+        token_aliases = list(
+            chain(*[tok.value.aliases for tok in PostSearchTokenCategory])
+        )
         assert len(token_aliases) == len(set(token_aliases))
 
 
@@ -42,6 +46,26 @@ class TestTagAutocomplete:
         assert "red_vs._blue" in tag_names
         assert "sky-blue" in tag_names
         assert len(tag_names) == 6
+
+    def test_autocomplete_partial_with_category(self, db):
+        tags = list(autocomplete_tags(Tag.objects.all(), "Peru:"))
+        tag_names = [tag.name for tag in tags]
+        assert len(tags) == 3
+        assert "Huarez" in tag_names
+        assert "Pallasca" in tag_names
+        assert "Dos_de_Mayo" in tag_names
+
+    def test_autocomplete_partial_with_nested_categories(self, db):
+        tags = list(
+            autocomplete_tags(
+                Tag.objects.all(),
+                f"South_America{TAG_CATEGORY_DELIMITER}Peru{TAG_CATEGORY_DELIMITER}",
+            )
+        )
+        tag_names = [tag.name for tag in tags]
+        assert "Huarez" in tag_names
+        assert "Pallasca" in tag_names
+        assert "Dos_de_Mayo" in tag_names
 
     def test_autocomplete_excluded_by_name_partial(self, db):
         tags = autocomplete_tags(Tag.objects.all(), exclude_partial="blue")
@@ -132,28 +156,63 @@ class TestPostAdvancedSearchQueryParsing:
         ps = PostSearch("tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
     def test_parse_single_negated_tag(self):
         ps = PostSearch("-tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert ps.tokens[0].negate
+
+    def test_parse_tag_with_category(self):
+        ps = PostSearch("category1:tag1")
+        assert len(ps.tokens) == 1
+        token = ps.tokens[0]
+        assert token.name == "category1:tag1"
+        assert token.category == PostSearchTokenCategory.TAG
+        assert not token.negate
+
+    def test_parse_negated_tag_with_category(self):
+        ps = PostSearch("-category1:tag1")
+        assert len(ps.tokens) == 1
+        token = ps.tokens[0]
+        assert token.name == "category1:tag1"
+        assert token.category == PostSearchTokenCategory.TAG
+        assert token.negate
+
+    def test_parse_tag_with_multiple_categories(self):
+        query = TAG_CATEGORY_DELIMITER.join(["root", "parent1", "parent2", "tag"])
+        ps = PostSearch(query)
+        assert len(ps.tokens) == 1
+        token = ps.tokens[0]
+        assert token.name == query
+        assert token.category == PostSearchTokenCategory.TAG
+        assert not token.negate
+
+    def test_parse_negated_tag_with_nested_categories(self):
+        query = TAG_CATEGORY_DELIMITER.join(["root", "parent1", "parent2", "tag"])
+        negated_query = "-" + query
+        ps = PostSearch(negated_query)
+        assert len(ps.tokens) == 1
+        token = ps.tokens[0]
+        assert token.name == query
+        assert token.category == PostSearchTokenCategory.TAG
+        assert token.negate
 
     def test_parse_single_tag_with_wildcard(self):
         ps = PostSearch("tag1*")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "tag1*"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
     def test_parse_single_negated_tag_with_wildcard(self):
         ps = PostSearch("-*negated_tag1")
         assert len(ps.tokens) == 1
         assert ps.tokens[0].name == "*negated_tag1"
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert ps.tokens[0].negate
 
     def test_parse_multiple_tags(self):
@@ -161,7 +220,7 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
             assert not tok.negate
 
     def test_parse_multiple_negated_tags(self):
@@ -169,7 +228,7 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
             assert tok.negate
 
     def test_parse_negated_and_non_negated_tags(self):
@@ -177,14 +236,14 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
 
-        assert ps.tokens[0].category == TokenCategory.TAG
+        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[0].negate
 
-        assert ps.tokens[1].category == TokenCategory.TAG
+        assert ps.tokens[1].category == PostSearchTokenCategory.TAG
         assert not ps.tokens[1].negate
 
         # Last tag is negated
-        assert ps.tokens[2].category == TokenCategory.TAG
+        assert ps.tokens[2].category == PostSearchTokenCategory.TAG
         assert ps.tokens[2].negate
 
     def test_parse_extra_space_between_tokens(self):
@@ -192,18 +251,18 @@ class TestPostAdvancedSearchQueryParsing:
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
 
     def test_parse_extra_space_start_and_end(self):
         ps = PostSearch("    -tag1 tag2 -tag3\t ")
         assert len(ps.tokens) == 3
         assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
         for tok in ps.tokens:
-            assert tok.category == TokenCategory.TAG
+            assert tok.category == PostSearchTokenCategory.TAG
 
-    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
     def test_correctly_identify_tag_categories_by_name(
-        self, token_category: TokenCategory
+        self, token_category: PostSearchTokenCategory
     ):
         if token_category.value.name:
             # This test does not test validation, only token identification
@@ -211,9 +270,9 @@ class TestPostAdvancedSearchQueryParsing:
                 ps = PostSearch(f"{token_category.value.name}=100")
                 assert ps.tokens[0].category == token_category
 
-    @pytest.mark.parametrize("token_category", list(TokenCategory))
+    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
     def test_correctly_identify_tag_categories_by_alias(
-        self, token_category: TokenCategory
+        self, token_category: PostSearchTokenCategory
     ):
         for alias in token_category.value.aliases:
             # This test does not test validation, only token identification
@@ -246,7 +305,9 @@ class TestPostAdvancedSearchAutocomplete:
 
         # Tags
         tag_names = [
-            item.name for item in items if item.token_category == TokenCategory.TAG
+            item.name
+            for item in items
+            if item.token_category == PostSearchTokenCategory.TAG
         ]
         assert "red" in tag_names
         assert "red_vs._blue" in tag_names
@@ -255,7 +316,7 @@ class TestPostAdvancedSearchAutocomplete:
         alias_names = [
             item.alias
             for item in items
-            if item.token_category == TokenCategory.TAG_ALIAS
+            if item.token_category == PostSearchTokenCategory.TAG_ALIAS
         ]
         assert "red_v._blue" in alias_names
         assert "red_vs_blue" in alias_names
@@ -273,16 +334,16 @@ class TestPostAdvancedSearchAutocomplete:
         ps = PostSearch("")
         items = list(ps.autocomplete(show_filters=True))
         item_categories = {item.token_category for item in items}
-        for tc in TokenCategory:
+        for tc in PostSearchTokenCategory:
             assert tc in item_categories
 
     def test_no_filters(self):
         ps = PostSearch("")
         items = ps.autocomplete(show_filters=False)
         item_categories = {item.token_category for item in items}
-        item_categories.remove(TokenCategory.TAG)
-        item_categories.remove(TokenCategory.TAG_ALIAS)
-        for tc in TokenCategory:
+        item_categories.remove(PostSearchTokenCategory.TAG)
+        item_categories.remove(PostSearchTokenCategory.TAG_ALIAS)
+        for tc in PostSearchTokenCategory:
             assert tc not in item_categories
 
     def test_complete_with_leading_negation(self):
@@ -324,6 +385,109 @@ class TestPostAdvancedSearchTags:
         assert len(
             posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
+
+    def test_include_tag_with_category(self):
+        common_tag = TagFactory.create()
+
+        # Posts to be included in results
+        category = TagCategoryFactory.create(name="category1")
+        included_posts = PostFactory.create_batch(5)
+        included_tag = TagFactory.create(category=category)
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        # Posts not to be included in results
+        not_included_posts = PostFactory.create_batch(5)
+        not_included_tag = TagFactory.create()
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        query = TAG_CATEGORY_DELIMITER.join(
+            [included_tag.category.name, included_tag.name]
+        )
+        ps = PostSearch(query)
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+        ) == len(not_included_posts)
+
+    def test_include_tag_with_nested_categories(self):
+        common_tag = TagFactory.create()
+
+        # Posts to be included in results
+        category1 = TagCategoryFactory.create(name="category1")
+        category2 = TagCategoryFactory.create(name="category2", parent=category1)
+        included_posts = PostFactory.create_batch(5)
+        included_tag = TagFactory.create(category=category2)
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        # Posts not to be included in results
+        not_included_posts = PostFactory.create_batch(5)
+        not_included_tag = TagFactory.create()
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        query = TAG_CATEGORY_DELIMITER.join(
+            [
+                included_tag.category.parent.name,
+                included_tag.category.name,
+                included_tag.name,
+            ]
+        )
+        ps = PostSearch(query)
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+        ) == len(not_included_posts)
+
+    def test_exclude_tag_with_category(self):
+        tags = TagFactory.create_batch(5)
+        test_posts = PostFactory.create_batch(5)
+
+        category = TagCategoryFactory.create(name="cat1")
+        tags[0].category = category
+        tags[0].save()
+
+        for i, post in enumerate(test_posts):
+            post.tags.add(tags[i])
+
+        posts = PostSearch(
+            f"-{tags[0].category.name}{TAG_CATEGORY_DELIMITER}{tags[0].name}"
+        ).get_posts()
+        assert test_posts[0] not in posts
+        assert test_posts[1] in posts
+        assert test_posts[2] in posts
+        assert test_posts[3] in posts
+        assert test_posts[4] in posts
+
+    def test_exclude_tag_with_nested_categories(self):
+        tags = TagFactory.create_batch(5)
+        test_posts = PostFactory.create_batch(5)
+
+        category1 = TagCategoryFactory.create(name="cat1")
+        category2 = TagCategoryFactory.create(name="cat2", parent=category1)
+        tags[0].category = category2
+        tags[0].save()
+
+        for i, post in enumerate(test_posts):
+            post.tags.add(tags[i])
+
+        query = "-" + TAG_CATEGORY_DELIMITER.join(
+            [tags[0].category.parent.name, tags[0].category.name, tags[0].name]
+        )
+        posts = PostSearch(query).get_posts()
+        assert test_posts[0] not in posts
+        assert test_posts[1] in posts
+        assert test_posts[2] in posts
+        assert test_posts[3] in posts
+        assert test_posts[4] in posts
 
     def test_include_tag_with_wildcard(self):  # noqa: PLR0915
         wild = TagFactory.create(name="wild")
@@ -470,12 +634,15 @@ class TestPostAdvancedTagID:
 @pytest.mark.django_db
 class TestPostAdvancedSearchTagAliases:
     def test_include_tag_alias(self):
+        # TODO
         pass
 
     def test_include_tag_alias_with_wildcard(self):
+        # TODO
         pass
 
     def test_exclude_tag_alias_with_wildcard(self):
+        # TODO
         pass
 
 

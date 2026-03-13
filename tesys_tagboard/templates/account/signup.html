@@ -1,47 +1,62 @@
-{% extends "account/base_entrance.html" %}
+{% extends 'account/base_entrance.html' %}
 
 {% load allauth i18n %}
 
 {% block head_title %}
-  {% trans "Signup" %}
+  {% trans 'Signup' %}
 {% endblock head_title %}
 {% block content %}
-  {% include "heading.html" with text=_("SIGNUP") %}
-  <div class="m-auto md:max-w-xl xl:max-w-3xl">
-    {% setvar link %}
-    <a href="{{ login_url }}">
-    {% endsetvar %}
-    {% setvar end_link %}
-  </a>
-{% endsetvar %}
-<p class="py-2">
-  {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
-</p>
-{% if not SOCIALACCOUNT_ONLY %}
-  {% url 'account_signup' as action_url %}
-  {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-  {% slot body %}
-  {% csrf_token %}
-  {% element fields form=form unlabeled=True %}
-{% endelement %}
-{{ redirect_field }}
-{% endslot %}
-{% slot actions %}
-{% element button tags="prominent,signup" type="submit" %}
-{% trans "Sign Up" %}
-{% endelement %}
-{% endslot %}
-{% endelement %}
-{% endif %}
-{% if PASSKEY_SIGNUP_ENABLED %}
-  {% element hr %}
-{% endelement %}
-{% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
-{% trans "Sign up using a passkey" %}
-{% endelement %}
-{% endif %}
-{% if SOCIALACCOUNT_ENABLED %}
-  {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-{% endif %}
-</div>
+  {% if not SOCIALACCOUNT_ONLY %}
+    <form method="post" action="{% url 'account_signup' %}" class="form">
+      {% csrf_token %}
+      <h1 class="text-center">{% translate 'Signup' %}</h1>
+      {% if form.errors %}<div class="text-sm text-error">{{ form.errors }}</div>{% endif %}
+      <!-- Username -->
+      <div>
+        <label>Username</label>
+        <input required
+               type="text"
+               name="username"
+               class="w-full input"
+               placeholder="Enter your username" />
+      </div>
+      <!-- Email -->
+      <div>
+        <label>Email</label>
+        <input required
+               type="email"
+               name="email"
+               class="w-full input"
+               placeholder="example@email.com" />
+      </div>
+      <!-- Password -->
+      <div>
+        <label>Password</label>
+        <input required
+               type="password"
+               name="password1"
+               class="w-full input"
+               placeholder="Enter your password" />
+      </div>
+      <!-- Confirm Password -->
+      <div>
+        <label>Confirm Password</label>
+        <input required
+               type="password"
+               name="password2"
+               class="w-full input"
+               placeholder="Confirm your password" />
+      </div>
+      <!-- Submit -->
+      <button type="submit" class="btn btn-lg btn-primary">Sign Up</button>
+    {% endif %}
+    <!-- Social account login -->
+    {% if SOCIALACCOUNT_ENABLED %}
+      {% include 'socialaccount/snippets/login.html' with page_layout='entrance' %}
+    {% endif %}
+    <p class="py-2 text-sm text-center">
+      {% translate 'Already have an account?' %}
+      <a href="{% url 'account_login' %}">{% translate 'Log in' %}</a>
+    </p>
+  </form>
 {% endblock content %}

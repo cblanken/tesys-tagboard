@@ -1,25 +1,20 @@
-{% extends "account/base_manage.html" %}
+{% extends 'account/base_manage.html' %}
 
 {% load allauth i18n %}
 
 {% block head_title %}
-  {% trans "Sign Out" %}
+  {% translate 'Log Out' %}
 {% endblock head_title %}
 {% block content %}
-  {% include "heading.html" with text=_("SIGN OUT") %}
-  <section class="flex flex-col gap-4">
-    <p class="text-xl">{% trans 'Are you sure you want to sign out?' %}</p>
-    {% url 'account_logout' as action_url %}
-    {% element form method="post" action=action_url no_visible_fields=True %}
-    {% slot body %}
-    {% csrf_token %}
-    {{ redirect_field }}
-  {% endslot %}
-  {% slot actions %}
-  {% element button type="submit" tags="warning" %}
-  {% trans 'Sign Out' %}
-{% endelement %}
-{% endslot %}
-{% endelement %}
-</section>
+  <div class="grid justify-center content-center pt-20 w-full">
+    <form method="post"
+          action="{% url 'account_logout' %}"
+          class="flex flex-col gap-4 justify-center p-8 w-full h-full md:max-w-3xl bg-base-300 rounded-box">
+      {% csrf_token %}
+      {{ redirect_field }}
+      <h1 class="font-bold text-center text-base-accent">{% translate 'Log Out' %}</h1>
+      <p class="py-2 text-lg text-center">{% translate 'Are you sure you want to log out?' %}</p>
+      <button type="submit" class="btn btn-lg btn-error">{% translate 'Log Out' %}</button>
+    </form>
+  </div>
 {% endblock content %}

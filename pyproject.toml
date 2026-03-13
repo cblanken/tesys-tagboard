@@ -138,6 +138,7 @@ force-single-line = true
 
 [dependency-groups]
 dev = [
+    "aiosmtpd>=1.4.6",
     "cookiecutter>=2.6.0",
     "coverage==7.13.4",
     "django-coverage-plugin==3.2.0",
@@ -152,7 +153,7 @@ dev = [
     "mypy==1.19.1",
     "myst-parser>=5.0.0",
     "pre-commit==4.5.1",
-    "psycopg[c]==3.3.3",
+    "psycopg[binary]==3.3.3",
     "pytest>=9.0",
     "pytest-django==4.12.0",
     "pytest-sugar==1.1.1",
@@ -160,7 +161,7 @@ dev = [
     "ruff==0.15.4",
     "sphinx==9.1.0",
     "sphinx-autobuild==2025.8.25",
-    "sphinx-nefertiti>=0.9.5",
+    "sphinx-nefertiti>=0.9.8",
     "watchfiles==1.1.1",
     "werkzeug[watchdog]==3.1.6",
 ]
@@ -182,7 +183,7 @@ dependencies = [
     "crispy-tailwind>=1.0.3",
     "django>=6.0.2",
     "django-allauth[mfa,socialaccount]==65.14.3",
-    "django-anymail[mailgun]==14.0",
+    "django-anymail[mailgun,mailtrap]==14.0",
     "django-browser-reload>=1.21.0",
     "django-colorfield>=0.14.0",
     "django-components>=0.143.1",

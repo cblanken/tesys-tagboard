@@ -30,8 +30,13 @@ CACHES = {
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.console.EmailBackend",
+    default="django.core.mail.backends.smtp.EmailBackend",
 )
+EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", "tesys_tagboard_local_mailpit")
+EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER")
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", 1025)
+
 
 # WhiteNoise
 # ------------------------------------------------------------------------------

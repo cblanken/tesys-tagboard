@@ -9,12 +9,13 @@
     {% if item.name %}
       <li data-id="{{ item.tag_id }}"
           data-name="{{ item.name }}"
+          data-search_token="{{ item.get_search_token_string }}"
           tabindex="-1"
           style="{% if item.tag_category.bg %}background: {{ item.tag_category.bg }};
                  {% endif %} {% if item.tag_category.fg %}color: {{ item.tag_category.fg }};{% endif %}"
           class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border-1 border-neutral/80 text-tag-content {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}bg-tag-default{% else %}bg-filter-func{% endif %} last:border-b-1 hover:brightness-115 focus:brightness-115">
         <div class="flex justify-between max-h-8 rounded-none">
-          <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10">
+          <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10 h-fit min-h-10">
             {% if item.alias %}
               <div>{% include "icons/feather.html" with icon="corner-down-right" %}</div>
             {% elif item.token_category.name == "TAG" %}
@@ -26,14 +27,14 @@
               {% if item.alias %}
                 <div>{{ item.alias }}</div>
                 {% include "icons/feather.html" with icon="arrow-right" %}
-                {% if item.token_category.name == "TAG" %}
+                {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}
                   {% include "icons/feather.html" with icon="tag" %}
                 {% else %}
                   {% include "icons/feather.html" with icon="filter" %}
                 {% endif %}
-                <div>{{ item.name }}</div>
+                <div>{{ item.get_tag_label }}</div>
               {% else %}
-                {{ item.name }}
+                {{ item.get_tag_label }}
               {% endif %}
             </div>
           </div>

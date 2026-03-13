@@ -14,9 +14,9 @@
 @plugin "daisyui/theme" {
   /* Based on DaisyUI's "silk" theme */
   name: "light-1";
-  default: true; /* set as default */
-  prefersdark: false; /* set as default dark mode (prefers-color-scheme:dark) */
-  color-scheme: light; /* color of browser-provided UI */
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
 
   --color-base-100: oklch(97% 0.0035 67.78);
   --color-base-200: oklch(95% 0.0081 61.42);
@@ -53,7 +53,7 @@
   /* Based on DaisyUI's "winter" theme */
   name: "light-2";
   default: false;
-  prefersdark: false; /* set as default dark mode (prefers-color-scheme:dark) */
+  prefersdark: false;
   color-scheme: light;
 
   --color-base-100: oklch(100% 0 0);
@@ -90,7 +90,7 @@
   /* Based on DaisyUI's "dracula" theme */
   name: "dark-1";
   default: false;
-  prefersdark: true; /* set as default dark mode (prefers-color-scheme:dark) */
+  prefersdark: true;
   color-scheme: dark;
 
   --color-base-100: oklch(28.822% 0.022 277.508);
@@ -128,7 +128,7 @@
   /* Based on DaisyUI's "dim" theme */
   name: "dark-2";
   default: false;
-  prefersdark: true; /* set as default dark mode (prefers-color-scheme:dark) */
+  prefersdark: true;
   color-scheme: dark;
 
   --color-base-100: oklch(30.857% 0.023 264.149);
@@ -220,7 +220,7 @@
   }
 
   p {
-    @apply leading-6;
+    @apply leading-6 mb-3;
   }
 
   code {
@@ -228,8 +228,30 @@
   }
 }
 
+@layer components {
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: --spacing(4);
+    background-color: var(--color-base-300);
+    width: 100%;
+    padding: --spacing(12);
+    border-radius: var(--radius-box);
+    max-width: var(--container-lg);
+    box-shadow: var(--shadow-xl);
+
+    & label {
+      font-size: var(-text-sm);
+
+      & + input {
+        margin-top: --spacing(1);
+      }
+    }
+  }
+}
+
 @theme {
-  /* Fonts */
+  /* Fonts and Text */
   --text-sm: 0.8rem;
   --text-base: 1.0rem;
   --text-lg: 1.25rem;
@@ -238,8 +260,10 @@
   --text-3xl: 2.2rem;
   --text-4xl: 2.55rem;
   --text-5xl: 3.65rem;
-
   --font-heading: "Komikula", "Pak Kumis", "Courier New", mono;
+
+  /* Containers */
+  --container-8xl: 96rem;
 
   /* Colors */
   --color-tag-default: #a8e6cf; /* Tag background */
@@ -248,6 +272,8 @@
   --color-user: #121212;
   --color-user-content: #ddd;
 
+  --color-discord: #5865F2;
+  --color-discord-content: oklch(0.9162 0 139.549);
 
   /* Keyframes */
   @keyframes fade_in {
@@ -370,8 +396,31 @@
 
 /* Many tags may be rendered on a single page. These styles reduce the total
 rendered document size */
-.tag-container > button {
+.tag-container>button {
   color: var(--color-tag-content);
   background-color: var(--color-tag-default);
-  padding: var(--spacing) calc(var(--spacing) * 3)
+  padding: --spacing(1) --spacing(3)
+}
+
+/* Smooth scrolling IF user doesn't have a preference due to motion sensitivities */
+@media screen and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.back-to-top-wrapper {
+  position: absolute;
+  top: 250vh;
+  left: --spacing(2);
+  bottom: 0;
+  width: 3rem;
+  pointer-events: none;
+}
+
+.back-to-top-link {
+  position: fixed; /* fixed position fallback */
+  position: sticky;
+  top: calc(100dvh - var(--spacing) * 16);
+  pointer-events: all;
 }

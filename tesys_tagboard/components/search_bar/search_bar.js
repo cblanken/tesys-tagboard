@@ -126,7 +126,7 @@
       let active_token = get_query_active_token_selection();
       let query = String(search_input.value)
 
-      const autocompleted_name = e.currentTarget?.dataset.name
+      const autocompleted_name = e.currentTarget?.dataset.search_token
       if (autocompleted_name == undefined) {
         console.error("Search autocomplete failed to parse the provided query.");
         return

@@ -1,0 +1,56 @@
+# General
+# ------------------------------------------------------------------------------
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=
+DJANGO_ADMIN_URL=admin
+DJANGO_ALLOWED_HOSTS=localhost,[ADD YOUR PUBLIC HOSTNAME HERE: e.g. tagboard.example.com]
+DJANGO_TITLE="Tagboard Demo"
+
+# Security
+# ------------------------------------------------------------------------------
+DJANGO_SECURE_SSL_REDIRECT=False
+DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:11611,https://localhost:11611,https://p52.nuthatch-kettle.ts.net
+
+# Authentication and registration
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+DJANGO_EMAIL_VERIFICATION=optional
+
+# Third-party accounts
+# ------------------------------------------------------------------------------
+DJANGO_DISCORD_CLIENT_ID=
+DJANGO_DISCORD_CLIENT_SECRET=
+DJANGO_DISCORD_CLIENT_PUBLIC_KEY=
+
+
+# Email
+# ------------------------------------------------------------------------------
+# Tesy's Tagboard supports email either via SMTP, Mailgun, or Mailtrap
+# Configure only ONE of the email deliver options below. If you choose to disallow
+# email registration you may ignore this section.
+
+# SMTP
+DJANGO_SERVER_EMAIL=noreply@example.com
+DJANGO_EMAIL_HOST=
+DJANGO_EMAIL_PORT=2525
+DJANGO_EMAIL_HOST_USER=
+DJANGO_EMAIL_HOST_PASSWORD=
+DJANGO_DEFAULT_FROM_EMAIL="Tesy's Tagboard <noreply@example.com>"
+
+# Mailtrap config
+MAILTRAP_API_TOKEN=
+MAILTRAP_SANDBOX_ID=
+
+# Mailgun config
+MAILGUN_API_KEY=
+MAILGUN_SENDER_DOMAIN=
+MAILGUN_API_URL=
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0

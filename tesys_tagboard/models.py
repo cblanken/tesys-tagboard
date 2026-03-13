@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import imagehash
 from colorfield.fields import ColorField
+from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import HashIndex
@@ -73,19 +74,40 @@ class TagCategory(models.Model):
         fg: ColorField the foreground color for the category
     """
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     bg = ColorField(format="hex", null=True)
     fg = ColorField(format="hex", null=True)
 
     class Meta:
+        verbose_name_plural = "tag categories"
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "parent"],
+                name="unique_name_parent",
+                nulls_distinct=False,
+            ),
+        ]
         indexes = [
-            models.Index("name", name="tag_category_name_idx"),
+            models.Index(fields=["name"], name="tag_category_name_idx"),
         ]
 
     def __str__(self) -> str:
         return f"<TagCategory - {self.name}, bg: {self.bg}, fg: {self.fg}, parent: {self.parent}>"  # noqa: E501
+
+    def get_full_path(self, max_depth: int = 5) -> str:
+        """Return the category chain up to the root or up to `max_depth` categories"""
+        category = self
+        path = self.name
+        for _ in range(max_depth):
+            if category.parent is None:
+                break
+
+            path = f"{category.parent.name}{settings.TAG_CATEGORY_DELIMITER}{path}"
+            category = category.parent
+
+        return path
 
 
 class TagQuerySet(models.QuerySet):
@@ -240,15 +262,6 @@ def csv_to_tag_ids(tags_csv: str) -> Sequence[int]:
         raise ValueError(msg) from e
     else:
         return tag_ids
-
-
-def add_tag_history(tags: QuerySet[Tag], post: Post, user):
-    old_tags = set(post.tags.order_by("pk"))
-    new_tags = set(tags.all())
-    tag_histories = PostTagHistory.objects.filter(post=post)
-    if old_tags != new_tags or not tag_histories:
-        tag_hist = PostTagHistory(post=post, user=user, tags=tags_to_csv(tags.all()))
-        tag_hist.save()
 
 
 class PostQuerySet(models.QuerySet):
@@ -428,6 +441,15 @@ class Post(models.Model):
         return None
 
 
+def add_tag_history(tags: QuerySet[Tag], post: Post, user):
+    old_tags = set(post.tags.order_by("pk"))
+    new_tags = set(tags.all())
+    tag_histories = PostTagHistory.objects.filter(post=post)
+    if old_tags != new_tags or not tag_histories:
+        tag_hist = PostTagHistory(post=post, user=user, tags=tags_to_csv(tags.all()))
+        tag_hist.save()
+
+
 class Image(models.Model):
     """Media linked to static image files"""
 
@@ -586,6 +608,9 @@ class SourceHistory(models.Model):
         default="",
     )
 
+    class Meta:
+        verbose_name_plural = "Source histories"
+
     def __str__(self) -> str:
         return f"<MediaSourceHistory - post: {self.post}, mod_time: {self.mod_time}, source: {self.src_url}>"  # noqa: E501
 
@@ -603,6 +628,9 @@ class PostTagHistory(models.Model):
         db_comment="Comma-delimited string of tag IDs at the current time",
         default="",
     )
+
+    class Meta:
+        verbose_name_plural = "Post tag histories"
 
     def __str__(self) -> str:
         return f"<PostTagHistory - id: {self.pk}; post: {self.post}; modified: {self.mod_time};"  # noqa: E501
