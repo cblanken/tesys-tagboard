@@ -16,8 +16,14 @@ services:
       - /app/.venv
       - .:/app:z
     env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
+      - path: ./.envs/.local/.postgres.example
+        required: true
+      - path: ./.envs/.local/.django.example
+        required: true
+      - path: ./.envs/.local/.postgres
+        required: false
+      - path: ./.envs/.local/.django
+        required: false
     ports:
       - '55555:8000'
     command: /start
@@ -35,7 +41,10 @@ services:
       - tesys_tagboard_local_postgres_data:/var/lib/postgresql/data
       - tesys_tagboard_local_postgres_data_backups:/backups
     env_file:
-      - ./.envs/.local/.postgres
+      - path: ./.envs/.local/.postgres.example
+        required: true
+      - path: ./.envs/.local/.postgres
+        required: false
     profiles: [all, debug]
 
   mailpit:

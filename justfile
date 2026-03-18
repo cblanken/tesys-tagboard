@@ -11,18 +11,25 @@ export COMPOSE_PROFILES := "all"
 default:
     @just --list
 
+# Setup default environment
+setup-env:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cp --update=none .envs/.local/.django.example .envs/.local/.django
+    cp --update=none .envs/.local/.postgres.example .envs/.local/.postgres
+
 # Build container images
-build *args:
+build *args: setup-env
     @echo "Building container images..."
     @docker compose build {{args}}
 
 # Start up containers
-up *args:
+up *args: setup-env
     @echo "Starting up containers..."
     @docker compose up -d --remove-orphans {{args}}
 
 # Start up containers and attach python debugger
-up-debug:
+up-debug: setup-env
     @echo "Starting up containers with debug console for Django app..."
     @docker compose --profile debug up -d --remove-orphans
     @docker compose run --rm --service-ports django # to handle python breakpoints
@@ -136,5 +143,5 @@ make-component name:
     echo '    js_file = "{{name}}.js"' >> "$py_file"
 
 clean-media:
-    @echo "Cleaning out media folder..."
+    echo "Cleaning out media folder..."
     rm -rf tesys_tagboard/media/*
