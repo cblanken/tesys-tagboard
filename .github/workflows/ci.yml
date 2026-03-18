@@ -72,6 +72,9 @@ jobs:
             docs.cache-to=type=gha,scope=cached-docs,mode=max
 
 
+      - name: Start django service
+        run: just up django
+
       - name: Check DB Migrations
         run: just manage makemigrations --check
 
