@@ -20,8 +20,14 @@ services:
       - postgres
       - redis
     env_file:
-      - ./.envs/.production/.django
-      - ./.envs/.production/.postgres
+      - path: ./.envs/.production/.postgres.example
+        required: true
+      - path: ./.envs/.production/.django.example
+        required: true
+      - path: ./.envs/.production/.postgres
+        required: false
+      - path: ./.envs/.production/.django
+        required: false
     command: /start
 
   postgres:
@@ -34,7 +40,10 @@ services:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
-      - ./.envs/.production/.postgres
+      - path: ./.envs/.production/.postgres.example
+        required: true
+      - path: ./.envs/.production/.postgres
+        required: false
 
   redis:
     image: docker.io/redis:8.6

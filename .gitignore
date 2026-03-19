@@ -261,16 +261,20 @@ Session.vim
 # Redis dump file
 dump.rdb
 
-### Project template
-tesys_tagboard/media/
 
-.pytest_cache/
-.ipython/
+# Env
 .env
-.envs/*
-!.envs/.local/
+.envs/.local/*
+!.envs/.local/.django.example
+!.envs/.local/.postgres.example
+.envs/.production/*
+!.envs/.production/.django.example
+!.envs/.production/.postgres.example
 
-# Dev env
+# Dev environment and data
 .helix
-
+.ipython/
+.pytest_cache/
+mailpit_data
+tesys_tagboard/media/
 staticfiles

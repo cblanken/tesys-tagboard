@@ -1,6 +1,8 @@
 from django_components import Component
 from django_components import register
 
+from tesys_tagboard.enums import RatingLevel
+
 
 @register("create_tag")
 class CreateTagComponent(Component):
@@ -9,4 +11,4 @@ class CreateTagComponent(Component):
 
     def get_template_data(self, args, kwargs, slots, context):
         categories = kwargs.get("categories")
-        return {"categories": categories}
+        return {"categories": categories, "rating_levels": list(RatingLevel)}

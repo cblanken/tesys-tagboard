@@ -1,5 +1,7 @@
+{% load i18n %}
+
 <div class="p-4 w-full rounded-box bg-base-300 lg:min-w-30 lg:w-fit">
-  <h2>Create a collection</h2>
+  <h2>{% translate 'Create a collection' %}</h2>
   <form class="flex flex-wrap gap-2 w-full"
         id="create-collection"
         action="{% url "create-collection" %}"
@@ -26,7 +28,7 @@
       </select>
     </fieldset>
     <input type="submit"
-           value="Create"
+           value="{% translate 'Create' %}"
            class="my-2 w-full text-xl btn btn-primary" />
     {% if form.errors %}
       <div role="alert" class="alert alert-error">

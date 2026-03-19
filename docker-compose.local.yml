@@ -16,8 +16,14 @@ services:
       - /app/.venv
       - .:/app:z
     env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
+      - path: ./.envs/.local/.postgres.example
+        required: true
+      - path: ./.envs/.local/.django.example
+        required: true
+      - path: ./.envs/.local/.postgres
+        required: false
+      - path: ./.envs/.local/.django
+        required: false
     ports:
       - '55555:8000'
     command: /start
@@ -35,5 +41,23 @@ services:
       - tesys_tagboard_local_postgres_data:/var/lib/postgresql/data
       - tesys_tagboard_local_postgres_data_backups:/backups
     env_file:
-      - ./.envs/.local/.postgres
+      - path: ./.envs/.local/.postgres.example
+        required: true
+      - path: ./.envs/.local/.postgres
+        required: false
     profiles: [all, debug]
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: tesys_tagboard_local_mailpit
+    restart: unless-stopped
+    volumes:
+        - ./mailpit_data:/data
+    ports:
+        - 8025:8025
+        - 1025:1025
+    environment:
+        MP_MAX_MESSAGES: 5000
+        MP_DATABASE: /data/mailpit.db
+        MP_SMTP_AUTH_ACCEPT_ANY: 1
+        MP_SMTP_AUTH_ALLOW_INSECURE: 1

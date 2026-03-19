@@ -11,6 +11,10 @@ from django.views.static import serve
 from tesys_tagboard import views
 from tesys_tagboard.api import api
 
+admin_url = (
+    f"{settings.ADMIN_URL}/" if settings.ADMIN_URL[-1] != "/" else settings.ADMIN_URL
+)
+
 urlpatterns = [
     path("", views.home, name="home"),
     path("posts/", views.posts, name="posts"),

@@ -1,4 +1,4 @@
-{% load component_tags static %}
+{% load component_tags static i18n %}
 
 <div data-post_id="{{ post.pk|safe }}"
      {% if post.favorited %}data-favorite{% endif %}
@@ -29,9 +29,15 @@
     </section>
     <div class="absolute {% if tags|length > 4 %}top-2/3 max-h-1/3 hover:max-h-fit{% else %}top-3/4 hover:h-1/4 hover:max-h-1/4{% endif %} rounded-b-box p-2 w-full z-5 overflow-clip hover:overflow-visible hover:bg-neutral/30">
       <div class="flex flex-wrap gap-1">
-        {% for tag in tags %}
-          {% component "tag" tag=tag size="xs" / %}
-        {% endfor %}
+        {% if tags %}
+          {% for tag in tags %}
+            {% component "tag" tag=tag size="xs" / %}
+          {% endfor %}
+        {% else %}
+          <div class="h-full text-sm italic text-neutral-content text-wrap-normal">
+            {% translate "This post doesn't have any tags assigned yet!" %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

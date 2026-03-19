@@ -6,330 +6,1403 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 13:58+0000\n"
 "Language: fr-FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: tesys_tagboard/templates/account/account_inactive.html:5
-#: tesys_tagboard/templates/account/account_inactive.html:8
+
+msgid "English"
+msgstr ""
+
+msgid "French"
+msgstr ""
+
+msgid "German"
+msgstr ""
+
+msgid "Spanish"
+msgstr ""
+
+msgid "Create a tag"
+msgstr ""
+
+msgid "Tag name"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Pick a category"
+msgstr ""
+
+msgid "Rating (optional)"
+msgstr ""
+
+msgid "Pick a rating level"
+msgstr ""
+
+msgid "This post doesn't have any tags assigned yet!"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "File"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid ""
+"The default (un-named) token. When a plain string without any operator is "
+"given it will be interpreted as a tag."
+msgstr ""
+
+msgid "tag_id"
+msgstr ""
+
+msgid "The ID of a tag."
+msgstr ""
+
+msgid "id"
+msgstr ""
+
+msgid "The ID of a Post."
+msgstr ""
+
+msgid "alias"
+msgstr ""
+
+msgid "The name of a TagAlias."
+msgstr ""
+
+#, fuzzy
+#| msgid "Account"
+msgid "tag_count"
+msgstr "Compte"
+
+msgid "The number of tags on a Post."
+msgstr ""
+
+msgid "comment_by"
+msgstr ""
+
+msgid "The username of a user that has commented on a Post"
+msgstr ""
+
+#, fuzzy
+#| msgid "Account"
+msgid "comment_count"
+msgstr "Compte"
+
+msgid "The number of comments on a Post."
+msgstr ""
+
+msgid "favorite_count"
+msgstr ""
+
+msgid "The number of favorites recieved by a Post."
+msgstr ""
+
+msgid "height"
+msgstr ""
+
+msgid "The height of a Post (only applies to Images and Videos)."
+msgstr ""
+
+msgid "width"
+msgstr ""
+
+msgid "The width of a Post (only applies to Images and Videos."
+msgstr ""
+
+msgid "rating_label"
+msgstr ""
+
+msgid ""
+"The rating of a Post. Accepts one of safe, unrated, questionable, and "
+"explicit."
+msgstr ""
+
+msgid "rating_num"
+msgstr ""
+
+msgid "The rating level of a Post."
+msgstr ""
+
+msgid "source"
+msgstr ""
+
+msgid "The source url of a Post."
+msgstr ""
+
+msgid "posted_by"
+msgstr ""
+
+msgid "The username of the uploader of a Post."
+msgstr ""
+
+msgid "posted_on"
+msgstr ""
+
+msgid "The date the post was posted on."
+msgstr ""
+
+msgid "mimetype"
+msgstr ""
+
+msgid "The MIME type of the post's file."
+msgstr ""
+
+msgid "extension"
+msgstr ""
+
+msgid "The file extension of the post's related file."
+msgstr ""
+
+msgid "collection_id"
+msgstr ""
+
+msgid "The ID of a collection."
+msgstr ""
+
+msgid "collection"
+msgstr ""
+
+msgid "Whether or not a post is part of a collection (yes/no)."
+msgstr ""
+
+msgid "collection_name"
+msgstr ""
+
+msgid "A collection's name."
+msgstr ""
+
+msgid "parent"
+msgstr ""
+
+msgid "Whether or not a post has a parent (yes/no)."
+msgstr ""
+
+msgid "parent_id"
+msgstr ""
+
+msgid "Whether or not a post has a parent matching the given post ID."
+msgstr ""
+
+msgid "children"
+msgstr ""
+
+msgid "Whether or not a post has any children (yes/no)."
+msgstr ""
+
+msgid "child_id"
+msgstr ""
+
+msgid "Whether or not a post has a child post matching the given post ID."
+msgstr ""
+
 msgid "Account Inactive"
 msgstr "Compte inactif"
 
-#: tesys_tagboard/templates/account/account_inactive.html:10
 msgid "This account is inactive."
 msgstr "Ce compte est inactif."
 
-#: tesys_tagboard/templates/account/email.html:7
-msgid "Account"
-msgstr "Compte"
-
-#: tesys_tagboard/templates/account/email.html:10
-msgid "E-mail Addresses"
-msgstr "Adresses e-mail"
-
-#: tesys_tagboard/templates/account/email.html:13
-msgid "The following e-mail addresses are associated with your account:"
-msgstr "Les adresses e-mail suivantes sont associées à votre compte :"
-
-#: tesys_tagboard/templates/account/email.html:27
-msgid "Verified"
-msgstr "Vérifié"
-
-#: tesys_tagboard/templates/account/email.html:29
-msgid "Unverified"
-msgstr "Non vérifié"
-
-#: tesys_tagboard/templates/account/email.html:31
-msgid "Primary"
-msgstr "Primaire"
-
-#: tesys_tagboard/templates/account/email.html:37
-msgid "Make Primary"
-msgstr "Changer Primaire"
-
-#: tesys_tagboard/templates/account/email.html:38
-msgid "Re-send Verification"
-msgstr "Renvoyer vérification"
-
-#: tesys_tagboard/templates/account/email.html:39
-msgid "Remove"
-msgstr "Supprimer"
-
-#: tesys_tagboard/templates/account/email.html:46
-msgid "Warning:"
-msgstr "Avertissement:"
-
-#: tesys_tagboard/templates/account/email.html:46
-msgid ""
-"You currently do not have any e-mail address set up. You should really add "
-"an e-mail address so you can receive notifications, reset your password, etc."
-msgstr ""
-"Vous n'avez actuellement aucune adresse e-mail configurée. Vous devriez ajouter "
-"une adresse e-mail pour reçevoir des notifications, réinitialiser votre mot "
-"de passe, etc."
-
-#: tesys_tagboard/templates/account/email.html:51
-msgid "Add E-mail Address"
-msgstr "Ajouter une adresse e-mail"
-
-#: tesys_tagboard/templates/account/email.html:56
-msgid "Add E-mail"
-msgstr "Ajouter e-mail"
-
-#: tesys_tagboard/templates/account/email.html:66
-msgid "Do you really want to remove the selected e-mail address?"
-msgstr "Voulez-vous vraiment supprimer l'adresse e-mail sélectionnée ?"
-
-#: tesys_tagboard/templates/account/email_confirm.html:6
-#: tesys_tagboard/templates/account/email_confirm.html:10
-msgid "Confirm E-mail Address"
-msgstr "Confirmez votre adresse email"
-
-#: tesys_tagboard/templates/account/email_confirm.html:16
 #, python-format
 msgid ""
-"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
-"address for user %(user_display)s."
+"We've sent a code to %(recipient)s. The code expires shortly, so please "
+"enter it soon."
 msgstr ""
-"Veuillez confirmer que <a href=\"mailto:%(email)s\">%(email)s</a> est un e-mail "
-"adresse de l'utilisateur %(user_display)s."
 
-#: tesys_tagboard/templates/account/email_confirm.html:20
 msgid "Confirm"
 msgstr "Confirm"
 
-#: tesys_tagboard/templates/account/email_confirm.html:27
-#, python-format
-msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a href="
-"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgid "Request new code"
 msgstr ""
-"Ce lien de confirmation par e-mail a expiré ou n'est pas valide. Veuillez"
- "<a href=\"%(email_url)s\">émettre une nouvelle demande de confirmation "
-"par e-mail</a>."
 
-#: tesys_tagboard/templates/account/login.html:7
-#: tesys_tagboard/templates/account/login.html:11
-#: tesys_tagboard/templates/account/login.html:56
-#: tesys_tagboard/templates/base.html:72
+msgid "Cancel"
+msgstr ""
+
+#, fuzzy
+#| msgid "Confirm E-mail Address"
+msgid "Confirm Access"
+msgstr "Confirmez votre adresse email"
+
+msgid "Please reauthenticate to safeguard your account."
+msgstr ""
+
+msgid "Alternative options"
+msgstr ""
+
+#, fuzzy
+#| msgid "Re-send Verification"
+msgid "Email Verification"
+msgstr "Renvoyer vérification"
+
+msgid "Enter Email Verification Code"
+msgstr ""
+
+msgid "Use a different email address"
+msgstr ""
+
 msgid "Sign In"
 msgstr "S'identifier"
 
-#: tesys_tagboard/templates/account/login.html:17
-msgid "Please sign in with one of your existing third party accounts:"
-msgstr "Veuillez vous connecter avec l'un de vos comptes tiers existants :"
-
-#: tesys_tagboard/templates/account/login.html:19
-#, python-format
-msgid ""
-"Or, <a href=\"%(signup_url)s\">sign up</a> for a %(site_name)s account and "
-"sign in below:"
+msgid "Enter Sign-In Code"
 msgstr ""
-"Ou, <a href=\"%(signup_url)s\">créez</a> un compte %(site_name)s et "
-"connectez-vous ci-dessous :"
 
-#: tesys_tagboard/templates/account/login.html:32
-msgid "or"
-msgstr "ou"
-
-#: tesys_tagboard/templates/account/login.html:41
-#, python-format
-msgid ""
-"If you have not created an account yet, then please <a href=\"%(signup_url)s"
-"\">sign up</a> first."
-msgstr ""
-"Si vous n'avez pas encore créé de compte, veuillez d'abord <a href=\"%(signup_url)s"
-"\">vous inscrire</a>."
-
-#: tesys_tagboard/templates/account/login.html:55
-msgid "Forgot Password?"
-msgstr "Mot de passe oublié?"
-
-#: tesys_tagboard/templates/account/logout.html:5
-#: tesys_tagboard/templates/account/logout.html:8
-#: tesys_tagboard/templates/account/logout.html:17
-#: tesys_tagboard/templates/base.html:61
-msgid "Sign Out"
-msgstr "Se déconnecter"
-
-#: tesys_tagboard/templates/account/logout.html:10
-msgid "Are you sure you want to sign out?"
-msgstr "Êtes-vous certain de vouloir vous déconnecter?"
-
-#: tesys_tagboard/templates/account/password_change.html:6
-#: tesys_tagboard/templates/account/password_change.html:9
-#: tesys_tagboard/templates/account/password_change.html:14
-#: tesys_tagboard/templates/account/password_reset_from_key.html:5
-#: tesys_tagboard/templates/account/password_reset_from_key.html:8
-#: tesys_tagboard/templates/account/password_reset_from_key_done.html:4
-#: tesys_tagboard/templates/account/password_reset_from_key_done.html:7
-msgid "Change Password"
-msgstr "Changer le mot de passe"
-
-#: tesys_tagboard/templates/account/password_reset.html:7
-#: tesys_tagboard/templates/account/password_reset.html:11
-#: tesys_tagboard/templates/account/password_reset_done.html:6
-#: tesys_tagboard/templates/account/password_reset_done.html:9
 msgid "Password Reset"
 msgstr "Réinitialisation du mot de passe"
 
-#: tesys_tagboard/templates/account/password_reset.html:16
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Enter Password Reset Code"
+msgstr "Réinitialisation du mot de passe"
+
+#, fuzzy
+#| msgid "Re-send Verification"
+msgid "Phone Verification"
+msgstr "Renvoyer vérification"
+
+#, fuzzy
+#| msgid "Re-send Verification"
+msgid "Enter Phone Verification Code"
+msgstr "Renvoyer vérification"
+
+msgid "Use a different phone number"
+msgstr ""
+
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "Email Addresses"
+msgstr "Adresses e-mail"
+
+#, fuzzy
+#| msgid "The following e-mail addresses are associated with your account:"
+msgid "The following email addresses are associated with your account:"
+msgstr "Les adresses e-mail suivantes sont associées à votre compte :"
+
+msgid "Verified"
+msgstr "Vérifié"
+
+msgid "Unverified"
+msgstr "Non vérifié"
+
+msgid "Primary"
+msgstr "Primaire"
+
+msgid "Make Primary"
+msgstr "Changer Primaire"
+
+msgid "Re-send Verification"
+msgstr "Renvoyer vérification"
+
+msgid "Remove"
+msgstr "Supprimer"
+
+#, fuzzy
+#| msgid "Add E-mail Address"
+msgid "Add Email Address"
+msgstr "Ajouter une adresse e-mail"
+
+#, fuzzy
+#| msgid "Add E-mail"
+msgid "Add Email"
+msgstr "Ajouter e-mail"
+
+#, fuzzy
+#| msgid "Do you really want to remove the selected e-mail address?"
+msgid "Do you really want to remove the selected email address?"
+msgstr "Voulez-vous vraiment supprimer l'adresse e-mail sélectionnée ?"
+
+#, python-format
 msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll send you "
-"an e-mail allowing you to reset it."
+"You are receiving this email because you or someone else tried to signup for "
+"an\n"
+"account using email address:\n"
+"\n"
+"%(email)s\n"
+"\n"
+"However, an account using that email address already exists.  In case you "
+"have\n"
+"forgotten about this, please use the password forgotten procedure to "
+"recover\n"
+"your account:\n"
+"\n"
+"%(password_reset_url)s"
+msgstr ""
+
+msgid "Account Already Exists"
+msgstr ""
+
+#, python-format
+msgid "Hello from %(site_name)s!"
+msgstr ""
+
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+msgid ""
+"You are receiving this mail because the following change was made to your "
+"account:"
+msgstr ""
+
+#, python-format
+msgid ""
+"If you do not recognize this change then please take proper security "
+"precautions immediately. The change to your account originates from:\n"
+"\n"
+"- IP address: %(ip)s\n"
+"- Browser: %(user_agent)s\n"
+"- Date: %(timestamp)s"
+msgstr ""
+
+#, python-format
+msgid "Your email has been changed from %(from_email)s to %(to_email)s."
+msgstr ""
+
+msgid "Email Changed"
+msgstr ""
+
+msgid "Your email has been confirmed."
+msgstr ""
+
+msgid "Email Confirmation"
+msgstr ""
+
+#, python-format
+msgid ""
+"You're receiving this email because user %(user_display)s has given your "
+"email address to register an account on %(site_domain)s."
+msgstr ""
+
+msgid ""
+"Your email verification code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+
+#, python-format
+msgid "To confirm this is correct, go to %(activate_url)s"
+msgstr ""
+
+#, fuzzy
+#| msgid "Confirm E-mail Address"
+msgid "Please Confirm Your Email Address"
+msgstr "Confirmez votre adresse email"
+
+#, python-format
+msgid "Email address %(deleted_email)s has been removed from your account."
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Email Removed"
+msgstr "Supprimer"
+
+msgid ""
+"Your sign-in code is listed below. Please enter it in your open browser "
+"window."
+msgstr ""
+
+msgid "This mail can be safely ignored if you did not initiate this action."
+msgstr ""
+
+#, fuzzy
+#| msgid "Sign In"
+msgid "Sign-In Code"
+msgstr "S'identifier"
+
+#, fuzzy
+#| msgid "Your password is now changed."
+msgid "Your password has been changed."
+msgstr "Votre mot de passe est maintenant modifié."
+
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Changed"
+msgstr "Réinitialisation du mot de passe"
+
+msgid ""
+"Your password reset code is listed below. Please enter it in your open "
+"browser window."
+msgstr ""
+
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Reset Code"
+msgstr "Réinitialisation du mot de passe"
+
+msgid ""
+"You're receiving this email because you or someone else has requested a "
+"password reset for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Reset Email"
+msgstr "Réinitialisation du mot de passe"
+
+#, fuzzy
+#| msgid "Your password is now changed."
+msgid "Your password has been reset."
+msgstr "Votre mot de passe est maintenant modifié."
+
+#, fuzzy
+#| msgid "Your password is now changed."
+msgid "Your password has been set."
+msgstr "Votre mot de passe est maintenant modifié."
+
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Set"
+msgstr "Réinitialisation du mot de passe"
+
+#, python-format
+msgid ""
+"You are receiving this email because you, or someone else, tried to access "
+"an account with email %(email)s. However, we do not have any record of such "
+"an account in our database."
+msgstr ""
+
+msgid "If it was you, you can sign up for an account using the link below."
+msgstr ""
+
+#, fuzzy
+#| msgid "Account"
+msgid "Unknown Account"
+msgstr "Compte"
+
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "Email Address"
+msgstr "Adresses e-mail"
+
+msgid "Current email"
+msgstr ""
+
+msgid "Changing to"
+msgstr ""
+
+msgid "Your email address is still pending verification."
+msgstr ""
+
+msgid "Cancel Change"
+msgstr ""
+
+#, fuzzy
+#| msgid "Change Password"
+msgid "Change to"
+msgstr "Changer le mot de passe"
+
+msgid "Change Email"
+msgstr ""
+
+#, fuzzy
+#| msgid "Confirm E-mail Address"
+msgid "Confirm Email Address"
+msgstr "Confirmez votre adresse email"
+
+#, fuzzy, python-format
+#| msgid ""
+#| "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-"
+#| "mail address for user %(user_display)s."
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email "
+"address for user %(user_display)s."
+msgstr ""
+"Veuillez confirmer que <a href=\"mailto:%(email)s\">%(email)s</a> est un e-"
+"mail adresse de l'utilisateur %(user_display)s."
+
+#, python-format
+msgid ""
+"Unable to confirm %(email)s because it is already confirmed by a different "
+"account."
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid ""
+#| "This e-mail confirmation link expired or is invalid. Please <a "
+#| "href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgid ""
+"This email confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new email confirmation request</a>."
+msgstr ""
+"Ce lien de confirmation par e-mail a expiré ou n'est pas valide. Veuillez<a "
+"href=\"%(email_url)s\">émettre une nouvelle demande de confirmation par e-"
+"mail</a>."
+
+msgid "Log In to your account"
+msgstr ""
+
+#, fuzzy
+#| msgid "Users"
+msgid "Username"
+msgstr "Utilisateurs"
+
+#, fuzzy
+#| msgid "Set Password"
+msgid "Password"
+msgstr "Définir le mot de passe"
+
+#, fuzzy
+#| msgid "change password"
+msgid "Enter your password"
+msgstr "changer le mot de passe"
+
+msgid "Remember me"
+msgstr ""
+
+#, fuzzy
+#| msgid "Forgot Password?"
+msgid "Forgot password?"
+msgstr "Mot de passe oublié?"
+
+#, fuzzy, python-format
+#| msgid ""
+#| "If you have not created an account yet, then please <a "
+#| "href=\"%(signup_url)s\">sign up</a> first."
+msgid ""
+"\n"
+"        If you haven't created an account yet, then please <a "
+"href=%(account_signup_url)s>sign up</a> first.\n"
+"        "
+msgstr ""
+"Si vous n'avez pas encore créé de compte, veuillez d'abord <a "
+"href=\"%(signup_url)s\">vous inscrire</a>."
+
+#, fuzzy
+#| msgid "Sign Out"
+msgid "Log Out"
+msgstr "Se déconnecter"
+
+#, fuzzy
+#| msgid "Are you sure you want to sign out?"
+msgid "Are you sure you want to log out?"
+msgstr "Êtes-vous certain de vouloir vous déconnecter?"
+
+#, python-format
+msgid "You cannot remove your primary email address (%(email)s)."
+msgstr ""
+
+#, python-format
+msgid "Confirmation email sent to %(email)s."
+msgstr ""
+
+#, python-format
+msgid "You have confirmed %(email)s."
+msgstr ""
+
+#, python-format
+msgid "Removed email address %(email)s."
+msgstr ""
+
+#, python-format
+msgid "Successfully signed in as %(name)s."
+msgstr ""
+
+msgid "You have signed out."
+msgstr ""
+
+#, python-format
+msgid "A sign-in code has been sent to %(recipient)s."
+msgstr ""
+
+#, fuzzy
+#| msgid "Information successfully updated"
+msgid "Password successfully changed."
+msgstr "Informations mises à jour avec succès"
+
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password successfully set."
+msgstr "Réinitialisation du mot de passe"
+
+#, python-format
+msgid "A verification code has been sent to %(phone)s."
+msgstr ""
+
+#, python-format
+msgid "You have verified phone number %(phone)s."
+msgstr ""
+
+msgid "Primary email address set."
+msgstr ""
+
+msgid "Your primary email address must be verified."
+msgstr ""
+
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+msgid "Forgot Password?"
+msgstr "Mot de passe oublié?"
+
+#, fuzzy
+#| msgid "Forgot Password?"
+msgid "Forgot your password?"
+msgstr "Mot de passe oublié?"
+
+#, fuzzy
+#| msgid ""
+#| "Forgotten your password? Enter your e-mail address below, and we'll send "
+#| "you an e-mail allowing you to reset it."
+msgid ""
+"Please enter your email address below, and we'll send you an email allowing "
+"you to reset your password."
 msgstr ""
 "Mot de passe oublié? Entrez votre adresse e-mail ci-dessous, et nous vous "
 "enverrons un e-mail vous permettant de le réinitialiser."
 
-#: tesys_tagboard/templates/account/password_reset.html:21
+#, fuzzy
+#| msgid "Add E-mail"
+msgid "Email"
+msgstr "Ajouter e-mail"
+
+#, fuzzy
+#| msgid "Verify Your E-mail Address"
+msgid "Enter your email address"
+msgstr "Vérifiez votre adresse e-mail"
+
 msgid "Reset My Password"
 msgstr "Réinitialiser mon mot de passe"
 
-#: tesys_tagboard/templates/account/password_reset.html:24
-msgid "Please contact us if you have any trouble resetting your password."
-msgstr ""
-"Veuillez nous contacter si vous rencontrez des difficultés pour réinitialiser"
-"votre mot de passe."
-
-#: tesys_tagboard/templates/account/password_reset_done.html:15
 msgid ""
-"We have sent you an e-mail. Please contact us if you do not receive it "
-"within a few minutes."
+"\n"
+"        <p>Your password email has been sent!</p>\n"
+"        <p>If don't receive it within a few minutes please check your spam "
+"folder. Otherwise contact the administrator directly.</p>\n"
+"        "
 msgstr ""
-"Nous vous avons envoyé un e-mail. Veuillez nous contacter si vous ne le "
-"recevez pas d'ici quelques minutes."
 
-#: tesys_tagboard/templates/account/password_reset_from_key.html:8
+msgid "Back to login page"
+msgstr ""
+
 msgid "Bad Token"
 msgstr "Token Invalide"
 
-#: tesys_tagboard/templates/account/password_reset_from_key.html:12
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "The password reset link was invalid, possibly because it has already been "
+#| "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+#| "reset</a>."
 msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
-"a>."
+"\n"
+"    The password reset link was invalid, possibly because it has already "
+"been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>.\n"
+"    "
 msgstr ""
-"Le lien de réinitialisation du mot de passe n'était pas valide, peut-être parce "
-"qu'il a déjà été utilisé. Veuillez faire une <a href=\"%(passwd_reset_url)s\"> "
-"nouvelle demande de réinitialisation de mot de passe</a>."
+"Le lien de réinitialisation du mot de passe n'était pas valide, peut-être "
+"parce qu'il a déjà été utilisé. Veuillez faire une <a "
+"href=\"%(passwd_reset_url)s\"> nouvelle demande de réinitialisation de mot "
+"de passe</a>."
 
-#: tesys_tagboard/templates/account/password_reset_from_key.html:18
-msgid "change password"
-msgstr "changer le mot de passe"
-
-#: tesys_tagboard/templates/account/password_reset_from_key.html:21
-#: tesys_tagboard/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
 msgstr "Votre mot de passe est maintenant modifié."
 
-#: tesys_tagboard/templates/account/password_set.html:6
-#: tesys_tagboard/templates/account/password_set.html:9
-#: tesys_tagboard/templates/account/password_set.html:14
 msgid "Set Password"
 msgstr "Définir le mot de passe"
 
-#: tesys_tagboard/templates/account/signup.html:6
+#, fuzzy
+#| msgid "Change Password"
+msgid "Change Phone"
+msgstr "Changer le mot de passe"
+
+msgid "Current phone"
+msgstr ""
+
+msgid "Your phone number is still pending verification."
+msgstr ""
+
+#, fuzzy
+#| msgid "Change Password"
+msgctxt "action"
+msgid "Change Phone"
+msgstr "Changer le mot de passe"
+
+#, fuzzy
+#| msgid "change password"
+msgid "Enter your password:"
+msgstr "changer le mot de passe"
+
+msgid "Send me a sign-in code"
+msgstr ""
+
+msgid "You will receive a special code for a password-free sign-in."
+msgstr ""
+
+msgid "Request Code"
+msgstr ""
+
+msgid "Other sign-in options"
+msgstr ""
+
 msgid "Signup"
 msgstr "S'inscrire"
 
-#: tesys_tagboard/templates/account/signup.html:9
-#: tesys_tagboard/templates/account/signup.html:19
-#: tesys_tagboard/templates/base.html:67
+msgid "Already have an account?"
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Passkey Sign Up"
+msgstr "S'inscrire"
+
+#, fuzzy, python-format
+#| msgid ""
+#| "Already have an account? Then please <a href=\"%(login_url)s\">sign in</"
+#| "a>."
+msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
+msgstr ""
+"Vous avez déjà un compte? Alors veuillez <a href=\"%(login_url)s\">vous "
+"connecter</a>."
+
 msgid "Sign Up"
 msgstr "S'inscrire"
 
-#: tesys_tagboard/templates/account/signup.html:11
-#, python-format
-msgid ""
-"Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
+msgid "Other options"
 msgstr ""
-"Vous avez déjà un compte? Alors veuillez <a href=\"%(login_url)s\">vous connecter</a>."
 
-#: tesys_tagboard/templates/account/signup_closed.html:5
-#: tesys_tagboard/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
 msgstr "Inscriptions closes"
 
-#: tesys_tagboard/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
 msgstr "Désolé, mais l'inscription est actuellement fermée."
 
-#: tesys_tagboard/templates/account/verification_sent.html:5
-#: tesys_tagboard/templates/account/verification_sent.html:8
-#: tesys_tagboard/templates/account/verified_email_required.html:5
-#: tesys_tagboard/templates/account/verified_email_required.html:8
-msgid "Verify Your E-mail Address"
+msgid "Note"
+msgstr ""
+
+#, python-format
+msgid "You are already logged in as %(user_display)s."
+msgstr ""
+
+msgid "Warning:"
+msgstr "Avertissement:"
+
+#, fuzzy
+#| msgid ""
+#| "You currently do not have any e-mail address set up. You should really "
+#| "add an e-mail address so you can receive notifications, reset your "
+#| "password, etc."
+msgid ""
+"You currently do not have any email address set up. You should really add an "
+"email address so you can receive notifications, reset your password, etc."
+msgstr ""
+"Vous n'avez actuellement aucune adresse e-mail configurée. Vous devriez "
+"ajouter une adresse e-mail pour reçevoir des notifications, réinitialiser "
+"votre mot de passe, etc."
+
+#, fuzzy
+#| msgid "Verify Your E-mail Address"
+msgid "Verify Your Email Address"
 msgstr "Vérifiez votre adresse e-mail"
 
-#: tesys_tagboard/templates/account/verification_sent.html:10
+#, fuzzy
+#| msgid ""
+#| "We have sent an e-mail to you for verification. Follow the link provided "
+#| "to finalize the signup process. Please contact us if you do not receive "
+#| "it within a few minutes."
 msgid ""
-"We have sent an e-mail to you for verification. Follow the link provided to "
-"finalize the signup process. Please contact us if you do not receive it "
-"within a few minutes."
-msgstr "Nous vous avons envoyé un e-mail pour vérification. Suivez le lien fourni "
-"pour finalisez le processus d'inscription. Veuillez nous contacter si vous ne le "
-"recevez pas d'ici quelques minutes."
+"We have sent an email to you for verification. Follow the link provided to "
+"finalize the signup process. If you do not see the verification email in "
+"your main inbox, check your spam folder. Please contact us if you do not "
+"receive the verification email within a few minutes."
+msgstr ""
+"Nous vous avons envoyé un e-mail pour vérification. Suivez le lien fourni "
+"pour finalisez le processus d'inscription. Veuillez nous contacter si vous "
+"ne le recevez pas d'ici quelques minutes."
 
-#: tesys_tagboard/templates/account/verified_email_required.html:12
+#, fuzzy
+#| msgid ""
+#| "This part of the site requires us to verify that\n"
+#| "you are who you claim to be. For this purpose, we require that you\n"
+#| "verify ownership of your e-mail address. "
 msgid ""
 "This part of the site requires us to verify that\n"
 "you are who you claim to be. For this purpose, we require that you\n"
-"verify ownership of your e-mail address. "
+"verify ownership of your email address. "
 msgstr ""
 "Cette partie du site nous oblige à vérifier que\n"
 "vous êtes qui vous prétendez être. Nous vous demandons donc de\n"
 "vérifier la propriété de votre adresse e-mail."
 
-#: tesys_tagboard/templates/account/verified_email_required.html:16
+#, fuzzy
+#| msgid ""
+#| "We have sent an e-mail to you for\n"
+#| "verification. Please click on the link inside this e-mail. Please\n"
+#| "contact us if you do not receive it within a few minutes."
 msgid ""
-"We have sent an e-mail to you for\n"
-"verification. Please click on the link inside this e-mail. Please\n"
+"We have sent an email to you for\n"
+"verification. Please click on the link inside that email. If you do not see "
+"the verification email in your main inbox, check your spam folder. "
+"Otherwise\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
 "Nous vous avons envoyé un e-mail pour\n"
-"vérification. Veuillez cliquer sur le lien contenu dans cet e-mail. Veuillez nous\n"
+"vérification. Veuillez cliquer sur le lien contenu dans cet e-mail. Veuillez "
+"nous\n"
 "contacter si vous ne le recevez pas d'ici quelques minutes."
 
-#: tesys_tagboard/templates/account/verified_email_required.html:20
+#, fuzzy, python-format
+#| msgid ""
+#| "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change "
+#| "your e-mail address</a>."
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"email address</a>."
+msgstr ""
+"<strong>Remarque :</strong> vous pouvez toujours <a "
+"href=\"%(email_url)s\">changer votre e-adresse e-mail</a>."
+
+msgid "Authorize"
+msgstr ""
+
+#, python-format
+msgid "%(client_name)s wants to access your %(site_name)s account."
+msgstr ""
+
+msgid "Enter Device Code"
+msgstr ""
+
+msgid "Enter the code displayed on your device."
+msgstr ""
+
+msgid "Continue"
+msgstr ""
+
+#, fuzzy
+#| msgid "Confirm"
+msgid "Confirm Device"
+msgstr "Confirm"
+
 #, python-format
 msgid ""
-"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
-"mail address</a>."
+"Please confirm the code shown on your %(client_name)s to authorize this "
+"device."
 msgstr ""
-"<strong>Remarque :</strong> vous pouvez toujours <a href=\"%(email_url)s\">changer votre e-"
-"adresse e-mail</a>."
 
-#: tesys_tagboard/templates/base.html:57
-msgid "My Profile"
+msgid "Code"
+msgstr ""
+
+msgid "Deny"
+msgstr ""
+
+msgid "Device Authorized"
+msgstr ""
+
+#, python-format
+msgid "You successfully authorized your %(client_name)s device."
+msgstr ""
+
+msgid "Device Denied"
+msgstr ""
+
+#, python-format
+msgid "Authorization for your %(client_name)s device has been denied."
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Two-Factor Authentication"
+msgstr ""
+
+msgid ""
+"Your account is protected by two-factor authentication. Please enter an "
+"authenticator code:"
+msgstr ""
+
+msgid "Use a security key"
+msgstr ""
+
+msgid ""
+"A new set of Two-Factor Authentication recovery codes has been generated."
+msgstr ""
+
+msgid "New Recovery Codes Generated"
+msgstr ""
+
+msgid "Authenticator app activated."
+msgstr ""
+
+msgid "Authenticator App Activated"
+msgstr ""
+
+msgid "Authenticator app deactivated."
+msgstr ""
+
+msgid "Authenticator App Deactivated"
+msgstr ""
+
+msgid "A new security key has been added."
+msgstr ""
+
+msgid "Security Key Added"
+msgstr ""
+
+msgid "A security key has been removed."
+msgstr ""
+
+msgid "Security Key Removed"
+msgstr ""
+
+msgid "Authenticator App"
+msgstr ""
+
+msgid "Authentication using an authenticator app is active."
+msgstr ""
+
+msgid "An authenticator app is not active."
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
+msgid "Activate"
+msgstr ""
+
+msgid "Security Keys"
+msgstr ""
+
+#, python-format
+msgid "You have added %(count)s security key."
+msgid_plural "You have added %(count)s security keys."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No security keys have been added."
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Recovery Codes"
+msgstr ""
+
+#, python-format
+msgid ""
+"There is %(unused_count)s out of %(total_count)s recovery codes available."
+msgid_plural ""
+"There are %(unused_count)s out of %(total_count)s recovery codes available."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No recovery codes set up."
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Generate"
+msgstr ""
+
+msgid "A new set of recovery codes has been generated."
+msgstr ""
+
+msgid "Security key added."
+msgstr ""
+
+msgid "Security key removed."
+msgstr ""
+
+msgid "Enter an authenticator code:"
+msgstr ""
+
+msgid "You are about to generate a new set of recovery codes for your account."
+msgstr ""
+
+msgid "This action will invalidate your existing codes."
+msgstr ""
+
+msgid "Are you sure?"
+msgstr ""
+
+msgid "Unused codes"
+msgstr ""
+
+msgid "Download codes"
+msgstr ""
+
+msgid "Generate new codes"
+msgstr ""
+
+msgid "Activate Authenticator App"
+msgstr ""
+
+msgid ""
+"To protect your account with two-factor authentication, scan the QR code "
+"below with your authenticator app. Then, input the verification code "
+"generated by the app below."
+msgstr ""
+
+msgid "Authenticator secret"
+msgstr ""
+
+msgid ""
+"You can store this secret and use it to reinstall your authenticator app at "
+"a later time."
+msgstr ""
+
+msgid "Deactivate Authenticator App"
+msgstr ""
+
+msgid ""
+"You are about to deactivate authenticator app based authentication. Are you "
+"sure?"
+msgstr ""
+
+msgid "Trust this Browser?"
+msgstr ""
+
+msgid ""
+"If you choose to trust this browser, you will not be asked for a "
+"verification code the next time you sign in."
+msgstr ""
+
+#, python-format
+msgid "Trust for %(period)s"
+msgstr ""
+
+msgid "Don't Trust"
+msgstr ""
+
+msgid "Add Security Key"
+msgstr ""
+
+msgid "Remove Security Key"
+msgstr ""
+
+#, fuzzy
+#| msgid "Are you sure you want to sign out?"
+msgid "Are you sure you want to remove this security key?"
+msgstr "Êtes-vous certain de vouloir vous déconnecter?"
+
+msgid "Key"
+msgstr ""
+
+msgid "Usage"
+msgstr ""
+
+msgid "Passkey"
+msgstr ""
+
+msgid "Security key"
+msgstr ""
+
+msgid "This key does not indicate whether it is a passkey."
+msgstr ""
+
+#, fuzzy
+#| msgid "Unverified"
+msgid "Unspecified"
+msgstr "Non vérifié"
+
+#, python-format
+msgid "Added on %(created_at)s"
+msgstr ""
+
+#, python-format
+msgid "Last used %(last_used)s"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit Security Key"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Create Passkey"
+msgstr ""
+
+msgid ""
+"You are about to create a passkey for your account. As you can add "
+"additional keys later on, you can use a descriptive name to tell the keys "
+"apart."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "This functionality requires JavaScript."
+msgstr ""
+
+#, fuzzy
+#| msgid "My Profile"
+msgid "Profile"
 msgstr "Mon Profil"
 
-#: tesys_tagboard/users/admin.py:17
+msgid "Sign Out"
+msgstr "Se déconnecter"
+
+msgid ""
+"The advanced post search uses a set of tokens separated by spaces to filter "
+"and sort the results. Below you will find a list of all the available tokens "
+"and some examples of how to build a search query."
+msgstr ""
+
+msgid ""
+"Each token may accept different operators and values. A token's supported "
+"operators will be listed with the following search operator icons."
+msgstr ""
+
+msgid ""
+"The equality operator which indicates that returned posts will have the same "
+"value as the token. Or, if the token supports wildcards, that all posts will "
+"match the wildcard expression."
+msgstr ""
+
+msgid ""
+"The less than operator which indicates that returned posts will have a value "
+"<em>less than</em> the token's value."
+msgstr ""
+
+msgid ""
+"The greater than operator which indicates that returned posts will have a "
+"value <em>greater than</em> the token's value."
+msgstr ""
+
+msgid ""
+"Some search tokens may accept wildcards in the specified search value. These "
+"will make the filter more permissive, allowing resulting posts that match "
+"where the wildcard(s) may be replaced with any value."
+msgstr ""
+
+#, fuzzy
+#| msgid "Bad Token"
+msgid "Token"
+msgstr "Token Invalide"
+
+msgid "Operators and Modifiers"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid ""
+"\n"
+"        <p>Here are a few simple queries to get you started.</p>\n"
+"        <p>This query will return all posts with the <em>blue</em> tag that "
+"have more than 5 tags total and have been added to a collection.</p>\n"
+"        <code class=\"p-3 px-4 bg-info text-info-content w-fit rounded-"
+"field\">blue tag_count&lt;5 collection=yes</code>\n"
+"        <p>This query will return all posts with a height of exactly 400 "
+"pixels and more than 3 comments.</p>\n"
+"        <code class=\"py-3 px-4 bg-info text-info-content w-fit rounded-"
+"field\">height=400 comment_count>3</code>\n"
+"        <p>This query will return all posts with a source URL on "
+"<code>discord.com</code> that have not yet been rated. Note the wildcard at "
+"the end of the source value that allows the source to match any URL "
+"originating from Discord.</p>\n"
+"        <code class=\"py-3 px-4 bg-info text-info-content w-fit rounded-"
+"field\">source=https://discord.com* rating_label=unrated</code>\n"
+"      "
+msgstr ""
+
+msgid "Third-Party Login Failure"
+msgstr ""
+
+msgid ""
+"An error occurred while attempting to login via your third-party account."
+msgstr ""
+
+#, fuzzy
+#| msgid "Account Inactive"
+msgid "Account Connections"
+msgstr "Compte inactif"
+
+#, fuzzy
+#| msgid "Please sign in with one of your existing third party accounts:"
+msgid ""
+"You can sign in to your account using any of the following third-party "
+"accounts:"
+msgstr "Veuillez vous connecter avec l'un de vos comptes tiers existants :"
+
+msgid "You currently have no third-party accounts connected to this account."
+msgstr ""
+
+msgid "Add a Third-Party Account"
+msgstr ""
+
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been connected to your account."
+msgstr ""
+
+msgid "Third-Party Account Connected"
+msgstr ""
+
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been disconnected from your "
+"account."
+msgstr ""
+
+msgid "Third-Party Account Disconnected"
+msgstr ""
+
+#, python-format
+msgid "Sign In via %(provider)s"
+msgstr ""
+
+#, python-format
+msgid "You are about to sign in using a third-party account from %(provider)s"
+msgstr ""
+
+msgid "Login Cancelled"
+msgstr ""
+
+#, python-format
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+
+msgid "The third-party account has been connected."
+msgstr ""
+
+msgid "The third-party account is already connected to a different account."
+msgstr ""
+
+msgid "The third-party account has been disconnected."
+msgstr ""
+
+#, python-format
+msgid ""
+"You are about to use your %(provider_name)s account to login to\n"
+"%(site_name)s. As a final step, please complete the following form:"
+msgstr ""
+
+msgid "Signed out of all other sessions."
+msgstr ""
+
+#, fuzzy
+#| msgid "Permissions"
+msgid "Sessions"
+msgstr "Permissions"
+
+msgid "Started At"
+msgstr ""
+
+#, fuzzy
+#| msgid "E-mail Addresses"
+msgid "IP Address"
+msgstr "Adresses e-mail"
+
+msgid "Browser"
+msgstr ""
+
+msgid "Last seen at"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Sign Out Other Sessions"
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
 msgid "Personal info"
 msgstr "Personal info"
 
-#: tesys_tagboard/users/admin.py:19
 msgid "Permissions"
 msgstr "Permissions"
 
-#: tesys_tagboard/users/admin.py:30
 msgid "Important dates"
 msgstr "Dates importantes"
 
-#: tesys_tagboard/users/apps.py:7
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: tesys_tagboard/users/forms.py:24
-#: tesys_tagboard/users/tests/test_forms.py:36
 msgid "This username has already been taken."
 msgstr "Ce nom d'utilisateur est déjà pris."
 
-#: tesys_tagboard/users/models.py:15
 msgid "Name of User"
 msgstr "Nom de l'utilisateur"
 
-#: tesys_tagboard/users/views.py:23
 msgid "Information successfully updated"
 msgstr "Informations mises à jour avec succès"
+
+msgid "Enter a valid tag name."
+msgstr ""
+
+msgid "Enter a valid username."
+msgstr ""
+
+msgid "Enter a positive integer."
+msgstr ""
+
+msgid "Enter a valid URL with wildcards"
+msgstr ""
+
+msgid "Enter a date of the form: YYYY-MM-DD"
+msgstr ""
+
+msgid "Enter \"yes\" or \"no\""
+msgstr ""
+
+msgid "Enter a valid collection name."
+msgstr ""
+
+msgid "Enter a valid collection name with wildcards."
+msgstr ""
+
+#, python-format
+msgid "The MIME type argument must match one of the supported MIME types: %s"
+msgstr ""
+
+#, python-format
+msgid "The file extension argument must match a supported file extension: %s"
+msgstr ""
+
+msgid "A tagset may only contain positive integers"
+msgstr ""
+
+#, python-format
+#~ msgid ""
+#~ "Or, <a href=\"%(signup_url)s\">sign up</a> for a %(site_name)s account "
+#~ "and sign in below:"
+#~ msgstr ""
+#~ "Ou, <a href=\"%(signup_url)s\">créez</a> un compte %(site_name)s et "
+#~ "connectez-vous ci-dessous :"
+
+#~ msgid "or"
+#~ msgstr "ou"
+
+#~ msgid "Please contact us if you have any trouble resetting your password."
+#~ msgstr ""
+#~ "Veuillez nous contacter si vous rencontrez des difficultés pour "
+#~ "réinitialiservotre mot de passe."
+
+#~ msgid ""
+#~ "We have sent you an e-mail. Please contact us if you do not receive it "
+#~ "within a few minutes."
+#~ msgstr ""
+#~ "Nous vous avons envoyé un e-mail. Veuillez nous contacter si vous ne le "
+#~ "recevez pas d'ici quelques minutes."

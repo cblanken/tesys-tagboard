@@ -33,11 +33,15 @@ jobs:
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
 
-  # With no caching at all the entire ci process takes 3m to complete!
   pytest:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install Just command runner
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
       - name: Checkout Code Repository
         uses: actions/checkout@v6
 
@@ -67,14 +71,18 @@ jobs:
             docs.cache-from=type=gha,scope=cached-docs
             docs.cache-to=type=gha,scope=cached-docs,mode=max
 
+
+      - name: Start django service
+        run: just up django
+
       - name: Check DB Migrations
-        run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
+        run: just manage makemigrations --check
 
       - name: Run DB Migrations
-        run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
+        run: just manage migrate
 
       - name: Run Django Tests
-        run: docker compose -f docker-compose.local.yml run django pytest
+        run: just test
 
       - name: Tear down the Stack
-        run: docker compose -f docker-compose.local.yml down
+        run: just down

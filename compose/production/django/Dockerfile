@@ -82,16 +82,14 @@ COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
 ENV PATH="/app/.venv/bin:$PATH"
 
 # make django owner of the WORKDIR directory as well.
-RUN chown -R django:django ${APP_HOME}
+RUN chown django:django ${APP_HOME}
 
 USER django
 
-# explicitly create static folder
+# explicitly create static and media folders
 RUN mkdir -p ${APP_HOME}/staticfiles
-# explicitly create the media folders before changing ownership below
 RUN mkdir -p ${APP_HOME}/tesys_tagboard/media/images
 RUN mkdir -p ${APP_HOME}/tesys_tagboard/media/thumbnails
-# explicitly create Tailwind static folder
 RUN mkdir -p ${APP_HOME}/tesys_tagboard/theme/static
 
 

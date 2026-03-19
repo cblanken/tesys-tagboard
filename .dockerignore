@@ -17,3 +17,4 @@ venv
 .pytest_cache
 staticfiles
 node_modules
+tesys_tagboard/media/
