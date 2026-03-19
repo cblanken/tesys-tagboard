@@ -9,6 +9,7 @@ def migrate_permissions(apps, schema_editor):
         create_permissions(app_config, apps=apps, verbosity=0)
         app_config.models_module = None
 
+
 def add_default_groups(apps, schema_editor):
     # Create default groups and set permissions
     Group = apps.get_model("auth.Group")
@@ -81,8 +82,14 @@ def add_default_groups(apps, schema_editor):
     mod_group.save()
     mod_group.permissions.set(mod_permissions)
 
-class Migration(migrations.Migration):
 
+def add_categories(apps, schema_editor):
+    TagCategory = apps.get_model("tesys_tagboard.TagCategory")
+    TagCategory(name="artist", bg="#bae1ff").save()
+    TagCategory(name="copyright", bg="#ffd3b6").save()
+
+
+class Migration(migrations.Migration):
     dependencies = [
         ("auth", "0012_alter_user_first_name_max_length"), # ensure auth migrations have run
         ('tesys_tagboard', '0001_initial'),
@@ -91,4 +98,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(migrate_permissions),
         migrations.RunPython(add_default_groups),
+        migrations.RunPython(add_categories),
     ]
