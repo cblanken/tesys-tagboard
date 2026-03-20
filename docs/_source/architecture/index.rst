@@ -8,7 +8,6 @@ services.
 .. toctree::
    :maxdepth: 1
 
-   index
    frontend
    backend
    configuration
