@@ -3,10 +3,7 @@
 strict = true
 minversion = "6.0"
 addopts = "--ds=config.settings.test --import-mode=importlib"
-python_files = [
-    "tests.py",
-    "test_*.py",
-]
+python_files = ["tests.py", "test_*.py"]
 
 # ==== Coverage ====
 [tool.coverage.run]
@@ -22,16 +19,14 @@ ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unused_configs = true
-plugins = [
-    "mypy_django_plugin.main",
-]
+plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
 # Django migrations should not produce any errors:
 module = "*.migrations.*"
 ignore_errors = true
 
-[[tool.pyright]]
+[tool.pyright]
 reportAttributeAccessIssue = "warning"
 venvPath = "."
 venv = ".venv"
@@ -60,73 +55,70 @@ indent_size = 2
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
-extend-exclude = [
-    "*/migrations/*.py",
-    "staticfiles/*",
-]
+extend-exclude = ["*/migrations/*.py", "staticfiles/*"]
 
 [tool.ruff.lint]
 select = [
-  "F",    # Pyflakes
-  "A",    # flake8-builtins rules for shadowed builtin var, functions, etc.
+  "F", # Pyflakes
+  "A", # flake8-builtins rules for shadowed builtin var, functions, etc.
   # "ARG",  # flake8-unused-arguments
   # "ANN",  # flake8-annotations for missing type annotations
-  "ASYNC",# flake8-async rules for asyncio
-  "B",    # flake8-bugbear rules for likely bugs or design problems
-  "BLE",  # flake8-blind-except for bare Exception or BaseException(s)
-  "C4",   # flake8-comprehensions rules
-  "C90",  # Cyclomatic complexity check
-  "COM",  # flake8-commas rules for trailing commas
-  "DJ",   # flake8-django detects bad practices in Django projects
-  "DTZ",  # flake8-datetimez check for naive datetimess
+  "ASYNC", # flake8-async rules for asyncio
+  "B",     # flake8-bugbear rules for likely bugs or design problems
+  "BLE",   # flake8-blind-except for bare Exception or BaseException(s)
+  "C4",    # flake8-comprehensions rules
+  "C90",   # Cyclomatic complexity check
+  "COM",   # flake8-commas rules for trailing commas
+  "DJ",    # flake8-django detects bad practices in Django projects
+  "DTZ",   # flake8-datetimez check for naive datetimess
   "E",
-  "EM",   # flake8-errmsg consistent exception error message formatting
-  "ERA",  # eradicate commented-out code
-  "EXE",  # flake8-executable check for correct shebang and permissions
-  "FA",   # flake8-future-annotations
-  "FBT",  # flake8-boolean-trap
-  "FLY",  # flynt: use f-string instead of static joins
-  "G",    # flake8-logging-format don't use format strings in logging messages
-  "I",    # isort sorted and missing imports
-  "ICN",  # flake8-import-conventions
-  "INP",  # flake8-no-pep420 to avoid implicit namespace packages
-  "INT",  # flake8-gettext
-  "ISC",  # flake8-implicit-str-concat use implicit string concatenation over multiple lines
-  "LOG",  # flake8-logging check for errors using standard logging module
-  "N",    # PEP 8 naming
-  "PERF", # Perflint
-  "PIE",  # flake8-pie
-  "PL",   # Pylint
-  "PT",   # flake8-pytest-style
-  "PTH",  # flake8-use-pathlib use pathlib instead of os equivalents
-  "PYI",  # flake-pyi
-  "Q",    # flake8-quotes for consistent quotes
-  "RET",  # flake8-return
-  "RSE",  # flake8-raise
-  "RUF",  # Ruff-specific rules
-  "S",    # flake8-bandit security rules
-  "SIM",  # flake8-simplify simplifies common expression and control flow
-  "SLF",  # flake8-self private member access
-  "SLOT", # flake8-slots
-  "T10",  # flake8-debugger check for debugger calls and imports
-  "T20",  # flake8-print
-  "TC",   # flake8-type-checking
-  "TID",  # flake8-tidy-imports
-  "TRY",  # tryceratops: exception handling antipatterns
-  "UP",   # Upgrade syntax for newer version of Python
-  "W",    # Pycode style warning
+  "EM",    # flake8-errmsg consistent exception error message formatting
+  "ERA",   # eradicate commented-out code
+  "EXE",   # flake8-executable check for correct shebang and permissions
+  "FA",    # flake8-future-annotations
+  "FBT",   # flake8-boolean-trap
+  "FLY",   # flynt: use f-string instead of static joins
+  "G",     # flake8-logging-format don't use format strings in logging messages
+  "I",     # isort sorted and missing imports
+  "ICN",   # flake8-import-conventions
+  "INP",   # flake8-no-pep420 to avoid implicit namespace packages
+  "INT",   # flake8-gettext
+  "ISC",   # flake8-implicit-str-concat use implicit string concatenation over multiple lines
+  "LOG",   # flake8-logging check for errors using standard logging module
+  "N",     # PEP 8 naming
+  "PERF",  # Perflint
+  "PIE",   # flake8-pie
+  "PL",    # Pylint
+  "PT",    # flake8-pytest-style
+  "PTH",   # flake8-use-pathlib use pathlib instead of os equivalents
+  "PYI",   # flake-pyi
+  "Q",     # flake8-quotes for consistent quotes
+  "RET",   # flake8-return
+  "RSE",   # flake8-raise
+  "RUF",   # Ruff-specific rules
+  "S",     # flake8-bandit security rules
+  "SIM",   # flake8-simplify simplifies common expression and control flow
+  "SLF",   # flake8-self private member access
+  "SLOT",  # flake8-slots
+  "T10",   # flake8-debugger check for debugger calls and imports
+  "T20",   # flake8-print
+  "TC",    # flake8-type-checking
+  "TID",   # flake8-tidy-imports
+  "TRY",   # tryceratops: exception handling antipatterns
+  "UP",    # Upgrade syntax for newer version of Python
+  "W",     # Pycode style warning
 ]
 
 ignore = [
-    "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
-    "S311", # Use of pseudo-random number generator detected
-    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-    "SIM102", # sometimes it's better to nest
-    "COM812", # may cause conflicts with the formatter
-    "PLR2004",# allow hardcoded values
-    # of types for comparison.
-    # Deactivated because it can make the code slow:
-    # https://github.com/astral-sh/ruff/issues/7871
+  "S101",    # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
+  "S311",    # Use of pseudo-random number generator detected
+  "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
+  "SIM102",  # sometimes it's better to nest
+  "COM812",  # may cause conflicts with the formatter
+  "PLR2004", # allow hardcoded values
+  # of types for comparison.
+  # Deactivated because it can make the code slow:
+  # https://github.com/astral-sh/ruff/issues/7871
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -142,36 +134,37 @@ report_level = "WARNING"
 
 [dependency-groups]
 dev = [
-    "aiosmtpd>=1.4.6",
-    "cookiecutter>=2.6.0",
-    "coverage==7.13.4",
-    "django-coverage-plugin==3.2.0",
-    "django-debug-toolbar==6.2.0",
-    "django-extensions==4.1",
-    "django-stubs[compatible-mypy]==5.2.9",
-    "djangorestframework-stubs==3.16.8",
-    "djlint==1.36.4",
-    "factory-boy==3.3.3",
-    "honcho>=2.0.0",
-    "ipdb==0.13.13",
-    "mypy==1.19.1",
-    "pre-commit==4.5.1",
-    "psycopg[binary]==3.3.3",
-    "pytest>=9.0",
-    "pytest-django==4.12.0",
-    "pytest-sugar==1.1.1",
-    "pytest-xdist>=3.8.0",
-    "ruff==0.15.2",
-    "watchfiles==1.1.1",
-    "werkzeug[watchdog]==3.1.6",
-    "sphinx==9.1.0",
-    "sphinx-autobuild==2025.8.25",
-    "sphinx-nefertiti>=0.9.8",
-    "sphinx-colorschemed-images>=0.3.0",
-    "sphinx-copybutton>=0.5.2",
-    "myst-parser>=5.0.0",
-    "sphinx-design>=0.7.0",
-    "rstcheck[sphinx,toml]>=6.2.5",
+  "aiosmtpd>=1.4.6",
+  "cookiecutter>=2.6.0",
+  "coverage==7.13.4",
+  "django-coverage-plugin==3.2.0",
+  "django-debug-toolbar==6.2.0",
+  "django-extensions==4.1",
+  "django-stubs[compatible-mypy]==5.2.9",
+  "djangorestframework-stubs==3.16.8",
+  "djlint==1.36.4",
+  "factory-boy==3.3.3",
+  "honcho>=2.0.0",
+  "ipdb==0.13.13",
+  "mypy==1.19.1",
+  "pre-commit==4.5.1",
+  "psycopg[binary]==3.3.3",
+  "pytest>=9.0",
+  "pytest-django==4.12.0",
+  "pytest-sugar==1.1.1",
+  "pytest-xdist>=3.8.0",
+  "ruff==0.15.2",
+  "watchfiles==1.1.1",
+  "werkzeug[watchdog]==3.1.6",
+  "sphinx==9.1.0",
+  "sphinx-autobuild==2025.8.25",
+  "sphinx-nefertiti>=0.9.8",
+  "sphinx-colorschemed-images>=0.3.0",
+  "sphinx-copybutton>=0.5.2",
+  "myst-parser>=5.0.0",
+  "sphinx-design>=0.7.0",
+  "rstcheck[sphinx,toml]>=6.2.5",
+  "taplo>=0.9.3",
 ]
 
 [project]
@@ -186,43 +179,44 @@ authors = [
 ]
 requires-python = "==3.14.*"
 dependencies = [
-    "argon2-cffi==25.1.0",
-    "crispy-bootstrap5==2025.6",
-    "crispy-tailwind>=1.0.3",
-    "django>=6.0.2",
-    "django-allauth[mfa,socialaccount]==65.14.3",
-    "django-anymail[mailgun,mailtrap]==14.0",
-    "django-browser-reload>=1.21.0",
-    "django-colorfield>=0.14.0",
-    "django-components>=0.143.1",
-    "django-cors-headers==4.9.0",
-    "django-crispy-forms==2.5",
-    "django-environ==0.13.0",
-    "django-htmx>=1.26.0",
-    "django-minify-html>=1.14.0",
-    "django-model-utils==5.0.0",
-    "django-ninja>=1.4.5",
-    "django-redis==6.0.0",
-    "django-silk>=5.4.3",
-    "django-tailwind>=4.3.0",
-    "django-template-partials>=25.2",
-    "django-typer>=3.5.1",
-    "django-watchfiles>=1.4.0",
-    "djangorestframework==3.16.1",
-    "gunicorn==25.1.0",
-    "hiredis==3.3.0",
-    "imagehash>=4.3.2",
-    "jwt>=1.4.0",
-    "markdown>=3.10",    "more-itertools>=10.8.0",
-    "pillow==12.1.1",
-    "psycopg2>=2.9.11",
-    "psycopg[c]==3.3.3",
-    "python-magic>=0.4.27",
-    "python-slugify==8.0.4",
-    "redis==7.2.0",
-    "rich>=14.2.0",
-    "typer>=0.24.1",
-    "uvicorn-worker==0.4.0",
-    "uvicorn[standard]==0.41.0",
-    "whitenoise==6.11.0",
+  "argon2-cffi==25.1.0",
+  "crispy-bootstrap5==2025.6",
+  "crispy-tailwind>=1.0.3",
+  "django>=6.0.2",
+  "django-allauth[mfa,socialaccount]==65.14.3",
+  "django-anymail[mailgun,mailtrap]==14.0",
+  "django-browser-reload>=1.21.0",
+  "django-colorfield>=0.14.0",
+  "django-components>=0.143.1",
+  "django-cors-headers==4.9.0",
+  "django-crispy-forms==2.5",
+  "django-environ==0.13.0",
+  "django-htmx>=1.26.0",
+  "django-minify-html>=1.14.0",
+  "django-model-utils==5.0.0",
+  "django-ninja>=1.4.5",
+  "django-redis==6.0.0",
+  "django-silk>=5.4.3",
+  "django-tailwind>=4.3.0",
+  "django-template-partials>=25.2",
+  "django-typer>=3.5.1",
+  "django-watchfiles>=1.4.0",
+  "djangorestframework==3.16.1",
+  "gunicorn==25.1.0",
+  "hiredis==3.3.0",
+  "imagehash>=4.3.2",
+  "jwt>=1.4.0",
+  "markdown>=3.10",
+  "more-itertools>=10.8.0",
+  "pillow==12.1.1",
+  "psycopg2>=2.9.11",
+  "psycopg[c]==3.3.3",
+  "python-magic>=0.4.27",
+  "python-slugify==8.0.4",
+  "redis==7.2.0",
+  "rich>=14.2.0",
+  "typer>=0.24.1",
+  "uvicorn-worker==0.4.0",
+  "uvicorn[standard]==0.41.0",
+  "whitenoise==6.11.0",
 ]
