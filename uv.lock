@@ -2352,7 +2352,6 @@ dev = [
     { name = "honcho" },
     { name = "ipdb" },
     { name = "mypy" },
-    { name = "myst-parser" },
     { name = "pre-commit" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pytest" },
@@ -2361,6 +2360,12 @@ dev = [
     { name = "pytest-xdist" },
     { name = "rstcheck", extra = ["sphinx"] },
     { name = "ruff" },
+    { name = "taplo" },
+    { name = "watchfiles" },
+    { name = "werkzeug", extra = ["watchdog"] },
+]
+docs = [
+    { name = "myst-parser" },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-colorschemed-images" },
@@ -2368,9 +2373,6 @@ dev = [
     { name = "sphinx-design" },
     { name = "sphinx-nefertiti" },
     { name = "sphinxcontrib-mermaid" },
-    { name = "taplo" },
-    { name = "watchfiles" },
-    { name = "werkzeug", extra = ["watchdog"] },
 ]
 
 [package.metadata]
@@ -2432,7 +2434,6 @@ dev = [
     { name = "honcho", specifier = ">=2.0.0" },
     { name = "ipdb", specifier = "==0.13.13" },
     { name = "mypy", specifier = "==1.19.1" },
-    { name = "myst-parser", specifier = ">=5.0.0" },
     { name = "pre-commit", specifier = "==4.5.1" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.3" },
     { name = "pytest", specifier = ">=9.0" },
@@ -2441,6 +2442,12 @@ dev = [
     { name = "pytest-xdist", specifier = ">=3.8.0" },
     { name = "rstcheck", extras = ["sphinx", "toml"], specifier = ">=6.2.5" },
     { name = "ruff", specifier = "==0.15.2" },
+    { name = "taplo", specifier = ">=0.9.3" },
+    { name = "watchfiles", specifier = "==1.1.1" },
+    { name = "werkzeug", extras = ["watchdog"], specifier = "==3.1.6" },
+]
+docs = [
+    { name = "myst-parser", specifier = ">=5.0.0" },
     { name = "sphinx", specifier = "==9.1.0" },
     { name = "sphinx-autobuild", specifier = "==2025.8.25" },
     { name = "sphinx-colorschemed-images", specifier = ">=0.3.0" },
@@ -2448,9 +2455,6 @@ dev = [
     { name = "sphinx-design", specifier = ">=0.7.0" },
     { name = "sphinx-nefertiti", specifier = ">=0.9.8" },
     { name = "sphinxcontrib-mermaid", specifier = ">=2.0.1" },
-    { name = "taplo", specifier = ">=0.9.3" },
-    { name = "watchfiles", specifier = "==1.1.1" },
-    { name = "werkzeug", extras = ["watchdog"], specifier = "==3.1.6" },
 ]
 
 [[package]]
