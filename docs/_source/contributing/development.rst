@@ -71,7 +71,7 @@ own instance create a ``.env`` in the project root directory and define
 all your custom environment variables there.
 
 For a detailed description of all the environment variables, please see
-the :doc:`settings`.
+the :doc:`../configuration/settings`.
 
 Debugging
 ---------
@@ -187,3 +187,4 @@ Database (Postgres)
 ~~~~~~~~~~~~~~~~~~~
 
 TODO
+

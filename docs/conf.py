@@ -38,9 +38,9 @@ author = "Cameron Blankenbuehler"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    "myst_parser",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -72,6 +72,10 @@ html_theme_options = {
             "text": "Deployment Guide",
             "link": "deployment",
             "match": "/deployment/*",
+        },
+        {
+            "text": "FAQ",
+            "link": "faq",
         },
     ],
 }
