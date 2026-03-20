@@ -71,7 +71,7 @@ own instance create a ``.env`` in the project root directory and define
 all your custom environment variables there.
 
 For a detailed description of all the environment variables, please see
-the :doc:`settings`.
+the :doc:`../configuration/settings`.
 
 Debugging
 ---------
@@ -81,7 +81,7 @@ tools <https://developer.chrome.com/docs/devtools>`__, the dev
 environment also includes the `Django Debug
 Toolbar <https://django-debug-toolbar.readthedocs.io/en/latest/index.html>`__
 . The Debug Toolbar can be enabled by setting the
-:ref:`DJANGO_DEBUG_TOOLBAR` environment variable to ``True`` in your
+:envvar:`DJANGO_DEBUG_TOOLBAR` environment variable to ``True`` in your
 ``.env`` file.
 
 Additionally, you may find it useful to set breakpoints in the django
@@ -151,9 +151,9 @@ how to setup OAuth2.
 
 The relevant environment variables are:
 
-- :ref:`DJANGO_DISCORD_CLIENT_ID`
-- :ref:`DJANGO_DISCORD_CLIENT_SECRET`
-- :ref:`DJANGO_DISCORD_PUBLIC_KEY`
+- :envvar:`DJANGO_DISCORD_CLIENT_ID`
+- :envvar:`DJANGO_DISCORD_CLIENT_SECRET`
+- :envvar:`DJANGO_DISCORD_PUBLIC_KEY`
 
 Testing Production Settings
 ---------------------------
@@ -161,7 +161,7 @@ Testing Production Settings
 By default the application will load the ``config.settings.local``
 settings module. To override this behavior, you can manage the
 application using the productions settings module with the
-:ref:`DJANGO_SETTINGS_MODULE` environment variable like so:
+:envvar:`DJANGO_SETTINGS_MODULE` environment variable like so:
 
 .. code:: sh
 
@@ -187,3 +187,4 @@ Database (Postgres)
 ~~~~~~~~~~~~~~~~~~~
 
 TODO
+

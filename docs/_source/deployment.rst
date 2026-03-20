@@ -1,8 +1,7 @@
 Deployment Guide
 ================
 
-Here you will find all the instructions for configuration and deploying
-your own instance of Tesy’s Tagboard.
+Here you will find all the instructions for deploying your own instance of Tesy’s Tagboard.
 
 System Requirements
 -------------------
@@ -44,8 +43,8 @@ Then create an admin user following the command prompts of ``createsuperuser``.
 
 See all the available application settings in `Settings <SETTINGS.md>`__
 
-Checking Logs
--------------
+Logs
+----
 
 Run the following to view the logs of all running services.
 .. code:: bash
@@ -64,7 +63,7 @@ Some Recommendations
 Following are a few recommendations for deployment.
 
 Reverse proxy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 TODO
 
@@ -73,7 +72,7 @@ Admin Endpoint
 
 Set the admin endpoint to a long randomized, alphanumeric value to avoid
 scanning or brute-force attempts. The endpoint for the admin dashboard
-can be set with the ``DJANGO_ADMIN_URL`` environment variable, which
+can be set with the :ref:`DJANGO_ADMIN_URL` environment variable, which
 defaults to ``/admin``.
 
 Set a Complex Admin Password
@@ -86,11 +85,12 @@ password. Preferably more than 24 characters.
 
 Schedule regular database backups.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TODO
 
 Require email confirmation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 Email confirmation is required by default, but it can be disabled.
-Setup one of the supported `email providers`_ or use your own SMTP
+Setup one of the :ref:`supported email providers <supported-email-providers>` or use your own SMTP
 server.
 
 
@@ -99,7 +99,7 @@ Deployment without cloning?
 
 TODO
 
-Configurating a CDN
--------------------
+Configuring Tesy's Tagboard with a CDN
+--------------------------------------
 
 TODO

@@ -44,6 +44,13 @@ repos:
       - id: djlint-reformat-django
       - id: djlint-django
 
+  # Run rstcheck lint hook
+  - repo: https://github.com/rstcheck/rstcheck
+    rev: v6.2.5
+    hooks:
+      - id: rstcheck
+        additional_dependencies: ['rstcheck[sphinx,toml]']
+
   # Tailwind class ordering commit hook
   # Credit to: Jeff Triplett (https://jefftriplett.com/2023/rustywind-pre-commit-hook/)
   - repo: local
@@ -56,6 +63,20 @@ repos:
         entry: rustywind
         args: [--write]
         types_or: [html]
+
+  # Run taplo lint hook for toml file linting
+  - repo: local
+    hooks:
+      - id: taplo-lint
+        name: taplo-lint
+        description: Lint TOML documents
+        entry: taplo lint
+        language: python
+        types: [toml]
+        args: [--default-schema-catalogs]
+        require_serial: false
+        additional_dependencies: []
+        minimum_pre_commit_version: "0"
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
