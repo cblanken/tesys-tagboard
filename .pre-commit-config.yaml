@@ -75,7 +75,8 @@ repos:
         types: [toml]
         args: [--default-schema-catalogs]
         require_serial: false
-        additional_dependencies: []
+        additional_dependencies:
+          - taplo
         minimum_pre_commit_version: "0"
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
