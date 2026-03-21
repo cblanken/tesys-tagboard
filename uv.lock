@@ -2447,14 +2447,14 @@ dev = [
     { name = "werkzeug", extras = ["watchdog"], specifier = "==3.1.6" },
 ]
 docs = [
-    { name = "myst-parser", specifier = ">=5.0.0" },
+    { name = "myst-parser", specifier = "==5.0.0" },
     { name = "sphinx", specifier = "==9.1.0" },
     { name = "sphinx-autobuild", specifier = "==2025.8.25" },
-    { name = "sphinx-colorschemed-images", specifier = ">=0.3.0" },
-    { name = "sphinx-copybutton", specifier = ">=0.5.2" },
-    { name = "sphinx-design", specifier = ">=0.7.0" },
-    { name = "sphinx-nefertiti", specifier = ">=0.9.8" },
-    { name = "sphinxcontrib-mermaid", specifier = ">=2.0.1" },
+    { name = "sphinx-colorschemed-images", specifier = "==0.3.0" },
+    { name = "sphinx-copybutton", specifier = "==0.5.2" },
+    { name = "sphinx-design", specifier = "==0.7.0" },
+    { name = "sphinx-nefertiti", specifier = "==0.9.8" },
+    { name = "sphinxcontrib-mermaid", specifier = "==2.0.1" },
 ]
 
 [[package]]
