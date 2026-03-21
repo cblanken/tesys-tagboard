@@ -22,12 +22,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock,readwrite \
-    uv sync --no-install-project
+    uv sync --no-install-project --group docs
 
 COPY . ${APP_HOME}
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
+    uv sync --group docs
 
 
 # Python 'run' stage
