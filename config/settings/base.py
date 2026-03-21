@@ -386,6 +386,9 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # END Django Cookiecutter config
 # ------------------------------------------------------------------------------
 
+# Tailwind
+TAILWIND_APP_NAME = "tesys_tagboard.theme"
+
 # DaisyUI themes
 THEMES = [
     "light-1",
@@ -397,7 +400,7 @@ THEMES = [
 
 TITLE = env.str("DJANGO_TITLE", default=" Tagboard")
 
-HOMEPAGE_LINKS = env.list(
+HOMEPAGE_LINKS: list[tuple] = env.list(
     "DJANGO_HOMEPAGE_LINKS",
     default=[
         ("Home", "/"),

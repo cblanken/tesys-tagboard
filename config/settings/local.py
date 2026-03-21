@@ -8,7 +8,7 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", True)
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
+SECRET_KEY = env.str(
     "DJANGO_SECRET_KEY",
     default="FMR6xbXvhIvyW4GnKJRAFNrhkFUqgVea0dQBT9cfXOdAngG13eB6ZiGMQok5eGPt",
 )
@@ -28,13 +28,13 @@ CACHES = {
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
+EMAIL_BACKEND = env.str(
     "DJANGO_EMAIL_BACKEND",
     default="django.core.mail.backends.smtp.EmailBackend",
 )
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", "tesys_tagboard_local_mailpit")
-EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD")
-EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD", default="")
+EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER", default="")
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", 1025)
 
 
@@ -98,5 +98,3 @@ INSTALLED_APPS += ["django_watchfiles"]
 
 # Tesy's Tagboard dev apps
 INSTALLED_APPS += []
-
-TAILWIND_APP_NAME = "tesys_tagboard.theme"
