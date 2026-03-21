@@ -22,7 +22,7 @@ if os.getenv("READTHEDOCS", default="False") == "True":
 else:
     sys.path.insert(0, os.path.abspath("/app"))
 os.environ["DATABASE_URL"] = "sqlite:///readthedocs.db"
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.docs")
 django.setup()
 
 # -- Project information -----------------------------------------------------

@@ -47,7 +47,7 @@ INSTALLED_APPS = ["whitenoise.runserver_nostatic", *INSTALLED_APPS]
 # ------------------------------------------------------------------------------
 CRISPY_FAIL_SILENTLY = False
 
-DEBUG_TOOLBAR = env.bool("DJANGO_DEBUG_TOOLBAR", True)
+DEBUG_TOOLBAR = env.bool("DJANGO_DEBUG_TOOLBAR", False)
 if DEBUG_TOOLBAR:
     # django-debug-toolbar
     # ------------------------------------------------------------------------------
