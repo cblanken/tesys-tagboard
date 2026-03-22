@@ -18,7 +18,7 @@ build:
       - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --frozen --no-dev --group docs
     build:
       html:
-        - DJANGO_SETTINGS_MODULE="config.settings.docs" python -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs/_source/ docs/_build/html/
+        - DJANGO_SETTINGS_MODULE="config.settings.docs" python -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs/_source/ $READTHEDOCS_OUTPUT/html/
 
 sphinx:
   configuration: docs/_source/conf.py
