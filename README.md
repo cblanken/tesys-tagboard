@@ -1,18 +1,20 @@
 # Tesy's Tagboard
 
-[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Built with Django](https://img.shields.io/badge/6.0-django?style=flat&logo=django&label=django&labelColor=092E20&color=404242)](https://www.djangoproject.com)
+[![Documentation](https://app.readthedocs.org/projects/tesys-tagboard/badge/?version=latest&style=flat)](https://tesys-tagboard.readthedocs.io)
 
-This is a self-hosted booru and media tagging application.
 
-The name is an homage to the wonderful web serial [_The Wandering Inn_](https://wanderinginn.com) and one of it's characters, [Tesy](https://wiki.wanderinginn.com/Tesy).
+Tesy's Tagboard is a self-hosted booru and media tagging application. Initially inspired by other booru application like [Shimmie2](https://github.com/shish/shimmie2) and [Szurubooru](https://github.com/rr-/szurubooru).
+
+The name is an homage to the character [Tesy](https://wiki.wanderinginn.com/Tesy) from the wonderful web serial [_The Wandering Inn_](https://wanderinginn.com).
 
 ## Contributing
-If you'd like to help out with the development of this project please read both the [DEVELOPMENT.md](/docs/_source/DEVELOPMENT.md) and [CONTRIBUTING.md](/CONTRIBUTING.md) documents. They explain how to get started and the guidelines for submitting changes.
+If you'd like to help out with the development of this project please read through the [How to contribute](https://tesys-tagboard.readthedocs.io/en/latest/contributing/index.html#How%20to%20contribute) section of the [docs](https://tesys-tagboard.readthedocs.io/).
 
-If you can't contribute via code, don't worry! Submitting feature requests and bug reports is a perfectly good way to help out. Please submit any reports to the [issue tracker](https://github.com/cblanken/tesys-tagboard/issues).
+If you can't contribute via code, don't worry! Submitting feature requests and bug reports is a perfectly good way to help out. Please submit any bug reports or feature requests to the [issue tracker](https://github.com/cblanken/tesys-tagboard/issues).
 
 ## Deployment
-All guidance on how to deploy your own instance of Tesy's Tagbord can be found in the [deployment docs]().
+All guidance on how to deploy your own instance of Tesy's Tagboard can be found in the [Deployment Guide](https://tesys-tagboard.readthedocs.io/en/latest/deployment.html).
 
 ## Architecture
-Please see the [ARCHITECTURE.md](/docs/ARCHITECTURE.md) document for details on the structure of the project and the technology used to bulid Tesy's Tagboard.
+Please see the [architecture docs](https://tesys-tagboard.readthedocs.io/en/latest/architecture/) for details on the structure and technology used to build Tesy's Tagboard.
