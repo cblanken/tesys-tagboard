@@ -259,6 +259,7 @@ class PostSearchTokenCategory(Enum):
     TAG = WildcardSearchTokenCategory(
         name="",
         desc=_(
+            # Translators: Description for the "wildcard" search token
             "The default (un-named) token. When a plain string without any operator "
             "is given it will be interpreted as a tag name."
         ),
@@ -267,72 +268,121 @@ class PostSearchTokenCategory(Enum):
 
     TAG_ID = SimpleSearchTokenCategory(
         name=_("tag_id"),
+        # Translators: Description for the "tag_id" search token
         desc=_("The ID of a tag."),
         arg_validator=positive_int_validator,
     )
 
     POST_ID = ComparisonSearchTokenCategory(
+        # Translators: Name of the "id" search token
         name=_("id"),
+        # Translators: Description for the "id" search token
         desc=_("The ID of a post."),
         arg_validator=positive_int_validator,
     )
 
     TAG_ALIAS = WildcardSearchTokenCategory(
+        # Translators: Name of the "alias" search token
         name=_("alias"),
+        # Translators: Description for the "alias" search token
         desc=_("The name of a tag alias."),
-        aliases=("tag_alias",),
+        aliases=(
+            # Translators: Alias for the "alias" search token
+            _("tag_alias"),
+        ),
         arg_validator=tag_name_validator,
     )
 
     TAG_COUNT = ComparisonSearchTokenCategory(
+        # Translators: Name of the "tag_count" search token
         name=_("tag_count"),
+        # Translators: Description for the "tag_count" search token
         desc=_("The number of tags on a post."),
-        aliases=("tc",),
+        aliases=(
+            # Translators: Alias for the "tag_count" search token
+            _("tc"),
+        ),
         arg_validator=positive_int_validator,
     )
 
     COMMENT_BY = WildcardSearchTokenCategory(
+        # Translators: Name of the "comment_by" search token
         name=_("comment_by"),
+        # Translators: Description for the "comment_by" search token
         desc=_("The username of a user that has commented on a post"),
-        aliases=("comment", "cb"),
+        aliases=(
+            # Translators: Alias for the "comment_by" search token
+            _("comment"),
+            # Translators: Alias for the "comment_by" search token
+            _("cb"),
+        ),
         arg_validator=username_validator,
     )
 
     COMMENT_COUNT = ComparisonSearchTokenCategory(
+        # Translators: Name of the "comment_count" search token
         name=_("comment_count"),
+        # Translators: Description for the "comment_count" search token
         desc=_("The number of comments on a post."),
-        aliases=("cc",),
+        aliases=(
+            # Translators: Alias for the "comment_count" search token
+            _("cc"),
+        ),
         arg_validator=positive_int_validator,
     )
 
     FAV_COUNT = ComparisonSearchTokenCategory(
+        # Translators: Name of the "fav_count" search token
         name=_("favorite_count"),
+        # Translators: Description for the "fav_count" search token
         desc=_("The number of favorites recieved by a post."),
-        aliases=("fav_count", "fc"),
+        aliases=(
+            # Translators: Alias for the "fav_count" search token
+            _("fav_count"),
+            # Translators: Alias for the "fav_count" search token
+            _("fc"),
+        ),
         arg_validator=positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchTokenCategory(
+        # Translators: Name of the "height" search token
         name=_("height"),
+        # Translators: Description for the "height" search token
         desc=_("The height of a Post (only applies to images and videos)."),
-        aliases=("h",),
+        aliases=(
+            # Translators: Alias for the "height" search token
+            _("h"),
+        ),
         arg_validator=validators.integer_validator,
     )
 
     WIDTH = ComparisonSearchTokenCategory(
+        # Translators: Name of the "width" search token
         name=_("width"),
+        # Translators: Description for the "width" search token
         desc=_("The width of a Post (only applies to images and videos."),
-        aliases=("w",),
+        aliases=(
+            # Translators: Alias for the "width" search token
+            _("w"),
+        ),
         arg_validator=validators.integer_validator,
     )
 
     RATING_LABEL = SimpleSearchTokenCategory(
+        # Translators: Name of the "rating_label" search token
         name=_("rating_label"),
+        # Translators: Description for the "rating_label" search token
         desc=_(
             "The rating of a Post. Accepts one of safe, unrated, questionable, "
             "and explicit."
         ),
-        aliases=("rate", "r"),
+        aliases=(
+            # Translators: Alias for the "rating_label" search token
+            _("rate"),
+            # Translators: Alias for the "rating_label" search token
+            _("r"),
+        ),
         arg_validator=rating_label_validator,
     )
 
@@ -343,82 +393,129 @@ class PostSearchTokenCategory(Enum):
     )
 
     SOURCE = WildcardSearchTokenCategory(
+        # Translators: Name of the "source" search token
         name=_("source"),
+        # Translators: Description for the "source" search token
         desc=_("The source url of a post."),
-        aliases=("src",),
+        aliases=(
+            # Translators: Alias for the "source" search token
+            _("src"),
+        ),
         arg_validator=validators.URLValidator(),
         wildcard_arg_validator=wildcard_url_validator,
     )
 
     POSTED_BY = WildcardSearchTokenCategory(
+        # Translators: Name of the "posted_by" search token
         name=_("posted_by"),
+        # Translators: Description for the "posted_by" search token
         desc=_("The username of the uploader of a post."),
-        aliases=("uploaded_by",),
+        aliases=(
+            # Translators: Alias for the "posted_by" search token
+            _("uploaded_by"),
+        ),
         arg_validator=username_validator,
     )
 
     POSTED_ON = ComparisonSearchTokenCategory(
+        # Translators: Name of the "posted_on" search token
         name=_("posted_on"),
+        # Translators: Description for the "posted_on" search token
         desc=_("The date the post was posted on."),
-        aliases=("uploaded_on",),
+        aliases=(
+            # Translators: Alias for the "posted_on" search token
+            _("uploaded_on"),
+        ),
         arg_validator=iso_date_validator,
     )
 
     MIMETYPE = SimpleSearchTokenCategory(
+        # Translators: Name of the "mimetype" search token
         name=_("mimetype"),
+        # Translators: Description for the "mimetype" search token
         desc=_("The MIME type of the post's file."),
-        aliases=("mime",),
+        aliases=(
+            # Translators: Alias for the "mimetype" search token
+            _("mime"),
+        ),
         arg_validator=mimetype_validator,
     )
 
     FILE_EXTENSION = SimpleSearchTokenCategory(
-        name=_("extension"),
+        # Translators: Name of the "file_extension" search token
+        name=_("file_extension"),
+        # Translators: Description for the "file_extension" search token
         desc=_("The file extension of the post's related file."),
-        aliases=("ext",),
+        aliases=(
+            # Translators: Alias for the "file_extension" search token
+            _("extension"),
+            # Translators: Alias for the "file_extension" search token
+            _("ext"),
+        ),
         arg_validator=file_extension_validator,
     )
 
     COLLECTION_ID = SimpleSearchTokenCategory(
+        # Translators: Name of the "collection_id" search token
         name=_("collection_id"),
+        # Translators: Description for the "collection_id" search token
         desc=_("The ID of a collection."),
         arg_validator=positive_int_validator,
     )
 
     COLLECTION = SimpleSearchTokenCategory(
+        # Translators: Name of the "collection" search token
         name=_("collection"),
+        # Translators: Description for the "collection" search token
         desc=_("Whether or not a post is part of a collection (yes/no)."),
-        aliases=("in_collection",),
+        aliases=(
+            # Translators: Alias for the "collection" search token
+            _("in_collection"),
+        ),
         arg_validator=yes_no_validator,
     )
 
     COLLECTION_NAME = WildcardSearchTokenCategory(
+        # Translators: Name of the "collection_name" search token
         name=_("collection_name"),
+        # Translators: Description for the "collection_name" search token
         desc=_("A collection's name."),
         arg_validator=collection_name_validator,
         wildcard_arg_validator=wildcard_collection_name_validator,
     )
 
     PARENT = SimpleSearchTokenCategory(
+        # Translators: Name of the "parent" search token
         name=_("parent"),
+        # Translators: Description for the "parent" search token
         desc=_("Whether or not a post has a parent (yes/no)."),
         arg_validator=yes_no_validator,
     )
 
     PARENT_ID = SimpleSearchTokenCategory(
+        # Translators: Name of the "parent_id" search token
         name=_("parent_id"),
+        # Translators: Description for the "parent_id" search token
         desc=_("Whether or not a post has a parent matching the given post ID."),
         arg_validator=positive_int_validator,
     )
 
     CHILD = SimpleSearchTokenCategory(
+        # Translators: Name of the "children" search token
         name=_("children"),
+        # Translators: Description for the "children" search token
         desc=_("Whether or not a post has any children (yes/no)."),
-        aliases=("child",),
+        aliases=(
+            # Translators: Alias for the "children" search token
+            _("child"),
+        ),
         arg_validator=yes_no_validator,
     )
 
     CHILD_ID = SimpleSearchTokenCategory(
+        # Translators: Name of the "child_id" search token
         name=_("child_id"),
+        # Translators: Description for the "child_id" search token
         desc=_("Whether or not a post has a child post matching the given post ID."),
         arg_validator=positive_int_validator,
     )

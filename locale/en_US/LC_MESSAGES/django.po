@@ -7,292 +7,694 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 13:58+0000\n"
+"POT-Creation-Date: 2026-03-23 20:18+0000\n"
 "Language: en-US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: config/settings/base.py:30
 msgid "English"
 msgstr ""
 
+#: config/settings/base.py:31
 msgid "French"
 msgstr ""
 
+#: config/settings/base.py:32
 msgid "German"
 msgstr ""
 
+#: config/settings/base.py:33
 msgid "Spanish"
 msgstr ""
 
+#: tesys_tagboard/components/create_collection/create_collection.html:4
+msgid "Create a collection"
+msgstr ""
+
+#: tesys_tagboard/components/create_collection/create_collection.html:31
+#: tesys_tagboard/templates/mfa/webauthn/signup_form.html:23
+msgid "Create"
+msgstr ""
+
+#: tesys_tagboard/components/create_tag/create_tag.html:8
 msgid "Create a tag"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:11
+#: tesys_tagboard/components/create_tag/create_tag.html:16
 msgid "Tag name"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:19
 msgid "Category"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:21
 msgid "Pick a category"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:26
 msgid "Rating (optional)"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:28
 msgid "Pick a rating level"
 msgstr ""
 
+#: tesys_tagboard/components/create_tag/create_tag.html:35
+msgid "Create Tag"
+msgstr ""
+
+#: tesys_tagboard/components/create_tag_alias/create_tag_alias.html:8
+msgid "Create a tag alias"
+msgstr ""
+
+#: tesys_tagboard/components/create_tag_alias/create_tag_alias.html:27
+msgid "Create Alias"
+msgstr ""
+
+#: tesys_tagboard/components/post_thumbnail/post_thumbnail.html:38
 msgid "This post doesn't have any tags assigned yet!"
 msgstr ""
 
+#: tesys_tagboard/forms.py:68 tesys_tagboard/forms.py:106
 msgid "Source"
 msgstr ""
 
+#: tesys_tagboard/forms.py:72
 msgid "File"
 msgstr ""
 
+#: tesys_tagboard/forms.py:104
 msgid "Title"
 msgstr ""
 
-msgid ""
-"The default (un-named) token. When a plain string without any operator is "
-"given it will be interpreted as a tag."
+#: tesys_tagboard/models.py:85
+msgid "A parent tag category. Used for organizing tag categories into groups"
 msgstr ""
 
+#: tesys_tagboard/models.py:91
+msgid "Background color for tags in this category"
+msgstr ""
+
+#: tesys_tagboard/models.py:94
+msgid "Text color for tags in this category"
+msgstr ""
+
+#: tesys_tagboard/models.py:98
+msgid "tag category"
+msgstr ""
+
+#: tesys_tagboard/models.py:99
+msgid "tag categories"
+msgstr ""
+
+#: tesys_tagboard/models.py:168
+msgid "tag"
+msgstr ""
+
+#: tesys_tagboard/models.py:169
+msgid "tags"
+msgstr ""
+
+#: tesys_tagboard/models.py:196
+msgid "tag alias"
+msgstr ""
+
+#: tesys_tagboard/models.py:197
+msgid "tag aliases"
+msgstr ""
+
+#: tesys_tagboard/models.py:215
+msgid "default post tag"
+msgstr ""
+
+#: tesys_tagboard/models.py:216
+msgid "default post tags"
+msgstr ""
+
+#: tesys_tagboard/models.py:230
+msgid "artist"
+msgstr ""
+
+#: tesys_tagboard/models.py:231
+msgid "artists"
+msgstr ""
+
+#: tesys_tagboard/models.py:422
+msgid "post"
+msgstr ""
+
+#: tesys_tagboard/models.py:423
+msgid "posts"
+msgstr ""
+
+#: tesys_tagboard/models.py:521
+msgid "image"
+msgstr ""
+
+#: tesys_tagboard/models.py:522
+msgid "images"
+msgstr ""
+
+#: tesys_tagboard/models.py:581
+msgid "video"
+msgstr ""
+
+#: tesys_tagboard/models.py:582
+msgid "videos"
+msgstr ""
+
+#: tesys_tagboard/models.py:612
+msgid "audio"
+msgstr ""
+
+#: tesys_tagboard/models.py:613
+msgid "audios"
+msgstr ""
+
+#: tesys_tagboard/models.py:647
+msgid "source history"
+msgstr ""
+
+#: tesys_tagboard/models.py:648
+msgid "source histories"
+msgstr ""
+
+#: tesys_tagboard/models.py:669
+msgid "post tag history"
+msgstr ""
+
+#: tesys_tagboard/models.py:670
+msgid "post tag histories"
+msgstr ""
+
+#. Translators: Name of the "collection" search token
+#: tesys_tagboard/models.py:703 tesys_tagboard/search.py:468
+msgid "collection"
+msgstr ""
+
+#: tesys_tagboard/models.py:704
+msgid "collections"
+msgstr ""
+
+#. Translators: Alias for the "comment_by" search token
+#: tesys_tagboard/models.py:752 tesys_tagboard/search.py:315
+msgid "comment"
+msgstr ""
+
+#: tesys_tagboard/models.py:753
+msgid "comments"
+msgstr ""
+
+#: tesys_tagboard/models.py:778
+msgid "favorite"
+msgstr ""
+
+#: tesys_tagboard/models.py:779
+msgid "favorites"
+msgstr ""
+
+#. Translators: Description for the "wildcard" search token
+#: tesys_tagboard/search.py:263
+msgid ""
+"The default (un-named) token. When a plain string without any operator is "
+"given it will be interpreted as a tag name."
+msgstr ""
+
+#: tesys_tagboard/search.py:270
 msgid "tag_id"
 msgstr ""
 
+#. Translators: Description for the "tag_id" search token
+#: tesys_tagboard/search.py:272
 msgid "The ID of a tag."
 msgstr ""
 
+#. Translators: Name of the "id" search token
+#: tesys_tagboard/search.py:278
 msgid "id"
 msgstr ""
 
-msgid "The ID of a Post."
+#. Translators: Description for the "id" search token
+#: tesys_tagboard/search.py:280
+msgid "The ID of a post."
 msgstr ""
 
+#. Translators: Name of the "alias" search token
+#: tesys_tagboard/search.py:286
 msgid "alias"
 msgstr ""
 
-msgid "The name of a TagAlias."
+#. Translators: Description for the "alias" search token
+#: tesys_tagboard/search.py:288
+msgid "The name of a tag alias."
 msgstr ""
 
+#. Translators: Alias for the "alias" search token
+#: tesys_tagboard/search.py:291
+msgid "tag_alias"
+msgstr ""
+
+#. Translators: Name of the "tag_count" search token
+#: tesys_tagboard/search.py:298
 msgid "tag_count"
 msgstr ""
 
-msgid "The number of tags on a Post."
+#. Translators: Description for the "tag_count" search token
+#: tesys_tagboard/search.py:300
+msgid "The number of tags on a post."
 msgstr ""
 
+#. Translators: Alias for the "tag_count" search token
+#: tesys_tagboard/search.py:303
+msgid "tc"
+msgstr ""
+
+#. Translators: Name of the "comment_by" search token
+#: tesys_tagboard/search.py:310
 msgid "comment_by"
 msgstr ""
 
-msgid "The username of a user that has commented on a Post"
+#. Translators: Description for the "comment_by" search token
+#: tesys_tagboard/search.py:312
+msgid "The username of a user that has commented on a post"
 msgstr ""
 
+#. Translators: Alias for the "comment_by" search token
+#: tesys_tagboard/search.py:317
+msgid "cb"
+msgstr ""
+
+#. Translators: Name of the "comment_count" search token
+#: tesys_tagboard/search.py:324
 msgid "comment_count"
 msgstr ""
 
-msgid "The number of comments on a Post."
+#. Translators: Description for the "comment_count" search token
+#: tesys_tagboard/search.py:326
+msgid "The number of comments on a post."
 msgstr ""
 
+#. Translators: Alias for the "comment_count" search token
+#: tesys_tagboard/search.py:329
+msgid "cc"
+msgstr ""
+
+#. Translators: Name of the "fav_count" search token
+#: tesys_tagboard/search.py:336
 msgid "favorite_count"
 msgstr ""
 
-msgid "The number of favorites recieved by a Post."
+#. Translators: Description for the "fav_count" search token
+#: tesys_tagboard/search.py:338
+msgid "The number of favorites recieved by a post."
 msgstr ""
 
+#. Translators: Alias for the "fav_count" search token
+#: tesys_tagboard/search.py:341
+msgid "fav_count"
+msgstr ""
+
+#. Translators: Alias for the "fav_count" search token
+#: tesys_tagboard/search.py:343
+msgid "fc"
+msgstr ""
+
+#. Translators: Name of the "height" search token
+#: tesys_tagboard/search.py:350
 msgid "height"
 msgstr ""
 
-msgid "The height of a Post (only applies to Images and Videos)."
+#. Translators: Description for the "height" search token
+#: tesys_tagboard/search.py:352
+msgid "The height of a Post (only applies to images and videos)."
 msgstr ""
 
+#. Translators: Alias for the "height" search token
+#: tesys_tagboard/search.py:355
+msgid "h"
+msgstr ""
+
+#. Translators: Name of the "width" search token
+#: tesys_tagboard/search.py:362
 msgid "width"
 msgstr ""
 
-msgid "The width of a Post (only applies to Images and Videos."
+#. Translators: Description for the "width" search token
+#: tesys_tagboard/search.py:364
+msgid "The width of a Post (only applies to images and videos."
 msgstr ""
 
+#. Translators: Alias for the "width" search token
+#: tesys_tagboard/search.py:367
+msgid "w"
+msgstr ""
+
+#. Translators: Name of the "rating_label" search token
+#: tesys_tagboard/search.py:374
 msgid "rating_label"
 msgstr ""
 
+#: tesys_tagboard/search.py:377
 msgid ""
 "The rating of a Post. Accepts one of safe, unrated, questionable, and "
 "explicit."
 msgstr ""
 
+#. Translators: Alias for the "rating_label" search token
+#: tesys_tagboard/search.py:382
+msgid "rate"
+msgstr ""
+
+#. Translators: Alias for the "rating_label" search token
+#: tesys_tagboard/search.py:384
+msgid "r"
+msgstr ""
+
+#: tesys_tagboard/search.py:390
 msgid "rating_num"
 msgstr ""
 
-msgid "The rating level of a Post."
+#: tesys_tagboard/search.py:391
+msgid "The rating level of a post."
 msgstr ""
 
+#. Translators: Name of the "source" search token
+#: tesys_tagboard/search.py:397
 msgid "source"
 msgstr ""
 
-msgid "The source url of a Post."
+#. Translators: Description for the "source" search token
+#: tesys_tagboard/search.py:399
+msgid "The source url of a post."
 msgstr ""
 
+#. Translators: Alias for the "source" search token
+#: tesys_tagboard/search.py:402
+msgid "src"
+msgstr ""
+
+#. Translators: Name of the "posted_by" search token
+#: tesys_tagboard/search.py:410
 msgid "posted_by"
 msgstr ""
 
-msgid "The username of the uploader of a Post."
+#. Translators: Description for the "posted_by" search token
+#: tesys_tagboard/search.py:412
+msgid "The username of the uploader of a post."
 msgstr ""
 
+#. Translators: Alias for the "posted_by" search token
+#: tesys_tagboard/search.py:415
+msgid "uploaded_by"
+msgstr ""
+
+#. Translators: Name of the "posted_on" search token
+#: tesys_tagboard/search.py:422
 msgid "posted_on"
 msgstr ""
 
+#. Translators: Description for the "posted_on" search token
+#: tesys_tagboard/search.py:424
 msgid "The date the post was posted on."
 msgstr ""
 
+#. Translators: Alias for the "posted_on" search token
+#: tesys_tagboard/search.py:427
+msgid "uploaded_on"
+msgstr ""
+
+#. Translators: Name of the "mimetype" search token
+#: tesys_tagboard/search.py:434
 msgid "mimetype"
 msgstr ""
 
+#. Translators: Description for the "mimetype" search token
+#: tesys_tagboard/search.py:436
 msgid "The MIME type of the post's file."
 msgstr ""
 
-msgid "extension"
+#. Translators: Alias for the "mimetype" search token
+#: tesys_tagboard/search.py:439
+msgid "mime"
 msgstr ""
 
+#. Translators: Name of the "file_extension" search token
+#: tesys_tagboard/search.py:446
+msgid "file_extension"
+msgstr ""
+
+#. Translators: Description for the "file_extension" search token
+#: tesys_tagboard/search.py:448
 msgid "The file extension of the post's related file."
 msgstr ""
 
+#. Translators: Alias for the "file_extension" search token
+#: tesys_tagboard/search.py:451
+msgid "extension"
+msgstr ""
+
+#. Translators: Alias for the "file_extension" search token
+#: tesys_tagboard/search.py:453
+msgid "ext"
+msgstr ""
+
+#. Translators: Name of the "collection_id" search token
+#: tesys_tagboard/search.py:460
 msgid "collection_id"
 msgstr ""
 
+#. Translators: Description for the "collection_id" search token
+#: tesys_tagboard/search.py:462
 msgid "The ID of a collection."
 msgstr ""
 
-msgid "collection"
-msgstr ""
-
+#. Translators: Description for the "collection" search token
+#: tesys_tagboard/search.py:470
 msgid "Whether or not a post is part of a collection (yes/no)."
 msgstr ""
 
+#. Translators: Alias for the "collection" search token
+#: tesys_tagboard/search.py:473
+msgid "in_collection"
+msgstr ""
+
+#. Translators: Name of the "collection_name" search token
+#: tesys_tagboard/search.py:480
 msgid "collection_name"
 msgstr ""
 
+#. Translators: Description for the "collection_name" search token
+#: tesys_tagboard/search.py:482
 msgid "A collection's name."
 msgstr ""
 
+#. Translators: Name of the "parent" search token
+#: tesys_tagboard/search.py:489
 msgid "parent"
 msgstr ""
 
+#. Translators: Description for the "parent" search token
+#: tesys_tagboard/search.py:491
 msgid "Whether or not a post has a parent (yes/no)."
 msgstr ""
 
+#. Translators: Name of the "parent_id" search token
+#: tesys_tagboard/search.py:497
 msgid "parent_id"
 msgstr ""
 
+#. Translators: Description for the "parent_id" search token
+#: tesys_tagboard/search.py:499
 msgid "Whether or not a post has a parent matching the given post ID."
 msgstr ""
 
+#. Translators: Name of the "children" search token
+#: tesys_tagboard/search.py:505
 msgid "children"
 msgstr ""
 
+#. Translators: Description for the "children" search token
+#: tesys_tagboard/search.py:507
 msgid "Whether or not a post has any children (yes/no)."
 msgstr ""
 
+#. Translators: Alias for the "children" search token
+#: tesys_tagboard/search.py:510
+msgid "child"
+msgstr ""
+
+#. Translators: Name of the "child_id" search token
+#: tesys_tagboard/search.py:517
 msgid "child_id"
 msgstr ""
 
+#. Translators: Description for the "child_id" search token
+#: tesys_tagboard/search.py:519
 msgid "Whether or not a post has a child post matching the given post ID."
 msgstr ""
 
+#: tesys_tagboard/templates/account/account_inactive.html:7
+#: tesys_tagboard/templates/account/account_inactive.html:11
 msgid "Account Inactive"
 msgstr ""
 
+#: tesys_tagboard/templates/account/account_inactive.html:14
 msgid "This account is inactive."
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_confirm_code.html:33
 #, python-format
 msgid ""
 "We've sent a code to %(recipient)s. The code expires shortly, so please "
 "enter it soon."
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_confirm_code.html:45
+#: tesys_tagboard/templates/account/email_confirm.html:26
+#: tesys_tagboard/templates/account/reauthenticate.html:20
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:28
+#: tesys_tagboard/templates/mfa/reauthenticate.html:20
 msgid "Confirm"
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_confirm_code.html:49
 msgid "Request new code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_confirm_code.html:54
+#: tesys_tagboard/templates/account/base_confirm_code.html:58
+#: tesys_tagboard/templates/account/password_reset_from_key.html:39
+#: tesys_tagboard/templates/idp/oidc/authorization_form.html:28
+#: tesys_tagboard/templates/mfa/authenticate.html:30
+#: tesys_tagboard/templates/mfa/authenticate.html:46
+#: tesys_tagboard/templates/mfa/trust.html:31
+#: tesys_tagboard/templates/mfa/webauthn/signup_form.html:28
 msgid "Cancel"
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_reauthenticate.html:7
+#: tesys_tagboard/templates/account/base_reauthenticate.html:11
 msgid "Confirm Access"
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_reauthenticate.html:14
 msgid "Please reauthenticate to safeguard your account."
 msgstr ""
 
+#: tesys_tagboard/templates/account/base_reauthenticate.html:22
+#: tesys_tagboard/templates/mfa/authenticate.html:39
 msgid "Alternative options"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_email_verification_code.html:7
 msgid "Email Verification"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_email_verification_code.html:10
 msgid "Enter Email Verification Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_email_verification_code.html:22
 msgid "Use a different email address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_login_code.html:7
+#: tesys_tagboard/templates/account/login.html:7
+#: tesys_tagboard/templates/account/request_login_code.html:7
+#: tesys_tagboard/templates/allauth/layouts/entrance.html:10
+#: tesys_tagboard/templates/mfa/authenticate.html:8
+#: tesys_tagboard/templates/mfa/authenticate.html:26
+#: tesys_tagboard/templates/nav/navbar_links.html:45
+#: tesys_tagboard/templates/openid/login.html:7
+#: tesys_tagboard/templates/openid/login.html:11
+#: tesys_tagboard/templates/openid/login.html:22
+#: tesys_tagboard/templates/socialaccount/login.html:7
+#: tesys_tagboard/templates/socialaccount/login_redirect.html:5
 msgid "Sign In"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_login_code.html:10
 msgid "Enter Sign-In Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_password_reset_code.html:7
+#: tesys_tagboard/templates/account/email/password_reset_subject.txt:3
+#: tesys_tagboard/templates/account/password_reset.html:6
+#: tesys_tagboard/templates/account/password_reset_done.html:8
 msgid "Password Reset"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_password_reset_code.html:10
 msgid "Enter Password Reset Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_phone_verification_code.html:7
 msgid "Phone Verification"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_phone_verification_code.html:10
 msgid "Enter Phone Verification Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/confirm_phone_verification_code.html:19
 msgid "Use a different phone number"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:6
+#: tesys_tagboard/templates/account/email.html:10
 msgid "Email Addresses"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:14
 msgid "The following email addresses are associated with your account:"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:27
 msgid "Verified"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:31
 msgid "Unverified"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:36
 msgid "Primary"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:46
 msgid "Make Primary"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:49
+#: tesys_tagboard/templates/account/email_change.html:39
+#: tesys_tagboard/templates/account/phone_change.html:26
 msgid "Re-send Verification"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:52
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_confirm_delete.html:18
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:62
+#: tesys_tagboard/templates/socialaccount/connections.html:42
 msgid "Remove"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:61
 msgid "Add Email Address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:72
 msgid "Add Email"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email.html:84
 msgid "Do you really want to remove the selected email address?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/account_already_exists_message.txt:4
 #, python-format
 msgid ""
 "You are receiving this email because you or someone else tried to signup for "
@@ -310,24 +712,29 @@ msgid ""
 "%(password_reset_url)s"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/account_already_exists_subject.txt:3
 msgid "Account Already Exists"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/base_message.txt:1
 #, python-format
 msgid "Hello from %(site_name)s!"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/base_message.txt:5
 #, python-format
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/base_notification.txt:5
 msgid ""
 "You are receiving this mail because the following change was made to your "
 "account:"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/base_notification.txt:10
 #, python-format
 msgid ""
 "If you do not recognize this change then please take proper security "
@@ -338,69 +745,89 @@ msgid ""
 "- Date: %(timestamp)s"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_changed_message.txt:4
 #, python-format
 msgid "Your email has been changed from %(from_email)s to %(to_email)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_changed_subject.txt:3
 msgid "Email Changed"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirm_message.txt:4
 msgid "Your email has been confirmed."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirm_subject.txt:3
 msgid "Email Confirmation"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirmation_message.txt:5
 #, python-format
 msgid ""
 "You're receiving this email because user %(user_display)s has given your "
 "email address to register an account on %(site_domain)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirmation_message.txt:7
 msgid ""
 "Your email verification code is listed below. Please enter it in your open "
 "browser window."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirmation_message.txt:9
 #, python-format
 msgid "To confirm this is correct, go to %(activate_url)s"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your Email Address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_deleted_message.txt:4
 #, python-format
 msgid "Email address %(deleted_email)s has been removed from your account."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/email_deleted_subject.txt:3
 msgid "Email Removed"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/login_code_message.txt:5
 msgid ""
 "Your sign-in code is listed below. Please enter it in your open browser "
 "window."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/login_code_message.txt:9
+#: tesys_tagboard/templates/account/email/password_reset_code_message.txt:9
+#: tesys_tagboard/templates/account/email/unknown_account_message.txt:6
 msgid "This mail can be safely ignored if you did not initiate this action."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/login_code_subject.txt:3
 msgid "Sign-In Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_changed_message.txt:4
 msgid "Your password has been changed."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_changed_subject.txt:3
 msgid "Password Changed"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_code_message.txt:5
 msgid ""
 "Your password reset code is listed below. Please enter it in your open "
 "browser window."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_code_subject.txt:3
 msgid "Password Reset Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_key_message.txt:4
 msgid ""
 "You're receiving this email because you or someone else has requested a "
 "password reset for your user account.\n"
@@ -408,22 +835,28 @@ msgid ""
 "link below to reset your password."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_key_message.txt:9
 #, python-format
 msgid "In case you forgot, your username is %(username)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset Email"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_reset_message.txt:4
 msgid "Your password has been reset."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_set_message.txt:4
 msgid "Your password has been set."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/password_set_subject.txt:3
 msgid "Password Set"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/unknown_account_message.txt:4
 #, python-format
 msgid ""
 "You are receiving this email because you, or someone else, tried to access "
@@ -431,72 +864,97 @@ msgid ""
 "an account in our database."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/unknown_account_message.txt:8
 msgid "If it was you, you can sign up for an account using the link below."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email/unknown_account_subject.txt:3
 msgid "Unknown Account"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:7
+#: tesys_tagboard/templates/account/email_change.html:11
 msgid "Email Address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:23
+#: tesys_tagboard/templates/account/email_change.html:31
 msgid "Current email"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:33
 msgid "Changing to"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:37
 msgid "Your email address is still pending verification."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:43
 msgid "Cancel Change"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:51
+#: tesys_tagboard/templates/account/phone_change.html:34
 msgid "Change to"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_change.html:57
 msgid "Change Email"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_confirm.html:8
+#: tesys_tagboard/templates/account/email_confirm.html:12
 msgid "Confirm Email Address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_confirm.html:18
 #, python-format
 msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email "
 "address for user %(user_display)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_confirm.html:32
+#: tesys_tagboard/templates/account/messages/email_confirmation_failed.txt:2
 #, python-format
 msgid ""
 "Unable to confirm %(email)s because it is already confirmed by a different "
 "account."
 msgstr ""
 
+#: tesys_tagboard/templates/account/email_confirm.html:38
 #, python-format
 msgid ""
 "This email confirmation link expired or is invalid. Please <a "
 "href=\"%(email_url)s\">issue a new email confirmation request</a>."
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:14
 msgid "Log In to your account"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:17
 msgid "Username"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:26
 msgid "Password"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:31
 msgid "Enter your password"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:37
 msgid "Remember me"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:39
 msgid "Forgot password?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/login.html:48
 #, python-format
 msgid ""
 "\n"
@@ -505,82 +963,114 @@ msgid ""
 "        "
 msgstr ""
 
+#: tesys_tagboard/templates/account/logout.html:6
+#: tesys_tagboard/templates/account/logout.html:15
+#: tesys_tagboard/templates/account/logout.html:17
 msgid "Log Out"
 msgstr ""
 
+#: tesys_tagboard/templates/account/logout.html:16
 msgid "Are you sure you want to log out?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/cannot_delete_primary_email.txt:2
 #, python-format
 msgid "You cannot remove your primary email address (%(email)s)."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/email_confirmation_sent.txt:2
 #, python-format
 msgid "Confirmation email sent to %(email)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/email_confirmed.txt:2
 #, python-format
 msgid "You have confirmed %(email)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/email_deleted.txt:2
 #, python-format
 msgid "Removed email address %(email)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/logged_in.txt:4
 #, python-format
 msgid "Successfully signed in as %(name)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/logged_out.txt:2
 msgid "You have signed out."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/login_code_sent.txt:2
 #, python-format
 msgid "A sign-in code has been sent to %(recipient)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/password_changed.txt:2
 msgid "Password successfully changed."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/password_set.txt:2
 msgid "Password successfully set."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/phone_verification_sent.txt:2
 #, python-format
 msgid "A verification code has been sent to %(phone)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/phone_verified.txt:2
 #, python-format
 msgid "You have verified phone number %(phone)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/primary_email_set.txt:2
 msgid "Primary email address set."
 msgstr ""
 
+#: tesys_tagboard/templates/account/messages/unverified_primary_email.txt:2
 msgid "Your primary email address must be verified."
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_change.html:6
+#: tesys_tagboard/templates/account/password_change.html:10
+#: tesys_tagboard/templates/account/password_change.html:22
+#: tesys_tagboard/templates/account/password_reset_from_key.html:7
+#: tesys_tagboard/templates/account/password_reset_from_key.html:15
+#: tesys_tagboard/templates/account/password_reset_from_key.html:36
+#: tesys_tagboard/templates/account/password_reset_from_key_done.html:7
+#: tesys_tagboard/templates/account/password_reset_from_key_done.html:12
 msgid "Change Password"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_change.html:24
 msgid "Forgot Password?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset.html:18
 msgid "Forgot your password?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset.html:20
 msgid ""
 "Please enter your email address below, and we'll send you an email allowing "
 "you to reset your password."
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset.html:24
 msgid "Email"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset.html:29
 msgid "Enter your email address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset.html:32
 msgid "Reset My Password"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset_done.html:22
 msgid ""
 "\n"
 "        <p>Your password email has been sent!</p>\n"
@@ -589,12 +1079,15 @@ msgid ""
 "        "
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset_done.html:28
 msgid "Back to login page"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset_from_key.html:13
 msgid "Bad Token"
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset_from_key.html:21
 #, python-format
 msgid ""
 "\n"
@@ -604,86 +1097,125 @@ msgid ""
 "    "
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_reset_from_key_done.html:16
 msgid "Your password is now changed."
 msgstr ""
 
+#: tesys_tagboard/templates/account/password_set.html:7
+#: tesys_tagboard/templates/account/password_set.html:10
+#: tesys_tagboard/templates/account/password_set.html:21
 msgid "Set Password"
 msgstr ""
 
+#: tesys_tagboard/templates/account/phone_change.html:7
+#: tesys_tagboard/templates/account/phone_change.html:11
 msgid "Change Phone"
 msgstr ""
 
+#: tesys_tagboard/templates/account/phone_change.html:20
 msgid "Current phone"
 msgstr ""
 
+#: tesys_tagboard/templates/account/phone_change.html:24
 msgid "Your phone number is still pending verification."
 msgstr ""
 
+#: tesys_tagboard/templates/account/phone_change.html:40
 msgctxt "action"
 msgid "Change Phone"
 msgstr ""
 
+#: tesys_tagboard/templates/account/reauthenticate.html:8
 msgid "Enter your password:"
 msgstr ""
 
+#: tesys_tagboard/templates/account/request_login_code.html:11
 msgid "Send me a sign-in code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/request_login_code.html:14
 msgid "You will receive a special code for a password-free sign-in."
 msgstr ""
 
+#: tesys_tagboard/templates/account/request_login_code.html:26
 msgid "Request Code"
 msgstr ""
 
+#: tesys_tagboard/templates/account/request_login_code.html:32
 msgid "Other sign-in options"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup.html:6
+#: tesys_tagboard/templates/account/signup.html:12
+#: tesys_tagboard/templates/account/signup_by_passkey.html:6
+#: tesys_tagboard/templates/socialaccount/signup.html:7
 msgid "Signup"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup.html:58
 msgid "Already have an account?"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup.html:59
 msgid "Log in"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_by_passkey.html:10
 msgid "Passkey Sign Up"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_by_passkey.html:19
 #, python-format
 msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_by_passkey.html:31
+#: tesys_tagboard/templates/nav/navbar_links.html:38
+#: tesys_tagboard/templates/socialaccount/signup.html:11
+#: tesys_tagboard/templates/socialaccount/signup.html:27
 msgid "Sign Up"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_by_passkey.html:38
 msgid "Other options"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_closed.html:7
+#: tesys_tagboard/templates/account/signup_closed.html:11
 msgid "Sign Up Closed"
 msgstr ""
 
+#: tesys_tagboard/templates/account/signup_closed.html:14
 msgid "We are sorry, but the sign up is currently closed."
 msgstr ""
 
+#: tesys_tagboard/templates/account/snippets/already_logged_in.html:8
 msgid "Note"
 msgstr ""
 
+#: tesys_tagboard/templates/account/snippets/already_logged_in.html:8
 #, python-format
 msgid "You are already logged in as %(user_display)s."
 msgstr ""
 
+#: tesys_tagboard/templates/account/snippets/warn_no_email.html:4
 msgid "Warning:"
 msgstr ""
 
+#: tesys_tagboard/templates/account/snippets/warn_no_email.html:4
 msgid ""
 "You currently do not have any email address set up. You should really add an "
 "email address so you can receive notifications, reset your password, etc."
 msgstr ""
 
+#: tesys_tagboard/templates/account/verification_sent.html:7
+#: tesys_tagboard/templates/account/verification_sent.html:11
+#: tesys_tagboard/templates/account/verified_email_required.html:7
+#: tesys_tagboard/templates/account/verified_email_required.html:11
 msgid "Verify Your Email Address"
 msgstr ""
 
+#: tesys_tagboard/templates/account/verification_sent.html:14
 msgid ""
 "We have sent an email to you for verification. Follow the link provided to "
 "finalize the signup process. If you do not see the verification email in "
@@ -691,12 +1223,14 @@ msgid ""
 "receive the verification email within a few minutes."
 msgstr ""
 
+#: tesys_tagboard/templates/account/verified_email_required.html:15
 msgid ""
 "This part of the site requires us to verify that\n"
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your email address. "
 msgstr ""
 
+#: tesys_tagboard/templates/account/verified_email_required.html:20
 msgid ""
 "We have sent an email to you for\n"
 "verification. Please click on the link inside that email. If you do not see "
@@ -705,138 +1239,203 @@ msgid ""
 "contact us if you do not receive it within a few minutes."
 msgstr ""
 
+#: tesys_tagboard/templates/account/verified_email_required.html:25
 #, python-format
 msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
 "email address</a>."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/authorization_form.html:7
+#: tesys_tagboard/templates/idp/oidc/authorization_form.html:11
+#: tesys_tagboard/templates/idp/oidc/authorization_form.html:25
+#: tesys_tagboard/templates/idp/oidc/device_authorization_code_form.html:7
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:7
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirmed.html:7
+#: tesys_tagboard/templates/idp/oidc/device_authorization_denied.html:7
 msgid "Authorize"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/authorization_form.html:14
 #, python-format
 msgid "%(client_name)s wants to access your %(site_name)s account."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_code_form.html:11
 msgid "Enter Device Code"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_code_form.html:14
 msgid "Enter the code displayed on your device."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_code_form.html:23
+#: tesys_tagboard/templates/socialaccount/login_redirect.html:10
 msgid "Continue"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:11
 msgid "Confirm Device"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:14
 #, python-format
 msgid ""
 "Please confirm the code shown on your %(client_name)s to authorize this "
 "device."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:18
 msgid "Code"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirm_form.html:31
 msgid "Deny"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirmed.html:11
 msgid "Device Authorized"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_confirmed.html:14
 #, python-format
 msgid "You successfully authorized your %(client_name)s device."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_denied.html:11
 msgid "Device Denied"
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/device_authorization_denied.html:14
 #, python-format
 msgid "Authorization for your %(client_name)s device has been denied."
 msgstr ""
 
+#: tesys_tagboard/templates/idp/oidc/error.html:7
+#: tesys_tagboard/templates/idp/oidc/error.html:11
 msgid "Error"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/authenticate.html:12
+#: tesys_tagboard/templates/mfa/index.html:7
+#: tesys_tagboard/templates/mfa/index.html:11
 msgid "Two-Factor Authentication"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/authenticate.html:15
 msgid ""
 "Your account is protected by two-factor authentication. Please enter an "
 "authenticator code:"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/authenticate.html:43
+#: tesys_tagboard/templates/mfa/webauthn/reauthenticate.html:17
 msgid "Use a security key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/recovery_codes_generated_message.txt:4
 msgid ""
 "A new set of Two-Factor Authentication recovery codes has been generated."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/recovery_codes_generated_subject.txt:3
 msgid "New Recovery Codes Generated"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/totp_activated_message.txt:4
+#: tesys_tagboard/templates/mfa/messages/totp_activated.txt:2
 msgid "Authenticator app activated."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/totp_activated_subject.txt:3
 msgid "Authenticator App Activated"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/totp_deactivated_message.txt:4
+#: tesys_tagboard/templates/mfa/messages/totp_deactivated.txt:2
 msgid "Authenticator app deactivated."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/totp_deactivated_subject.txt:3
 msgid "Authenticator App Deactivated"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/webauthn_added_message.txt:4
 msgid "A new security key has been added."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/webauthn_added_subject.txt:3
 msgid "Security Key Added"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/webauthn_removed_message.txt:4
 msgid "A security key has been removed."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/email/webauthn_removed_subject.txt:3
 msgid "Security Key Removed"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:16
+#: tesys_tagboard/templates/mfa/totp/base.html:6
 msgid "Authenticator App"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:21
 msgid "Authentication using an authenticator app is active."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:25
 msgid "An authenticator app is not active."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:34
+#: tesys_tagboard/templates/mfa/totp/deactivate_form.html:26
 msgid "Deactivate"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:38
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:34
 msgid "Activate"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:47
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:10
+#: tesys_tagboard/templates/mfa/webauthn/base.html:6
 msgid "Security Keys"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:52
 #, python-format
 msgid "You have added %(count)s security key."
 msgid_plural "You have added %(count)s security keys."
 msgstr[0] ""
 msgstr[1] ""
 
+#: tesys_tagboard/templates/mfa/index.html:56
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:14
 msgid "No security keys have been added."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:64
 msgid "Manage"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:69
+#: tesys_tagboard/templates/mfa/webauthn/add_form.html:20
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:72
 msgid "Add"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:79
+#: tesys_tagboard/templates/mfa/recovery_codes/base.html:6
+#: tesys_tagboard/templates/mfa/recovery_codes/generate.html:8
+#: tesys_tagboard/templates/mfa/recovery_codes/index.html:8
 msgid "Recovery Codes"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:84
+#: tesys_tagboard/templates/mfa/recovery_codes/index.html:11
 #, python-format
 msgid ""
 "There is %(unused_count)s out of %(total_count)s recovery codes available."
@@ -845,264 +1444,336 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
+#: tesys_tagboard/templates/mfa/index.html:88
 msgid "No recovery codes set up."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:98
 msgid "View"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:104
 msgid "Download"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/index.html:112
+#: tesys_tagboard/templates/mfa/recovery_codes/generate.html:31
 msgid "Generate"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/messages/recovery_codes_generated.txt:2
 msgid "A new set of recovery codes has been generated."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/messages/webauthn_added.txt:2
 msgid "Security key added."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/messages/webauthn_removed.txt:2
 msgid "Security key removed."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/reauthenticate.html:8
 msgid "Enter an authenticator code:"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/generate.html:11
 msgid "You are about to generate a new set of recovery codes for your account."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/generate.html:13
 msgid "This action will invalidate your existing codes."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/generate.html:15
 msgid "Are you sure?"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/index.html:15
 msgid "Unused codes"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/index.html:27
 msgid "Download codes"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/recovery_codes/index.html:32
 msgid "Generate new codes"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:6
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:10
 msgid "Activate Authenticator App"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:13
 msgid ""
 "To protect your account with two-factor authentication, scan the QR code "
 "below with your authenticator app. Then, input the verification code "
 "generated by the app below."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:23
 msgid "Authenticator secret"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/activate_form.html:26
 msgid ""
 "You can store this secret and use it to reinstall your authenticator app at "
 "a later time."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/deactivate_form.html:7
+#: tesys_tagboard/templates/mfa/totp/deactivate_form.html:11
 msgid "Deactivate Authenticator App"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/totp/deactivate_form.html:14
 msgid ""
 "You are about to deactivate authenticator app based authentication. Are you "
 "sure?"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/trust.html:6
+#: tesys_tagboard/templates/mfa/trust.html:10
 msgid "Trust this Browser?"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/trust.html:13
 msgid ""
 "If you choose to trust this browser, you will not be asked for a "
 "verification code the next time you sign in."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/trust.html:25
 #, python-format
 msgid "Trust for %(period)s"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/trust.html:28
 msgid "Don't Trust"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/add_form.html:9
 msgid "Add Security Key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_confirm_delete.html:8
 msgid "Remove Security Key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_confirm_delete.html:11
 msgid "Are you sure you want to remove this security key?"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:20
 msgid "Key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:23
 msgid "Usage"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:35
 msgid "Passkey"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:39
 msgid "Security key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:42
 msgid "This key does not indicate whether it is a passkey."
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:43
 msgid "Unspecified"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:48
 #, python-format
 msgid "Added on %(created_at)s"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:50
 #, python-format
 msgid "Last used %(last_used)s"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/authenticator_list.html:58
 msgid "Edit"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/edit_form.html:9
 msgid "Edit Security Key"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/edit_form.html:20
 msgid "Save"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/signup_form.html:9
 msgid "Create Passkey"
 msgstr ""
 
+#: tesys_tagboard/templates/mfa/webauthn/signup_form.html:12
 msgid ""
 "You are about to create a passkey for your account. As you can add "
 "additional keys later on, you can use a descriptive name to tell the keys "
 "apart."
 msgstr ""
 
-msgid "Create"
-msgstr ""
-
+#: tesys_tagboard/templates/mfa/webauthn/snippets/scripts.html:3
 msgid "This functionality requires JavaScript."
 msgstr ""
 
+#: tesys_tagboard/templates/nav/navbar_links.html:26
 msgid "Profile"
 msgstr ""
 
+#: tesys_tagboard/templates/nav/navbar_links.html:30
+#: tesys_tagboard/templates/usersessions/usersession_list.html:78
 msgid "Sign Out"
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:13
 msgid ""
 "The advanced post search uses a set of tokens separated by spaces to filter "
 "and sort the results. Below you will find a list of all the available tokens "
 "and some examples of how to build a search query."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:16
 msgid ""
 "Each token may accept different operators and values. A token's supported "
 "operators will be listed with the following search operator icons."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:37
 msgid ""
 "The equality operator which indicates that returned posts will have the same "
 "value as the token. Or, if the token supports wildcards, that all posts will "
 "match the wildcard expression."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:45
 msgid ""
 "The less than operator which indicates that returned posts will have a value "
 "<em>less than</em> the token's value."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:53
 msgid ""
 "The greater than operator which indicates that returned posts will have a "
 "value <em>greater than</em> the token's value."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:72
 msgid ""
 "Some search tokens may accept wildcards in the specified search value. These "
 "will make the filter more permissive, allowing resulting posts that match "
 "where the wildcard(s) may be replaced with any value."
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:83
 msgid "Token"
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:84
 msgid "Operators and Modifiers"
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:85
 msgid "Details"
 msgstr ""
 
+#: tesys_tagboard/templates/pages/help.html:114
 msgid ""
 "\n"
-"        <p>Here are a few simple queries to get you started.</p>\n"
-"        <p>This query will return all posts with the <em>blue</em> tag that "
-"have more than 5 tags total and have been added to a collection.</p>\n"
+"        <p class=\"mb-0\">Here are a few simple queries to get you started. "
+"This query will return all posts with the <em>blue</em> tag that have more "
+"than 5 tags total and have been added to a collection.</p>\n"
 "        <code class=\"p-3 px-4 bg-info text-info-content w-fit rounded-"
 "field\">blue tag_count&lt;5 collection=yes</code>\n"
-"        <p>This query will return all posts with a height of exactly 400 "
-"pixels and more than 3 comments.</p>\n"
+"        <p class=\"mb-0\">This query will return all posts with a height of "
+"exactly 400 pixels and more than 3 comments.</p>\n"
 "        <code class=\"py-3 px-4 bg-info text-info-content w-fit rounded-"
 "field\">height=400 comment_count>3</code>\n"
-"        <p>This query will return all posts with a source URL on "
-"<code>discord.com</code> that have not yet been rated. Note the wildcard at "
-"the end of the source value that allows the source to match any URL "
+"        <p class=\"mb-0\">This query will return all posts with a source URL "
+"on <code>discord.com</code> that have not yet been rated. Note the wildcard "
+"at the end of the source value that allows the source to match any URL "
 "originating from Discord.</p>\n"
 "        <code class=\"py-3 px-4 bg-info text-info-content w-fit rounded-"
 "field\">source=https://discord.com* rating_label=unrated</code>\n"
 "      "
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/authentication_error.html:7
+#: tesys_tagboard/templates/socialaccount/authentication_error.html:11
 msgid "Third-Party Login Failure"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/authentication_error.html:14
 msgid ""
 "An error occurred while attempting to login via your third-party account."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/connections.html:7
+#: tesys_tagboard/templates/socialaccount/connections.html:11
 msgid "Account Connections"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/connections.html:15
 msgid ""
 "You can sign in to your account using any of the following third-party "
 "accounts:"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/connections.html:48
 msgid "You currently have no third-party accounts connected to this account."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/connections.html:52
 msgid "Add a Third-Party Account"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/email/account_connected_message.txt:4
 #, python-format
 msgid ""
 "A third-party account from %(provider)s has been connected to your account."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/email/account_connected_subject.txt:3
 msgid "Third-Party Account Connected"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/email/account_disconnected_message.txt:4
 #, python-format
 msgid ""
 "A third-party account from %(provider)s has been disconnected from your "
 "account."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/email/account_disconnected_subject.txt:3
 msgid "Third-Party Account Disconnected"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/login.html:17
 #, python-format
 msgid "Sign In via %(provider)s"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/login.html:20
 #, python-format
 msgid "You are about to sign in using a third-party account from %(provider)s"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/login_cancelled.html:7
+#: tesys_tagboard/templates/socialaccount/login_cancelled.html:11
 msgid "Login Cancelled"
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/login_cancelled.html:15
 #, python-format
 msgid ""
 "You decided to cancel logging in to our site using one of your existing "
@@ -1110,100 +1781,133 @@ msgid ""
 "href=\"%(login_url)s\">sign in</a>."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/messages/account_connected.txt:2
 msgid "The third-party account has been connected."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/messages/account_connected_other.txt:2
 msgid "The third-party account is already connected to a different account."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/messages/account_disconnected.txt:2
 msgid "The third-party account has been disconnected."
 msgstr ""
 
+#: tesys_tagboard/templates/socialaccount/signup.html:14
 #, python-format
 msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "%(site_name)s. As a final step, please complete the following form:"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/messages/sessions_logged_out.txt:2
 msgid "Signed out of all other sessions."
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:8
+#: tesys_tagboard/templates/usersessions/usersession_list.html:12
 msgid "Sessions"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:26
 msgid "Started At"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:29
 msgid "IP Address"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:32
 msgid "Browser"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:36
 msgid "Last seen at"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:61
 msgid "Current"
 msgstr ""
 
+#: tesys_tagboard/templates/usersessions/usersession_list.html:74
 msgid "Sign Out Other Sessions"
 msgstr ""
 
+#: tesys_tagboard/theme/apps.py:7
 msgid "Theme"
 msgstr ""
 
+#: tesys_tagboard/users/admin.py:24
 msgid "Personal info"
 msgstr ""
 
+#: tesys_tagboard/users/admin.py:26
 msgid "Permissions"
 msgstr ""
 
+#: tesys_tagboard/users/admin.py:37
 msgid "Important dates"
 msgstr ""
 
+#: tesys_tagboard/users/apps.py:18
 msgid "Users"
 msgstr ""
 
+#: tesys_tagboard/users/forms.py:23 tesys_tagboard/users/tests/test_forms.py:39
 msgid "This username has already been taken."
 msgstr ""
 
+#: tesys_tagboard/users/models.py:28
 msgid "Name of User"
 msgstr ""
 
+#: tesys_tagboard/users/tests/test_views.py:76
+#: tesys_tagboard/users/views.py:116
 msgid "Information successfully updated"
 msgstr ""
 
+#: tesys_tagboard/validators.py:17
 msgid "Enter a valid tag name."
 msgstr ""
 
+#: tesys_tagboard/validators.py:22
 msgid "Enter a valid username."
 msgstr ""
 
+#: tesys_tagboard/validators.py:26
 msgid "Enter a positive integer."
 msgstr ""
 
+#: tesys_tagboard/validators.py:32
 msgid "Enter a valid URL with wildcards"
 msgstr ""
 
+#: tesys_tagboard/validators.py:36
 msgid "Enter a date of the form: YYYY-MM-DD"
 msgstr ""
 
+#: tesys_tagboard/validators.py:40
 msgid "Enter \"yes\" or \"no\""
 msgstr ""
 
+#: tesys_tagboard/validators.py:44
 msgid "Enter a valid collection name."
 msgstr ""
 
+#: tesys_tagboard/validators.py:48
 msgid "Enter a valid collection name with wildcards."
 msgstr ""
 
+#: tesys_tagboard/validators.py:56
 #, python-format
 msgid "The MIME type argument must match one of the supported MIME types: %s"
 msgstr ""
 
+#: tesys_tagboard/validators.py:65
 #, python-format
 msgid "The file extension argument must match a supported file extension: %s"
 msgstr ""
 
+#: tesys_tagboard/validators.py:72
 msgid "A tagset may only contain positive integers"
 msgstr ""
