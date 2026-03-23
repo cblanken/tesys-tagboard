@@ -144,7 +144,16 @@ class TestTagAliasAutocomplete:
 class TestTokenCategory:
     def test_select_no_duplicate_names_or_aliases(self):
         """The TokenCategory enum should not have any ambigious names or aliases"""
-        # TODO: test category select
+        token_names: list[str] = []
+        for token_category in PostSearchTokenCategory:
+            assert token_category.value.name not in token_names
+            assert token_category.value.name not in token_category.value.aliases
+            for alias in token_category.value.aliases:
+                assert alias not in token_names
+
+            token_names.extend(
+                [token_category.value.name, *token_category.value.aliases]
+            )
 
 
 class TestPostAdvancedSearchQueryParsing:
