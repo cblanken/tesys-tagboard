@@ -25,6 +25,7 @@ from django.db.models import Value
 from django.db.models import When
 from django.utils import timezone
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 from PIL import Image as PIL_Image
 
 from config.settings.base import AUTH_USER_MODEL
@@ -75,12 +76,27 @@ class TagCategory(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
-    bg = ColorField(format="hex", null=True)
-    fg = ColorField(format="hex", null=True)
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_(
+            "A parent tag category. Used for organizing tag categories into groups"
+        ),
+    )
+    bg = ColorField(
+        format="hex",
+        null=True,
+        help_text=_("Background color for tags in this category"),
+    )
+    fg = ColorField(
+        format="hex", null=True, help_text=_("Text color for tags in this category")
+    )
 
     class Meta:
-        verbose_name_plural = "tag categories"
+        verbose_name = _("tag category")
+        verbose_name_plural = _("tag categories")
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
@@ -100,7 +116,7 @@ class TagCategory(models.Model):
         """Return the category chain up to the root or up to `max_depth` categories"""
         category = self
         path = self.name
-        for _ in range(max_depth):
+        for _i in range(max_depth):
             if category.parent is None:
                 break
 
@@ -149,6 +165,8 @@ class Tag(models.Model):
     objects = TagQuerySet.as_manager()
 
     class Meta:
+        verbose_name = _("tag")
+        verbose_name_plural = _("tags")
         ordering = ["category", "-post_count"]
         constraints = [
             models.UniqueConstraint(
@@ -175,7 +193,8 @@ class TagAlias(models.Model):
     objects = TagAliasQuerySet.as_manager()
 
     class Meta:
-        verbose_name_plural = "tag aliases"
+        verbose_name = _("tag alias")
+        verbose_name_plural = _("tag aliases")
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
@@ -192,6 +211,10 @@ class DefaultPostTag(models.Model):
 
     tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
 
+    class Meta:
+        verbose_name = _("default post tag")
+        verbose_name_plural = _("default post tags")
+
     def __str__(self) -> str:
         return f"<DefaultPostTag - {self.tag}>"
 
@@ -202,6 +225,10 @@ class Artist(models.Model):
     tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
     bio = models.TextField(blank=True, default="")
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name = _("artist")
+        verbose_name_plural = _("artists")
 
     def __str__(self) -> str:
         return f"<Artist - {self.tag}, bio: {self.bio}>"
@@ -392,6 +419,8 @@ class Post(models.Model):
     objects = PostQuerySet.as_manager()
 
     class Meta:
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
         permissions = [("lock_comments", "Can lock and unlock the comments of a post")]
         ordering = ["post_date"]
 
@@ -489,6 +518,8 @@ class Image(models.Model):
     # See https://github.com/JohannesBuchner/imagehash/issues/127 for
 
     class Meta:
+        verbose_name = _("image")
+        verbose_name_plural = _("images")
         indexes = [
             HashIndex("md5", name="image_md5_idx"),
             HashIndex("phash", name="image_phash_idx"),
@@ -547,6 +578,8 @@ class Video(models.Model):
     md5 = models.CharField(validators=[md5_validator])
 
     class Meta:
+        verbose_name = _("video")
+        verbose_name_plural = _("videos")
         indexes = [
             HashIndex("md5", name="video_md5_idx"),
         ]
@@ -576,6 +609,8 @@ class Audio(models.Model):
     md5 = models.CharField(validators=[md5_validator])
 
     class Meta:
+        verbose_name = _("audio")
+        verbose_name_plural = _("audios")
         indexes = [
             HashIndex("md5", name="audio_md5_idx"),
         ]
@@ -609,7 +644,8 @@ class SourceHistory(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = "Source histories"
+        verbose_name = _("source history")
+        verbose_name_plural = _("source histories")
 
     def __str__(self) -> str:
         return f"<MediaSourceHistory - post: {self.post}, mod_time: {self.mod_time}, source: {self.src_url}>"  # noqa: E501
@@ -630,7 +666,8 @@ class PostTagHistory(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = "Post tag histories"
+        verbose_name = _("post tag history")
+        verbose_name_plural = _("post tag histories")
 
     def __str__(self) -> str:
         return f"<PostTagHistory - id: {self.pk}; post: {self.post}; modified: {self.mod_time};"  # noqa: E501
@@ -663,6 +700,8 @@ class Collection(models.Model):
     objects = CollectionQuerySet.as_manager()
 
     class Meta:
+        verbose_name = _("collection")
+        verbose_name_plural = _("collections")
         permissions = [
             ("add_post_to_collection", "Can add posts to a collection"),
             ("remove_post_from_collection", "Can remove posts from a collection"),
@@ -710,6 +749,8 @@ class Comment(models.Model):
     objects = CommentQuerySet.as_manager()
 
     class Meta:
+        verbose_name = _("comment")
+        verbose_name_plural = _("comments")
         ordering = ["-post_date"]
 
     def __str__(self) -> str:
@@ -734,6 +775,8 @@ class Favorite(models.Model):
     objects = FavoriteQuerySet.as_manager()
 
     class Meta:
+        verbose_name = _("favorite")
+        verbose_name_plural = _("favorites")
         constraints = [
             models.UniqueConstraint(fields=["user", "post"], name="unique_favorite"),
         ]
