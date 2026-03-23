@@ -13,7 +13,7 @@ from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import QueryDict
 from django.utils.safestring import SafeString
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from more_itertools import take
 
 from .enums import RatingLevel
@@ -41,6 +41,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from colorfield.validators import RegexValidator
+    from django_stubs_ext import StrOrPromise
 
     from tesys_tagboard.users.models import User
 
@@ -206,9 +207,9 @@ def autocomplete_tag_aliases(
 class SearchTokenBaseCategory:
     """A base class for modeling search tokens"""
 
-    name: str
-    desc: str
-    aliases: tuple[str, ...]
+    name: str | StrOrPromise
+    desc: str | StrOrPromise
+    aliases: tuple[str | StrOrPromise, ...]
     arg_validator: validators.RegexValidator | Callable
     allow_wildcard: bool
     allowed_arg_relations: tuple[TokenArgRelation, ...]
@@ -219,7 +220,7 @@ class SimpleSearchTokenCategory(SearchTokenBaseCategory):
     """A dataclass for defining simple search tokens categories accepting just the
     equal (=) operator and no wildcards. No aliases are included by default."""
 
-    aliases: tuple[str, ...] = ()
+    aliases: tuple[str | StrOrPromise, ...] = ()
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
 
@@ -229,7 +230,7 @@ class ComparisonSearchTokenCategory(SearchTokenBaseCategory):
     """A dataclass for defining search token categories that allow the following
     comparison operations of the token argument (>, <, and =)"""
 
-    aliases: tuple[str, ...] = ()
+    aliases: tuple[str | StrOrPromise, ...] = ()
     allow_wildcard: bool = False
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (
         TokenArgRelation.EQUAL,
@@ -243,7 +244,7 @@ class WildcardSearchTokenCategory(SearchTokenBaseCategory):
     """A dataclass for defining search token categories that accept wildcards (*) in
     its token argument"""
 
-    aliases: tuple[str, ...] = ()
+    aliases: tuple[str | StrOrPromise, ...] = ()
     allow_wildcard: bool = True
     allowed_arg_relations: tuple[TokenArgRelation, ...] = (TokenArgRelation.EQUAL,)
     wildcard_arg_validator: RegexValidator | Callable | None = None
@@ -361,7 +362,7 @@ class PostSearchTokenCategory(Enum):
         # Translators: Name of the "width" search token
         name=_("width"),
         # Translators: Description for the "width" search token
-        desc=_("The width of a Post (only applies to images and videos."),
+        desc=_("The width of a Post (only applies to images and videos)."),
         aliases=(
             # Translators: Alias for the "width" search token
             _("w"),

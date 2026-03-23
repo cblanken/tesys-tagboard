@@ -6,37 +6,38 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 20:18+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2026-03-23 23:15+0000\n"
+"PO-Revision-Date: 2026-03-26 20:11:+0000\n"
+"Last-Translator: cblanken"
+"com\n"
+"Language-Team: \n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=INTEGER; plural=(n != 1);\n"
 
 #: config/settings/base.py:30
 msgid "English"
-msgstr ""
+msgstr "Englisch"
 
 #: config/settings/base.py:31
 msgid "French"
-msgstr ""
+msgstr "Französisch"
 
 #: config/settings/base.py:32
 msgid "German"
-msgstr ""
+msgstr "Deutch"
 
 #: config/settings/base.py:33
 msgid "Spanish"
-msgstr ""
+msgstr "Spanisch"
 
 #: tesys_tagboard/components/create_collection/create_collection.html:4
 msgid "Create a collection"
-msgstr ""
+msgstr "Mach eine Sammlung"
 
 #: tesys_tagboard/components/create_collection/create_collection.html:31
 #: tesys_tagboard/templates/mfa/webauthn/signup_form.html:23
@@ -45,12 +46,12 @@ msgstr ""
 
 #: tesys_tagboard/components/create_tag/create_tag.html:8
 msgid "Create a tag"
-msgstr ""
+msgstr "Mach ein Tag"
 
 #: tesys_tagboard/components/create_tag/create_tag.html:11
 #: tesys_tagboard/components/create_tag/create_tag.html:16
 msgid "Tag name"
-msgstr ""
+msgstr "Tag-Name"
 
 #: tesys_tagboard/components/create_tag/create_tag.html:19
 msgid "Category"
@@ -197,22 +198,22 @@ msgid "post tag histories"
 msgstr ""
 
 #. Translators: Name of the "collection" search token
-#: tesys_tagboard/models.py:703 tesys_tagboard/search.py:468
+#: tesys_tagboard/models.py:703 tesys_tagboard/search.py:469
 msgid "collection"
-msgstr ""
+msgstr "sammlung"
 
 #: tesys_tagboard/models.py:704
 msgid "collections"
-msgstr ""
+msgstr "Sammlungen"
 
 #. Translators: Alias for the "comment_by" search token
-#: tesys_tagboard/models.py:752 tesys_tagboard/search.py:315
+#: tesys_tagboard/models.py:752 tesys_tagboard/search.py:316
 msgid "comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: tesys_tagboard/models.py:753
 msgid "comments"
-msgstr ""
+msgstr "Kommentare"
 
 #: tesys_tagboard/models.py:778
 msgid "favorite"
@@ -223,322 +224,323 @@ msgid "favorites"
 msgstr ""
 
 #. Translators: Description for the "wildcard" search token
-#: tesys_tagboard/search.py:263
+#: tesys_tagboard/search.py:264
 msgid ""
 "The default (un-named) token. When a plain string without any operator is "
 "given it will be interpreted as a tag name."
 msgstr ""
+"Der Standard namenlose Token. Er wird als Name interpretiert, sofern kein "
+"Operator bereitgestellt ist."
 
-#: tesys_tagboard/search.py:270
+#: tesys_tagboard/search.py:271
 msgid "tag_id"
-msgstr ""
+msgstr "tag_id"
 
 #. Translators: Description for the "tag_id" search token
-#: tesys_tagboard/search.py:272
+#: tesys_tagboard/search.py:273
 msgid "The ID of a tag."
-msgstr ""
+msgstr "Die ID eines Tags."
 
 #. Translators: Name of the "id" search token
-#: tesys_tagboard/search.py:278
+#: tesys_tagboard/search.py:279
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #. Translators: Description for the "id" search token
-#: tesys_tagboard/search.py:280
+#: tesys_tagboard/search.py:281
 msgid "The ID of a post."
-msgstr ""
+msgstr "Die ID eines Beitrags."
 
 #. Translators: Name of the "alias" search token
-#: tesys_tagboard/search.py:286
+#: tesys_tagboard/search.py:287
 msgid "alias"
-msgstr ""
+msgstr "alias"
 
 #. Translators: Description for the "alias" search token
-#: tesys_tagboard/search.py:288
+#: tesys_tagboard/search.py:289
 msgid "The name of a tag alias."
-msgstr ""
+msgstr "Der Name eines Tag-Alias."
 
 #. Translators: Alias for the "alias" search token
-#: tesys_tagboard/search.py:291
+#: tesys_tagboard/search.py:292
 msgid "tag_alias"
-msgstr ""
+msgstr "tag_alias"
 
 #. Translators: Name of the "tag_count" search token
-#: tesys_tagboard/search.py:298
+#: tesys_tagboard/search.py:299
 msgid "tag_count"
-msgstr ""
+msgstr "tag_anzahl"
 
 #. Translators: Description for the "tag_count" search token
-#: tesys_tagboard/search.py:300
+#: tesys_tagboard/search.py:301
 msgid "The number of tags on a post."
-msgstr ""
+msgstr "Die Anzahl der Tags auf einem Beitrag."
 
 #. Translators: Alias for the "tag_count" search token
-#: tesys_tagboard/search.py:303
+#: tesys_tagboard/search.py:304
 msgid "tc"
-msgstr ""
+msgstr "ta"
 
 #. Translators: Name of the "comment_by" search token
-#: tesys_tagboard/search.py:310
+#: tesys_tagboard/search.py:311
 msgid "comment_by"
-msgstr ""
+msgstr "kommentar_von"
 
 #. Translators: Description for the "comment_by" search token
-#: tesys_tagboard/search.py:312
+#: tesys_tagboard/search.py:313
 msgid "The username of a user that has commented on a post"
-msgstr ""
+msgstr "Der Benutzername eines Nutzers, der einen Beitrag kommentiert hat"
 
 #. Translators: Alias for the "comment_by" search token
-#: tesys_tagboard/search.py:317
+#: tesys_tagboard/search.py:318
 msgid "cb"
-msgstr ""
+msgstr "kv"
 
 #. Translators: Name of the "comment_count" search token
-#: tesys_tagboard/search.py:324
+#: tesys_tagboard/search.py:325
 msgid "comment_count"
-msgstr ""
+msgstr "kommentar_anzahl"
 
 #. Translators: Description for the "comment_count" search token
-#: tesys_tagboard/search.py:326
+#: tesys_tagboard/search.py:327
 msgid "The number of comments on a post."
-msgstr ""
+msgstr "Die Anzahl der Kommentare zu einem Beitrag."
 
 #. Translators: Alias for the "comment_count" search token
-#: tesys_tagboard/search.py:329
+#: tesys_tagboard/search.py:330
 msgid "cc"
-msgstr ""
+msgstr "ka"
 
 #. Translators: Name of the "fav_count" search token
-#: tesys_tagboard/search.py:336
+#: tesys_tagboard/search.py:337
 msgid "favorite_count"
-msgstr ""
+msgstr "favorit_anzahl"
 
 #. Translators: Description for the "fav_count" search token
-#: tesys_tagboard/search.py:338
+#: tesys_tagboard/search.py:339
 msgid "The number of favorites recieved by a post."
-msgstr ""
+msgstr "Die Anzahl der Favoriten für einem Beitrag."
 
 #. Translators: Alias for the "fav_count" search token
-#: tesys_tagboard/search.py:341
+#: tesys_tagboard/search.py:342
 msgid "fav_count"
-msgstr ""
+msgstr "fav_anzahl"
 
 #. Translators: Alias for the "fav_count" search token
-#: tesys_tagboard/search.py:343
+#: tesys_tagboard/search.py:344
 msgid "fc"
-msgstr ""
+msgstr "fa"
 
 #. Translators: Name of the "height" search token
-#: tesys_tagboard/search.py:350
+#: tesys_tagboard/search.py:351
 msgid "height"
-msgstr ""
+msgstr "höhe"
 
 #. Translators: Description for the "height" search token
-#: tesys_tagboard/search.py:352
+#: tesys_tagboard/search.py:353
 msgid "The height of a Post (only applies to images and videos)."
-msgstr ""
+msgstr "Die Höhe eines Beitrags (gilt nur für Bilder und Videos)."
 
 #. Translators: Alias for the "height" search token
-#: tesys_tagboard/search.py:355
+#: tesys_tagboard/search.py:356
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #. Translators: Name of the "width" search token
-#: tesys_tagboard/search.py:362
+#: tesys_tagboard/search.py:363
 msgid "width"
-msgstr ""
+msgstr "breite"
 
 #. Translators: Description for the "width" search token
-#: tesys_tagboard/search.py:364
-msgid "The width of a Post (only applies to images and videos."
-msgstr ""
+#: tesys_tagboard/search.py:365
+#, fuzzy
+msgid "The width of a Post (only applies to images and videos)."
+msgstr "Die Breite eines Beitrags (gilt nur für Bilder und Videos)."
 
 #. Translators: Alias for the "width" search token
-#: tesys_tagboard/search.py:367
+#: tesys_tagboard/search.py:368
 msgid "w"
-msgstr ""
+msgstr "b"
 
 #. Translators: Name of the "rating_label" search token
-#: tesys_tagboard/search.py:374
+#: tesys_tagboard/search.py:375
 msgid "rating_label"
-msgstr ""
+msgstr "explizitheitsbewertungsetikett"
 
-#: tesys_tagboard/search.py:377
-msgid ""
-"The rating of a Post. Accepts one of safe, unrated, questionable, and "
-"explicit."
-msgstr ""
+#: tesys_tagboard/search.py:378
+msgid "The rating of a Post. Accepts one of safe, unrated, questionable, and explicit."
+msgstr "Die Bewertung eines Beitrags. Akzeptiert eine der folgenden Optionen: safe, unrated, quesitonable und explicit."
 
 #. Translators: Alias for the "rating_label" search token
-#: tesys_tagboard/search.py:382
+#: tesys_tagboard/search.py:383
 msgid "rate"
-msgstr ""
+msgstr "explizitheit"
 
 #. Translators: Alias for the "rating_label" search token
-#: tesys_tagboard/search.py:384
+#: tesys_tagboard/search.py:385
 msgid "r"
-msgstr ""
-
-#: tesys_tagboard/search.py:390
-msgid "rating_num"
-msgstr ""
+msgstr "exp"
 
 #: tesys_tagboard/search.py:391
+msgid "rating_num"
+msgstr "explizitheitsnummer"
+
+#: tesys_tagboard/search.py:392
 msgid "The rating level of a post."
-msgstr ""
+msgstr "Die Explizitheitsnummer eines Beitrags"
 
 #. Translators: Name of the "source" search token
-#: tesys_tagboard/search.py:397
+#: tesys_tagboard/search.py:398
 msgid "source"
-msgstr ""
+msgstr "quelle"
 
 #. Translators: Description for the "source" search token
-#: tesys_tagboard/search.py:399
+#: tesys_tagboard/search.py:400
 msgid "The source url of a post."
-msgstr ""
+msgstr "Die Quell-URL eines Beitrags."
 
 #. Translators: Alias for the "source" search token
-#: tesys_tagboard/search.py:402
+#: tesys_tagboard/search.py:403
 msgid "src"
-msgstr ""
+msgstr "quell"
 
 #. Translators: Name of the "posted_by" search token
-#: tesys_tagboard/search.py:410
+#: tesys_tagboard/search.py:411
 msgid "posted_by"
-msgstr ""
+msgstr "gepostet_von"
 
 #. Translators: Description for the "posted_by" search token
-#: tesys_tagboard/search.py:412
+#: tesys_tagboard/search.py:413
 msgid "The username of the uploader of a post."
 msgstr ""
 
 #. Translators: Alias for the "posted_by" search token
-#: tesys_tagboard/search.py:415
+#: tesys_tagboard/search.py:416
 msgid "uploaded_by"
 msgstr ""
 
 #. Translators: Name of the "posted_on" search token
-#: tesys_tagboard/search.py:422
+#: tesys_tagboard/search.py:423
 msgid "posted_on"
 msgstr ""
 
 #. Translators: Description for the "posted_on" search token
-#: tesys_tagboard/search.py:424
+#: tesys_tagboard/search.py:425
 msgid "The date the post was posted on."
 msgstr ""
 
 #. Translators: Alias for the "posted_on" search token
-#: tesys_tagboard/search.py:427
+#: tesys_tagboard/search.py:428
 msgid "uploaded_on"
 msgstr ""
 
 #. Translators: Name of the "mimetype" search token
-#: tesys_tagboard/search.py:434
+#: tesys_tagboard/search.py:435
 msgid "mimetype"
 msgstr ""
 
 #. Translators: Description for the "mimetype" search token
-#: tesys_tagboard/search.py:436
+#: tesys_tagboard/search.py:437
 msgid "The MIME type of the post's file."
 msgstr ""
 
 #. Translators: Alias for the "mimetype" search token
-#: tesys_tagboard/search.py:439
+#: tesys_tagboard/search.py:440
 msgid "mime"
 msgstr ""
 
 #. Translators: Name of the "file_extension" search token
-#: tesys_tagboard/search.py:446
+#: tesys_tagboard/search.py:447
 msgid "file_extension"
 msgstr ""
 
 #. Translators: Description for the "file_extension" search token
-#: tesys_tagboard/search.py:448
+#: tesys_tagboard/search.py:449
 msgid "The file extension of the post's related file."
 msgstr ""
 
 #. Translators: Alias for the "file_extension" search token
-#: tesys_tagboard/search.py:451
+#: tesys_tagboard/search.py:452
 msgid "extension"
 msgstr ""
 
 #. Translators: Alias for the "file_extension" search token
-#: tesys_tagboard/search.py:453
+#: tesys_tagboard/search.py:454
 msgid "ext"
 msgstr ""
 
 #. Translators: Name of the "collection_id" search token
-#: tesys_tagboard/search.py:460
+#: tesys_tagboard/search.py:461
 msgid "collection_id"
 msgstr ""
 
 #. Translators: Description for the "collection_id" search token
-#: tesys_tagboard/search.py:462
+#: tesys_tagboard/search.py:463
 msgid "The ID of a collection."
 msgstr ""
 
 #. Translators: Description for the "collection" search token
-#: tesys_tagboard/search.py:470
+#: tesys_tagboard/search.py:471
 msgid "Whether or not a post is part of a collection (yes/no)."
 msgstr ""
 
 #. Translators: Alias for the "collection" search token
-#: tesys_tagboard/search.py:473
+#: tesys_tagboard/search.py:474
 msgid "in_collection"
 msgstr ""
 
 #. Translators: Name of the "collection_name" search token
-#: tesys_tagboard/search.py:480
+#: tesys_tagboard/search.py:481
 msgid "collection_name"
 msgstr ""
 
 #. Translators: Description for the "collection_name" search token
-#: tesys_tagboard/search.py:482
+#: tesys_tagboard/search.py:483
 msgid "A collection's name."
 msgstr ""
 
 #. Translators: Name of the "parent" search token
-#: tesys_tagboard/search.py:489
+#: tesys_tagboard/search.py:490
 msgid "parent"
 msgstr ""
 
 #. Translators: Description for the "parent" search token
-#: tesys_tagboard/search.py:491
+#: tesys_tagboard/search.py:492
 msgid "Whether or not a post has a parent (yes/no)."
 msgstr ""
 
 #. Translators: Name of the "parent_id" search token
-#: tesys_tagboard/search.py:497
+#: tesys_tagboard/search.py:498
 msgid "parent_id"
 msgstr ""
 
 #. Translators: Description for the "parent_id" search token
-#: tesys_tagboard/search.py:499
+#: tesys_tagboard/search.py:500
 msgid "Whether or not a post has a parent matching the given post ID."
 msgstr ""
 
 #. Translators: Name of the "children" search token
-#: tesys_tagboard/search.py:505
+#: tesys_tagboard/search.py:506
 msgid "children"
 msgstr ""
 
 #. Translators: Description for the "children" search token
-#: tesys_tagboard/search.py:507
+#: tesys_tagboard/search.py:508
 msgid "Whether or not a post has any children (yes/no)."
 msgstr ""
 
 #. Translators: Alias for the "children" search token
-#: tesys_tagboard/search.py:510
+#: tesys_tagboard/search.py:511
 msgid "child"
 msgstr ""
 
 #. Translators: Name of the "child_id" search token
-#: tesys_tagboard/search.py:517
+#: tesys_tagboard/search.py:518
 msgid "child_id"
 msgstr ""
 
 #. Translators: Description for the "child_id" search token
-#: tesys_tagboard/search.py:519
+#: tesys_tagboard/search.py:520
 msgid "Whether or not a post has a child post matching the given post ID."
 msgstr ""
 
@@ -1675,8 +1677,8 @@ msgstr ""
 
 #: tesys_tagboard/templates/pages/help.html:72
 msgid ""
-"Some search tokens may accept wildcards in the specified search value. These "
-"will make the filter more permissive, allowing resulting posts that match "
+"The wildcard modifer. Some search tokens may accept wildcards. These will "
+"make the filter more permissive, returning posts that match the given value "
 "where the wildcard(s) may be replaced with any value."
 msgstr ""
 

@@ -69,7 +69,7 @@
           {% with token_link_character="*" operator_name="equal" is_modifier=True %}
             <td id="wildcard-info">{% partial search-token-link-button %}</td>
             <td>
-              {% translate 'Some search tokens may accept wildcards in the specified search value. These will make the filter more permissive, allowing resulting posts that match where the wildcard(s) may be replaced with any value.' %}
+              {% translate 'The wildcard modifer. Some search tokens may accept wildcards. These will make the filter more permissive, returning posts that match the given value where the wildcard(s) may be replaced with any value.' %}
             </td>
           {% endwith %}
         </tr>
