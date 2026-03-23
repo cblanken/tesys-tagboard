@@ -20,6 +20,7 @@ from .factories import CommentFactory
 from .factories import FavoriteFactory
 from .factories import ImageFactory
 from .factories import PostFactory
+from .factories import TagAliasFactory
 from .factories import TagCategoryFactory
 from .factories import TagFactory
 from .factories import UserFactory
@@ -642,17 +643,81 @@ class TestPostAdvancedTagID:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchTagAliases:
-    def test_include_tag_alias(self):
-        # TODO
-        pass
+    def test_include_only_tag_alias(self):
+        """Ensure that PostSearch only returns posts that have a tag linked to a
+        tag alias"""
+        common_tag = TagFactory.create()
+
+        included_posts = PostFactory.create_batch(10)
+        included_tag = TagFactory.create()
+        included_tag_alias = TagAliasFactory.create(tag=included_tag)
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        not_included_posts = PostFactory.create_batch(10)
+        not_included_tag = TagFactory.create()
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        ps = PostSearch(f"alias={included_tag_alias.name}")
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+        ) == len(not_included_posts)
 
     def test_include_tag_alias_with_wildcard(self):
-        # TODO
-        pass
+        """Ensure that PostSearch only returns posts matching an alias with a wildcard
+        tag alias"""
+        common_tag = TagFactory.create(name="common")
+
+        included_posts = PostFactory.create_batch(10)
+        included_tag = TagFactory.create()
+        _included_tag_alias = TagAliasFactory.create(name="blunder", tag=included_tag)
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        not_included_posts = PostFactory.create_batch(10)
+        not_included_tag = TagFactory.create(name="success")
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        ps = PostSearch("alias=blu*er")
+        posts = ps.get_posts()
+        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+        ) == len(not_included_posts)
 
     def test_exclude_tag_alias_with_wildcard(self):
-        # TODO
-        pass
+        """Ensure tag filter negation works with tag aliases using wildcards"""
+        common_tag = TagFactory.create(name="common")
+
+        included_posts = PostFactory.create_batch(10)
+        included_tag = TagFactory.create()
+        _included_tag_alias = TagAliasFactory.create(name="blunder", tag=included_tag)
+        for post in included_posts:
+            post.tags.add(included_tag)
+            post.tags.add(common_tag)
+
+        not_included_posts = PostFactory.create_batch(10)
+        not_included_tag = TagFactory.create(name="success")
+        for post in not_included_posts:
+            post.tags.add(not_included_tag)
+            post.tags.add(common_tag)
+
+        ps = PostSearch("-alias=blu*er")
+        posts = ps.get_posts()
+        assert len(
+            posts.difference(Post.objects.filter(tags__in=[included_tag]))
+        ) == len(not_included_posts)
+        assert (
+            len(posts.difference(Post.objects.filter(tags__in=[not_included_tag]))) == 0
+        )
 
 
 @pytest.mark.django_db

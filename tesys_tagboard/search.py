@@ -260,7 +260,7 @@ class PostSearchTokenCategory(Enum):
         name="",
         desc=_(
             "The default (un-named) token. When a plain string without any operator "
-            "is given it will be interpreted as a tag."
+            "is given it will be interpreted as a tag name."
         ),
         arg_validator=tag_name_validator,
     )
@@ -273,55 +273,55 @@ class PostSearchTokenCategory(Enum):
 
     POST_ID = ComparisonSearchTokenCategory(
         name=_("id"),
-        desc=_("The ID of a Post."),
+        desc=_("The ID of a post."),
         arg_validator=positive_int_validator,
     )
 
     TAG_ALIAS = WildcardSearchTokenCategory(
         name=_("alias"),
-        desc=_("The name of a TagAlias."),
+        desc=_("The name of a tag alias."),
         aliases=("tag_alias",),
         arg_validator=tag_name_validator,
     )
 
     TAG_COUNT = ComparisonSearchTokenCategory(
         name=_("tag_count"),
-        desc=_("The number of tags on a Post."),
+        desc=_("The number of tags on a post."),
         aliases=("tc",),
         arg_validator=positive_int_validator,
     )
 
     COMMENT_BY = WildcardSearchTokenCategory(
         name=_("comment_by"),
-        desc=_("The username of a user that has commented on a Post"),
+        desc=_("The username of a user that has commented on a post"),
         aliases=("comment", "cb"),
         arg_validator=username_validator,
     )
 
     COMMENT_COUNT = ComparisonSearchTokenCategory(
         name=_("comment_count"),
-        desc=_("The number of comments on a Post."),
+        desc=_("The number of comments on a post."),
         aliases=("cc",),
         arg_validator=positive_int_validator,
     )
 
     FAV_COUNT = ComparisonSearchTokenCategory(
         name=_("favorite_count"),
-        desc=_("The number of favorites recieved by a Post."),
+        desc=_("The number of favorites recieved by a post."),
         aliases=("fav_count", "fc"),
         arg_validator=positive_int_validator,
     )
 
     HEIGHT = ComparisonSearchTokenCategory(
         name=_("height"),
-        desc=_("The height of a Post (only applies to Images and Videos)."),
+        desc=_("The height of a Post (only applies to images and videos)."),
         aliases=("h",),
         arg_validator=validators.integer_validator,
     )
 
     WIDTH = ComparisonSearchTokenCategory(
         name=_("width"),
-        desc=_("The width of a Post (only applies to Images and Videos."),
+        desc=_("The width of a Post (only applies to images and videos."),
         aliases=("w",),
         arg_validator=validators.integer_validator,
     )
@@ -338,13 +338,13 @@ class PostSearchTokenCategory(Enum):
 
     RATING_NUM = ComparisonSearchTokenCategory(
         name=_("rating_num"),
-        desc=_("The rating level of a Post."),
+        desc=_("The rating level of a post."),
         arg_validator=validators.integer_validator,
     )
 
     SOURCE = WildcardSearchTokenCategory(
         name=_("source"),
-        desc=_("The source url of a Post."),
+        desc=_("The source url of a post."),
         aliases=("src",),
         arg_validator=validators.URLValidator(),
         wildcard_arg_validator=wildcard_url_validator,
@@ -352,7 +352,7 @@ class PostSearchTokenCategory(Enum):
 
     POSTED_BY = WildcardSearchTokenCategory(
         name=_("posted_by"),
-        desc=_("The username of the uploader of a Post."),
+        desc=_("The username of the uploader of a post."),
         aliases=("uploaded_by",),
         arg_validator=username_validator,
     )
@@ -889,6 +889,20 @@ class PostSearch:
                 case PostSearchTokenCategory.TAG:
                     tag_token = TagToken(token)
                     token_expr = tag_token.get_post_filter_expr()
+
+                case PostSearchTokenCategory.TAG_ALIAS:
+                    match token.arg_relation:
+                        case TokenArgRelation.EQUAL:
+                            if token.wildcard_positions:
+                                token_expr = Q(
+                                    tags__tagalias__name__like=token.arg_with_wildcards()
+                                )
+                            else:
+                                token_expr = Q(tags__tagalias__name=token.arg)
+                        case _:
+                            raise UnsupportedSearchOperatorError(
+                                token.arg_relation_str, token
+                            )
 
                 case PostSearchTokenCategory.TAG_ID:
                     match token.arg_relation:
