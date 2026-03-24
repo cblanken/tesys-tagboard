@@ -13,6 +13,7 @@ import magic
 import typer
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Q
 from django_typer.management import Typer
@@ -39,7 +40,9 @@ from tesys_tagboard.models import TagCategory
 from tesys_tagboard.models import Video
 from tesys_tagboard.models import add_tag_history
 from tesys_tagboard.models import update_tag_post_counts
+from tesys_tagboard.upload import fix_upload_content_type
 from tesys_tagboard.users.models import User
+from tesys_tagboard.validators import media_file_supported_validator
 
 console = Console()
 
@@ -405,52 +408,58 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         media_files_sample,
         description="Creating posts from media files...",
     ):
-        m = magic.from_file(file, mime=True)
-        if smt := SupportedMediaType.select_by_mime(m):
-            post = Post(
-                title=fake.sentence(10),
-                uploader=choice(uploaders),
-                rating_level=choice(RatingLevel.choices())[0],
-                src_url=fake.word() + ".example.com",
-                type=smt.name,
+        fp = file.open("rb")
+        uploaded_file = UploadedFile(fp)
+        magic_mime = magic.from_file(file, mime=True)
+        try:
+            media_file_supported_validator(uploaded_file)
+            uploaded_file = fix_upload_content_type(uploaded_file)
+        except ValidationError as err:
+            console.print(
+                f"File '{file.name}' couldn't be validated because: {err.message}"
             )
+            continue
 
-            comment_texts = [" ".join(fake.sentences(4)) for _ in range(randint(0, 10))]
-
-            comments.extend(
-                [
-                    Comment(post=post, user=choice(users), text=text)
-                    for text in comment_texts
-                ]
-            )
-
-            media_object = None
-            match smt.value.category:
-                case MediaCategory.AUDIO:
-                    fp = file.open("rb")
-                    media_object = Audio(
-                        file=UploadedFile(UploadedFile(fp)), orig_name=file.name
-                    )
-                case MediaCategory.IMAGE:
-                    try:
-                        fp = file.open("rb")
-                        media_object = Image(file=UploadedFile(fp), orig_name=file.name)
-                    except UnidentifiedImageError:
-                        console.print("The image file couldn't be identified by PIL")
-                        console.print(f"See the file at {file.resolve()}")
-                case MediaCategory.VIDEO:
-                    fp = file.open("rb")
-                    media_object = Video(
-                        file=UploadedFile(UploadedFile(fp)), orig_name=file.name
-                    )
-
-            if media_object:
-                media_object.post = post
-                media_objects.append(media_object)
-
-            posts.append(post)
-        else:
+        smt = SupportedMediaType.select_by_mime(magic_mime)
+        if smt is None:
             console.print(f"The file type of '{file}' is not supported")
+            continue
+
+        post = Post(
+            title=fake.sentence(10),
+            uploader=choice(uploaders),
+            rating_level=choice(RatingLevel.choices())[0],
+            src_url=fake.word() + ".example.com",
+            type=smt.name,
+        )
+
+        comment_texts = [" ".join(fake.sentences(4)) for _ in range(randint(0, 10))]
+
+        comments.extend(
+            [
+                Comment(post=post, user=choice(users), text=text)
+                for text in comment_texts
+            ]
+        )
+
+        media_object = None
+        match smt.value.category:
+            case MediaCategory.AUDIO:
+                media_object = Audio(file=uploaded_file, orig_name=file.name)
+            case MediaCategory.IMAGE:
+                try:
+                    media_object = Image(file=uploaded_file, orig_name=file.name)
+                except UnidentifiedImageError:
+                    console.print("The image file couldn't be identified by PIL")
+                    console.print(f"See the file at {file.resolve()}")
+            case MediaCategory.VIDEO:
+                media_object = Video(file=uploaded_file, orig_name=file.name)
+
+        if media_object:
+            media_object.post = post
+            media_objects.append(media_object)
+
+        posts.append(post)
 
     with Progress(
         SpinnerColumn(),

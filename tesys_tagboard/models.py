@@ -33,9 +33,11 @@ from config.settings.base import AUTH_USER_MODEL
 from .enums import MediaCategory
 from .enums import RatingLevel
 from .enums import SupportedMediaType
+from .upload import get_file_content_type
 from .validators import collection_name_validator
 from .validators import dhash_validator
 from .validators import md5_validator
+from .validators import mimetype_validator
 from .validators import phash_validator
 from .validators import tag_name_validator
 
@@ -234,18 +236,25 @@ class Artist(models.Model):
         return f"<Artist - {self.tag}, bio: {self.bio}>"
 
 
-def media_upload_path(instance, filename: str) -> str:
+def media_upload_path(instance, original_filename: str) -> str:
     """Generate a unique upload path for a Media file"""
-    filename = str(uuid.uuid4())
+    random_filename = str(uuid.uuid4())
     now = timezone.now()
-    return f"uploads/{now.year}/{now.month}/{now.day}/{filename}"
+    mimetype = get_file_content_type(instance.file)
+    if smt := SupportedMediaType.select_by_mime(mimetype):
+        return f"uploads/{now.year}/{now.month}/{now.day}/{random_filename}.{smt.value.extensions[0]}"  # noqa: E501
+    msg = (
+        f"A file with an unsupported media type ({instance.mimetype}) "
+        "could not be uploaded"
+    )
+    raise ValueError(msg)
 
 
 def media_thumbnail_upload_path(instance, filename: str) -> str:
     """Generate a unique upload path for a Media file thumbnail"""
     filename = str(uuid.uuid4())
     now = timezone.now()
-    return f"thumbnails/{now.year}/{now.month}/{now.day}/{filename}"
+    return f"thumbnails/{now.year}/{now.month}/{now.day}/{filename}.png"
 
 
 def unique_filename(instance, filename: str) -> str:
@@ -483,6 +492,7 @@ class Image(models.Model):
     """Media linked to static image files"""
 
     post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    mimetype = models.CharField(max_length=30, validators=[mimetype_validator])
     orig_name = models.TextField(default="")
     file = models.ImageField(
         upload_to=media_upload_path,
@@ -571,6 +581,7 @@ class Video(models.Model):
     """Media linked to static video files"""
 
     post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    mimetype = models.CharField(max_length=30, validators=[mimetype_validator])
     orig_name = models.TextField(default="")
     file = models.FileField(upload_to=media_upload_path, unique=True)
 
@@ -602,6 +613,7 @@ class Audio(models.Model):
     """Media linked to static audio files"""
 
     post = models.OneToOneField(Post, on_delete=models.CASCADE, null=True)
+    mimetype = models.CharField(max_length=30, validators=[mimetype_validator])
     orig_name = models.TextField(default="")
     file = models.FileField(upload_to=media_upload_path, unique=True)
 

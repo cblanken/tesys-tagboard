@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .enums import RatingLevel
 from .enums import SupportedMediaType
+from .upload import fix_upload_content_type
 
 rgb_validator = validators.RegexValidator(r"^#[0-9A-F]{6}$")
 md5_validator = validators.RegexValidator(r"^[0-9A-Z]{32}$")
@@ -80,6 +81,11 @@ def tagset_validator(tag_ids: list):
 
 
 def media_file_supported_validator(file):
+    try:
+        fix_upload_content_type(file)
+    except UnicodeDecodeError as err:
+        msg = f"Could not read file because of a decoding error: {err}"
+        raise ValidationError(msg) from err
     if not SupportedMediaType.select_by_mime(file.content_type):
         msg = f"File with a content type of {file.content_type} is not supported"
         raise ValidationError(msg)

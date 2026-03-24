@@ -722,6 +722,10 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
         msg = "The uploaded file cannot be empty"
         raise ValidationError(msg)
 
+    if file.content_type is None:
+        msg = "File missing content type"
+        raise ValidationError(msg)
+
     validators = [
         media_file_supported_validator,
         media_file_type_matches_ext_validator,
@@ -729,18 +733,15 @@ def handle_media_upload(file: UploadedFile | None, src_url: str | None) -> tuple
     for validator in validators:
         validator(file)
 
-    if file.content_type is None:
-        msg = "File missing content type"
-        raise ValidationError(msg)
     if smt := SupportedMediaType.select_by_mime(file.content_type):
         media_file = None
         match smt.value.category:
             case MediaCategory.AUDIO:
-                media_file = Audio(file=file)
+                media_file = Audio(file=file, mimetype=smt.value.get_mimetype())
             case MediaCategory.IMAGE:
-                media_file = Image(file=file)
+                media_file = Image(file=file, mimetype=smt.value.get_mimetype())
             case MediaCategory.VIDEO:
-                media_file = Video(file=file)
+                media_file = Video(file=file, mimetype=smt.value.get_mimetype())
 
         duplicate_file = find_duplicate_media_file(media_file)
         return (duplicate_file, media_file)
@@ -786,8 +787,8 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
                 form.files.get("file"), form.cleaned_data.get("src_url")
             )
 
-        except ValidationError:
-            msg = "Failed to validate uploaded media file"
+        except ValidationError as err:
+            msg = f'Failed to validate uploaded media file because: "{err.message}"'
             messages.add_message(request, messages.INFO, msg)
             return TemplateResponse(request, "pages/upload.html", context=context)
         else:
