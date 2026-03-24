@@ -88,6 +88,7 @@ class SupportedMediaType(Enum):
     WAV = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "vnd.wav")
     WAV2 = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "vnd.wave")
     WAV3 = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "wave")
+    WAV4 = MediaType("WAV audio", ["wav"], MediaCategory.AUDIO, "x-wav")
 
     # Video types
     MP4 = MediaType("MP4 video", ["mp4"], MediaCategory.VIDEO, "mp4")
