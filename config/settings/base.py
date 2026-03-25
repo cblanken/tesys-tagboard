@@ -391,10 +391,8 @@ TAILWIND_APP_NAME = "tesys_tagboard.theme"
 
 # DaisyUI themes
 THEMES = [
-    "light-1",
-    "light-2",
-    "dark-1",
-    "dark-2",
+    "light",
+    "dark",
     "wireframe",
 ]
 
