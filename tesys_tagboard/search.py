@@ -748,7 +748,7 @@ class NamedToken:
                 if arg_relation not in [
                     x.value for x in token_category.value.allowed_arg_relations
                 ]:
-                    msg = f'The {token_category.value.name} filter does not accept the "{arg_relation}" operator'  # noqa: E501
+                    msg = f'The <span class="font-bold font-mono">{token_category.value.name}</span> filter does not accept the <span class="font-bold font-mono">{arg_relation}</span> operator'  # noqa: E501
                     raise ValidationError(msg)
 
             named_token = cls(

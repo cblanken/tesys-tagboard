@@ -1,8 +1,8 @@
 <ul class="absolute top-full p-0 w-full ms-0 menu bg-base-200">
   {% if error %}
-    <div class="flex flex-row gap-2 items-center p-2 text-base font-bold bg-error text-error-content">
+    <div class="flex flex-row gap-2 items-center p-2 text-base bg-error text-error-content">
       <div>{% include "icons/feather.html" with icon="alert-circle" size="lg" %}</div>
-      <div>{{ error }}</div>
+      <div>{{ error|safe }}</div>
     </div>
   {% endif %}
   {% for item in items %}
@@ -13,7 +13,7 @@
           tabindex="-1"
           style="{% if item.tag_category.bg %}background: {{ item.tag_category.bg }};
                  {% endif %} {% if item.tag_category.fg %}color: {{ item.tag_category.fg }};{% endif %}"
-          class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border-1 border-neutral/80 text-tag-content {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}bg-tag-default{% else %}bg-filter-func{% endif %} last:border-b-1 hover:brightness-115 focus:brightness-115">
+          class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border border-neutral/80 text-tag-content {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}bg-tag-default{% else %}bg-filter-func{% endif %} last:border-b hover:brightness-115 focus:brightness-115">
         <div class="flex justify-between max-h-8 rounded-none">
           <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10 h-fit min-h-10">
             {% if item.alias %}
