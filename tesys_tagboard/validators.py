@@ -60,7 +60,9 @@ def mimetype_validator(mimetype: str):
 
 
 def file_extension_validator(ext: str):
-    extensions = list(chain(*[smt.value.extensions for smt in SupportedMediaType]))
+    extensions = sorted(
+        set(chain(*[smt.value.extensions for smt in SupportedMediaType]))
+    )
     if ext not in extensions:
         msg = _(
             "The file extension argument must match a supported file extension: %s"
