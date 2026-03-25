@@ -72,7 +72,7 @@ class PostFactory(DjangoModelFactory[Post]):
     src_url = Faker("uri", schemes=["http", "https"])
     locked_comments = False
 
-    type = Faker("supported_media_type")
+    type = Faker(SupportedMediaTypeProvider.supported_media_type.__name__)
 
     class Meta:
         model = Post

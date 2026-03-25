@@ -5,6 +5,7 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from tesys_tagboard.enums import RatingLevel
+from tesys_tagboard.enums import SupportedMediaType
 from tesys_tagboard.models import Post
 from tesys_tagboard.models import Tag
 from tesys_tagboard.models import TagAlias
@@ -977,8 +978,17 @@ class TestPostAdvancedSearchTagCount:
 @pytest.mark.django_db
 class TestPostAdvancedSearchFiletype:
     def test_filetype_extension(self):
-        # TODO
-        pass
+        gif_posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
+        png_posts = PostFactory.create_batch(4, type=SupportedMediaType.PNG.name)
+
+        ps = PostSearch("file_extension=gif")
+        matching_posts = ps.get_posts()
+
+        found_post_ids = set(matching_posts.values_list("pk", flat=True))
+        gif_post_ids = {p.pk for p in gif_posts}
+        png_post_ids = {p.pk for p in png_posts}
+        assert all(pid in found_post_ids for pid in gif_post_ids)
+        assert not any(pid in found_post_ids for pid in png_post_ids)
 
 
 @pytest.mark.django_db
