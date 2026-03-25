@@ -1,3 +1,6 @@
+# See a complete list of the available settings in the project documentation
+# at https://tesys-tagboard.readthedocs.io/en/latest/configuration/settings.html
+#
 # PostgreSQL
 # ------------------------------------------------------------------------------
 POSTGRES_HOST=postgres
