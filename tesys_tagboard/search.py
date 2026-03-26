@@ -152,9 +152,13 @@ def autocomplete_tags(
 ) -> Generator[AutocompleteItem]:
     if include_partial is not None:
         if named_token := NamedToken.from_token_string(include_partial):
-            tag_token = TagToken(named_token)
-            tag_filter_expr = tag_token.get_tag_filter_autocomplete_expr()
-            tags = tags.filter(tag_filter_expr)
+            try:
+                tag_token = TagToken(named_token)
+                tag_filter_expr = tag_token.get_tag_filter_autocomplete_expr()
+                tags = tags.filter(tag_filter_expr)
+            except ValueError:
+                # Ignore any partial that can't be identified as a tag token
+                pass
     if exclude_partial is not None:
         tags = tags.exclude(name__contains=exclude_partial)
     if exclude_tag_names is not None:
