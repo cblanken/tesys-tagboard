@@ -26,7 +26,7 @@
       {% for action in actions %}
         <li class="relative p-0 w-full font-bold hover:rounded-none min-w-25 group menu z-1 hover:bg-accent hover:text-accent-content">
           {% if action.name == "search" %}
-            <a href='{% url "posts" %}?tag={{ tag.pk }}'
+            <a href='{% url "posts" %}?q={{ tag_search_query }}'
                class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none link link-hover">{{ action.name }}</a>
           {% else %}
             <button type="button"

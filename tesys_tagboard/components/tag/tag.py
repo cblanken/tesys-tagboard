@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from django_components import Component
 from django_components import register
 
+from tesys_tagboard.search import PostSearchTokenCategory
+
 
 @dataclass
 class Action:
@@ -31,6 +33,7 @@ class TagComponent(Component):
         ]
         return {
             "tag": tag,
+            "tag_search_query": f"{PostSearchTokenCategory.TAG_ID.value.name}={tag.pk}",
             "size": size,
             "category": category,
             "actions": actions,
