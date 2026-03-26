@@ -994,16 +994,29 @@ class TestPostAdvancedSearchFiletype:
 @pytest.mark.django_db
 class TestPostAdvancedSearchMimetype:
     def test_supported_mimetype(self):
-        # TODO
-        pass
+        gif_posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
+        png_posts = PostFactory.create_batch(4, type=SupportedMediaType.PNG.name)
+
+        ps = PostSearch("mimetype=image/gif")
+        found_posts = ps.get_posts()
+
+        found_post_ids = set(found_posts.values_list("pk", flat=True))
+        gif_post_ids = {p.pk for p in gif_posts}
+        png_post_ids = {p.pk for p in png_posts}
+        assert all(pid in found_post_ids for pid in gif_post_ids)
+        assert not any(pid in found_post_ids for pid in png_post_ids)
 
     def test_invalid_mimetype(self):
-        # TODO
-        pass
+        """Invalid mimetypes should raise a validation error"""
+        _posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
+        with pytest.raises(ValidationError):
+            PostSearch("mimetype=not_a/mimetype")
 
     def test_valid_but_unsupported_mimetype(self):
-        # TODO
-        pass
+        """Unsupported mimetypes should raise a validation error"""
+        _posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
+        with pytest.raises(ValidationError):
+            PostSearch("mimetype=text/html")
 
 
 @pytest.mark.django_db

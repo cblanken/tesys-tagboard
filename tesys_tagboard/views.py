@@ -307,9 +307,9 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             else:
                 posts = ps.get_posts()
     except ValidationError as err:
-        messages.add_message(request, messages.ERROR, err.message)
+        messages.add_message(request, messages.ERROR, SafeString(err.message))
     except SearchTokenFilterNotImplementedError as err:
-        messages.add_message(request, messages.ERROR, err.message)
+        messages.add_message(request, messages.ERROR, SafeString(err.message))
 
     pager = Paginator(posts, 36, 4)
     page_num = int(request.GET.get("page", 1))

@@ -149,7 +149,7 @@ def autocomplete_tags(
     exclude_partial: str | None = None,
     exclude_tag_names: Iterable[str] | None = None,
     exclude_tags: QuerySet[Tag] | None = None,
-) -> Generator[AutocompleteItem]:
+) -> Iterable[AutocompleteItem]:
     if include_partial is not None:
         if named_token := NamedToken.from_token_string(include_partial):
             try:
@@ -158,7 +158,7 @@ def autocomplete_tags(
                 tags = tags.filter(tag_filter_expr)
             except ValueError:
                 # Ignore any partial that can't be identified as a tag token
-                pass
+                return ()
     if exclude_partial is not None:
         tags = tags.exclude(name__contains=exclude_partial)
     if exclude_tag_names is not None:

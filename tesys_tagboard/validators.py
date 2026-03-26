@@ -52,10 +52,12 @@ wildcard_collection_name_validator = validators.RegexValidator(
 
 def mimetype_validator(mimetype: str):
     mimetypes = [smt.value.get_mimetype() for smt in SupportedMediaType]
-    if mimetype not in mimetypes:
+    if not SupportedMediaType.select_by_mime(mimetype):
         msg = _(
             "The MIME type argument must match one of the supported MIME types: %s"
-        ) % ", ".join(mimetypes)
+        ) % ", ".join(
+            [f"<span class='font-mono font-bold'>{mt}</span>" for mt in mimetypes]
+        )
         raise ValidationError(msg)
 
 
