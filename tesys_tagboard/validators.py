@@ -33,8 +33,13 @@ wildcard_url_validator = validators.RegexValidator(
     message=_("Enter a valid URL with wildcards"),
 )
 iso_date_validator = validators.RegexValidator(
-    _lazy_re_compile(r"^\d{4}-\d{2}-\d{2}$"),
-    message=_("Enter a date of the form: YYYY-MM-DD"),
+    _lazy_re_compile(
+        r"^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?:\:\d{2})?(?:\+\d{2}:\d{2})?)?$"
+    ),
+    message=_(
+        "Enter a date in the following format: <span class='font-bold font-mono'>"
+        "YYYY-MM-DD</span>"
+    ),
 )
 yes_no_validator = validators.RegexValidator(
     _lazy_re_compile(r"^(yes|no)$", re.IGNORECASE),

@@ -1,8 +1,10 @@
 import contextlib
+import datetime
 from itertools import chain
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import SupportedMediaType
@@ -1297,25 +1299,118 @@ class TestPostAdvancedSearchPostedBy:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchPostedOn:
-    def test_date_exact(self):
-        # TODO
-        pass
+    def test_exact_date(self):
+        """Confirm search by date only (YYYY-MM-DD) returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
 
-    def test_date_before(self):
-        # TODO
-        pass
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
 
-    def test_date_after(self):
-        # TODO
-        pass
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
 
-    def test_valid_format_invalid_date(self):
-        # TODO
-        pass
+        ps = PostSearch(f"posted_on={date1.strftime('%Y-%m-%d')}")
+        found_posts = ps.get_posts()
+
+        assert post1 in found_posts
+        assert post2 not in found_posts
+        assert post3 not in found_posts
+
+    def test_exact_iso(self):
+        """Confirm search by exact ISO date returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
+
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
+
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
+
+        ps = PostSearch(f"posted_on={date1.isoformat()}")
+        found_posts = ps.get_posts()
+
+        assert post1 in found_posts
+        assert post2 not in found_posts
+        assert post3 not in found_posts
+
+    def test_before_date(self):
+        """Confirm search by date before (YYYY-MM-DD) returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
+
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
+
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
+
+        ps = PostSearch(f"posted_on<{date2.strftime('%Y-%m-%d')}")
+        found_posts = ps.get_posts()
+
+        assert post1 in found_posts
+        assert post2 not in found_posts
+        assert post3 not in found_posts
+
+    def test_before_iso(self):
+        """Confirm search by before ISO date returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
+
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
+
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
+
+        ps = PostSearch(f"posted_on<{date2.isoformat()}")
+        found_posts = ps.get_posts()
+
+        assert post1 in found_posts
+        assert post2 not in found_posts
+        assert post3 not in found_posts
+
+    def test_after_date(self):
+        """Confirm search by date after (YYYY-MM-DD) returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
+
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
+
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
+
+        ps = PostSearch(f"posted_on>{date2.strftime('%Y-%m-%d')}")
+        found_posts = ps.get_posts()
+
+        assert post1 not in found_posts
+        assert post2 not in found_posts
+        assert post3 in found_posts
+
+    def test_after_iso(self):
+        """Confirm search by before ISO date returns correct posts"""
+        date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
+        post1 = PostFactory.create(post_date=date1)
+
+        date2 = datetime.datetime(2022, 2, 22, tzinfo=timezone.get_default_timezone())
+        post2 = PostFactory.create(post_date=date2)
+
+        date3 = datetime.datetime(2024, 2, 22, tzinfo=timezone.get_default_timezone())
+        post3 = PostFactory.create(post_date=date3)
+
+        ps = PostSearch(f"posted_on>{date2.isoformat()}")
+        found_posts = ps.get_posts()
+
+        assert post1 not in found_posts
+        assert post2 not in found_posts
+        assert post3 in found_posts
 
     def test_invalid_date_format(self):
-        # TODO
-        pass
+        """an invalid date argument should raise a validation error"""
+        with pytest.raises(ValidationError):
+            PostSearch("posted_on=2020:01:02")
 
 
 @pytest.mark.django_db
