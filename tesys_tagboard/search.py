@@ -101,7 +101,7 @@ class UnsupportedSearchOperatorError(ValidationError):
         *args,
         **kwargs,
     ):
-        self.message = f'The provided search operator: "{operator}" is not supported for the token: "{token}"'  # noqa: E501
+        self.message = f'The provided search operator <span class="font-bold font-mono">{operator}</span> is not supported for the token: <span class="font-bold font-mono">{token.name}</span>'  # noqa: E501
         super().__init__(self.message, *args, **kwargs)
 
 
@@ -460,7 +460,7 @@ class PostSearchTokenCategory(Enum):
         arg_validator=file_extension_validator,
     )
 
-    COLLECTION_ID = SimpleSearchTokenCategory(
+    COLLECTION_ID = ComparisonSearchTokenCategory(
         # Translators: Name of the "collection_id" search token
         name=_("collection_id"),
         # Translators: Description for the "collection_id" search token
@@ -1186,6 +1186,10 @@ class PostSearch:
                     match token.arg_relation:
                         case TokenArgRelation.EQUAL:
                             token_expr = Q(collection=int(token.arg))
+                        case TokenArgRelation.LESS_THAN:
+                            token_expr = Q(collection__lt=int(token.arg))
+                        case TokenArgRelation.GREATER_THAN:
+                            token_expr = Q(collection__gt=int(token.arg))
                         case _:
                             raise UnsupportedSearchOperatorError(
                                 token.arg_relation_str, token

@@ -19,6 +19,7 @@ from tesys_tagboard.search import TokenArgRelation
 from tesys_tagboard.search import autocomplete_tag_aliases
 from tesys_tagboard.search import autocomplete_tags
 
+from .factories import CollectionFactory
 from .factories import CommentFactory
 from .factories import FavoriteFactory
 from .factories import ImageFactory
@@ -1414,32 +1415,107 @@ class TestPostAdvancedSearchPostedOn:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCollections:
+class TestPostAdvancedSearchCollection:
+    def test_collection_yes(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1, c2 = CollectionFactory.create_batch(2)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+
+        ps = PostSearch("collection=yes")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+    def test_collection_no(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1, c2 = CollectionFactory.create_batch(2)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+
+        ps = PostSearch("collection=no")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk not in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk in post_ids
+
+    def test_invalid_choice(self):
+        with pytest.raises(ValidationError):
+            PostSearch("collection=yeehaw")
+
+
+@pytest.mark.django_db
+class TestPostAdvancedSearchCollectionID:
     def test_exact_id(self):
-        # TODO
-        pass
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1, c2, c3 = CollectionFactory.create_batch(3)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+
+        ps = PostSearch(f"collection_id={c1.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk not in post_ids
+
+    def test_id_less_than(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1 = CollectionFactory.create(pk=1)
+        c2 = CollectionFactory.create(pk=2)
+        c3 = CollectionFactory.create(pk=3)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+
+        ps = PostSearch(f"collection_id<{c3.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+    def test_id_greater_than(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1 = CollectionFactory.create(pk=1)
+        c2 = CollectionFactory.create(pk=2)
+        c3 = CollectionFactory.create(pk=3)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+
+        ps = PostSearch(f"collection_id>{c1.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk not in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk in post_ids
 
     def test_exact_id_multiple(self):
         # Search returns posts in _both_ collections when using multiple
         # collection_id tokens
-        # TODO
-        pass
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1, c2, c3, c4 = CollectionFactory.create_batch(4)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+        c4.posts.set([p1, p2])
 
-    def test_posts_in_a_collection(self):
-        # TODO
-        pass
-
-    def test_posts_not_in_a_collection(self):
-        # TODO
-        pass
-
-    def test_name(self):
-        # TODO
-        pass
-
-    def test_name_with_wildcard(self):
-        # TODO
-        pass
+        ps = PostSearch(f"collection_id={c4.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
 
 
 @pytest.mark.django_db
