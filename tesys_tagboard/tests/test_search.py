@@ -1571,21 +1571,91 @@ class TestPostAdvancedSearchCollectionName:
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchParent:
-    def test_parent_exists(self):
-        # TODO
-        pass
+    def test_has_parent(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
 
-    def test_parent_id(self):
-        # TODO
-        pass
+        ps = PostSearch("parent=yes")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk not in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+    def test_has_no_parent(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
+
+        ps = PostSearch("parent=no")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk in post_ids
+
+    def test_parent_id_exact(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
+        p3.parent = p2
+        p3.save()
+
+        ps = PostSearch(f"parent_id={p1.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk not in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
 
 
 @pytest.mark.django_db
 class TestPostAdvancedSearchChildren:
-    def test_child_exists(self):
-        # TODO
-        pass
+    def test_has_children(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
+        p3.parent = p2
+        p3.save()
 
-    def test_children_ids(self):
-        # TODO
-        pass
+        ps = PostSearch("child=yes")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+    def test_has_no_children(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
+        p3.parent = p2
+        p3.save()
+
+        ps = PostSearch("child=no")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk not in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk in post_ids
+
+    def test_children_id_exact(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        p2.parent = p1
+        p2.save()
+        p3.parent = p2
+        p3.save()
+
+        ps = PostSearch(f"child_id={p2.pk}")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk not in post_ids
