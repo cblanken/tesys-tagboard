@@ -70,37 +70,21 @@ class SearchTokenFilterNotImplementedError(Exception):
 class SearchTagTokenError(ValidationError):
     message = "The provided tag token is invalid"
 
-    def __init__(
-        self,
-        msg=message,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
 class SearchTokenNameError(ValidationError):
     message = "The provided name does not match an existing TokenCategory"
 
-    def __init__(
-        self,
-        msg=message,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
 class UnsupportedSearchOperatorError(ValidationError):
     message = "Unsupported search operator provided"
 
-    def __init__(
-        self,
-        operator: str,
-        token: NamedToken,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, operator: str, token: NamedToken, *args, **kwargs):
         self.message = f'The provided search operator <span class="font-bold font-mono">{operator}</span> is not supported for the token: <span class="font-bold font-mono">{token.name}</span>'  # noqa: E501
         super().__init__(self.message, *args, **kwargs)
 
@@ -108,12 +92,7 @@ class UnsupportedSearchOperatorError(ValidationError):
 class InvalidRatingLabelError(ValidationError):
     message = "The provided rating label does not match an existing RatingLevel"
 
-    def __init__(
-        self,
-        msg=message,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
@@ -121,12 +100,7 @@ class InvalidMimetypeError(ValidationError):
     mimetypes = ", ".join([smt.value.get_mimetype() for smt in SupportedMediaType])
     message = f"The provided mimetype does not match any of the supported mimetypes: {mimetypes}."  # noqa: E501
 
-    def __init__(
-        self,
-        msg=message,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
@@ -134,12 +108,7 @@ class InvalidFileExtensionError(ValidationError):
     extensions = ", ".join(chain(*[smt.value.extensions for smt in SupportedMediaType]))
     message = f"The provided file extension does not match any of the supported extensions: {extensions}"  # noqa: E501
 
-    def __init__(
-        self,
-        msg=message,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
 
 
@@ -677,7 +646,7 @@ class NamedToken:
     """
 
     category: PostSearchTokenCategory
-    name: str
+    name: str | StrOrPromise
     arg: str = ""
     arg_relation_str: str = TokenArgRelation.EQUAL.value
     arg_relation: TokenArgRelation | None = field(init=False)
@@ -802,11 +771,11 @@ class NamedToken:
 @dataclass
 class AutocompleteItem:
     token_category: PostSearchTokenCategory
-    name: str
+    name: str | StrOrPromise
     tag_category: TagCategory | None = None
     tag_id: int | None = None
-    alias: str = ""
-    extra: str = ""
+    alias: str | StrOrPromise = ""
+    extra: str | StrOrPromise = ""
 
     def get_tag_label(self) -> SafeString:
         """Build and return an AutocompleteItem's label to be used for rendering
@@ -852,17 +821,17 @@ class PostSearch:
     Post search queries parse a space delimited string which is split into tokens
     corresponding to any of the values in the `TokenCategory` Enum.
 
-    Tag categories may be searched by delimiting them with forward slashes. For example,
-    a token of `Locations/Countries/Chile` has a top-level category of "Locations" a
-    sub-category of "Countries" and a tag name of "Chile".
+    Tag categories may be searched by delimiting them with colons by default. For
+    example a token of `Locations:Countries:Chile` has a top-level category of
+    "Locations" a sub-category of "Countries" and a tag name of "Chile".
 
-    Beyond simple tags, there are also many filtering options all of which are delimited
+    Beyond simple tags, there are also many filtering options which are all delimited
     by a =, <, or > symbol. For example, a token of `uploaded_by=pablo` has a token
     category of "uploaded_by" with an argument of "pablo" which can be a user's
     username. Some filters may also include wildcards, so following the previous
     example, `uploaded_by=pablo*` would return any posts uploaded by a user with the
-    username prefix of "pablo". Similarly wildcards may appear at the beginning or in
-    the middle of the arg. For example, `uploaded_by=*pablo` or `uploaded_by=pa*blo`
+    username prefix of "pablo". Similarly, wildcards may appear at the beginning or in
+    the middle of the argument. Such as, `uploaded_by=*pablo` or `uploaded_by=pa*blo`.
 
     All tags and filters may be prefixed with a "-" sign to indicate the search for that
     token should be inverted. For example a token of `-uploaded_by=pablo` would exclude
