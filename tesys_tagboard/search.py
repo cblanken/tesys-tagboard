@@ -48,7 +48,9 @@ if TYPE_CHECKING:
 TAG_CATEGORY_DELIMITER = settings.TAG_CATEGORY_DELIMITER
 MAX_TAG_CATEGORY_DEPTH = settings.MAX_TAG_CATEGORY_DEPTH
 VALID_ARG_RELATIONS = "".join([x.value for x in TokenArgRelation])
+SEARCH_ARG_QUOTE_PATTERN = re.compile(r"([" + settings.SEARCH_ARG_QUOTE + r"])")
 FILTER_SPLIT_PATTERN = re.compile(r"([" + VALID_ARG_RELATIONS + r"])")
+TOKEN_SPLIT_PATTERN = re.compile(r"\s+")
 
 
 class SearchTokenFilterNotImplementedError(Exception):
@@ -107,6 +109,13 @@ class InvalidMimetypeError(ValidationError):
 class InvalidFileExtensionError(ValidationError):
     extensions = ", ".join(chain(*[smt.value.extensions for smt in SupportedMediaType]))
     message = f"The provided file extension does not match any of the supported extensions: {extensions}"  # noqa: E501
+
+    def __init__(self, msg=message, *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
+
+
+class UnevenArgumentQuotesError(ValidationError):
+    message = _("Search arguments may not contain an odd number of quotes.")
 
     def __init__(self, msg=message, *args, **kwargs):
         super().__init__(msg, *args, **kwargs)
@@ -727,7 +736,7 @@ class NamedToken:
             named_token = cls(
                 token_category,
                 name=token_name,
-                arg=token_arg,
+                arg=token_arg.replace(settings.SEARCH_ARG_QUOTE, ""),
                 arg_relation_str=arg_relation,
                 negate=negate,
             )
@@ -928,8 +937,34 @@ class PostSearch:
         """
         if query == "":
             return []
-        tokens = re.split(r"\s+", query)
+
         parsed_tokens: list[NamedToken] = []
+        quote_matches = list(re.finditer(SEARCH_ARG_QUOTE_PATTERN, query))
+        if len(quote_matches) > 0:
+            if len(quote_matches) % 2 == 1:
+                raise UnevenArgumentQuotesError
+
+            tokens: list[str] = []
+            prev_span_end = 0
+            for i in range(0, len(quote_matches), 2):
+                quote_match = quote_matches[i]
+                next_quote_match = quote_matches[i + 1]
+                tokens.extend(
+                    re.split(
+                        TOKEN_SPLIT_PATTERN,
+                        query[prev_span_end : quote_match.start()],
+                    )
+                )
+
+                # Append quote span to last parsed token
+                tokens[-1] += query[quote_match.end() : next_quote_match.start()]
+                prev_span_end = next_quote_match.end()
+
+            # Parse tokens in final span of query
+            tokens.extend(re.split(TOKEN_SPLIT_PATTERN, query[prev_span_end:]))
+        else:
+            tokens = re.split(r"\s+", query)
+
         for token in tokens:
             if named_token := NamedToken.from_token_string(token):
                 named_token.is_arg_valid()

@@ -50,7 +50,7 @@ collection_name_validator = validators.RegexValidator(
     message=_("Enter a valid collection name."),
 )
 wildcard_collection_name_validator = validators.RegexValidator(
-    _lazy_re_compile(r"^[a-zA-Z\d_\- *]+\Z"),
+    _lazy_re_compile(r"^[a-zA-Z\d_\-\.\s]+\Z"),
     message=_("Enter a valid collection name with wildcards."),
 )
 

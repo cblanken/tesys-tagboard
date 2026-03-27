@@ -1519,6 +1519,57 @@ class TestPostAdvancedSearchCollectionID:
 
 
 @pytest.mark.django_db
+class TestPostAdvancedSearchCollectionName:
+    def test_name_simple(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1, c2 = CollectionFactory.create_batch(2)
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+
+        ps = PostSearch(f'collection_name="{c1.name}"')
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk not in post_ids
+        assert p3.pk not in post_ids
+
+    def test_name_with_wildcard(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1 = CollectionFactory.create(name="my_collection1")
+        c2 = CollectionFactory.create(name="my_collection2")
+        c3 = CollectionFactory.create(name="secret_collection")
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+
+        ps = PostSearch("collection_name=my*")
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+    def test_name_with_wildcard_and_surrounding_quotes(self):
+        p1, p2, p3 = PostFactory.create_batch(3)
+        c1 = CollectionFactory.create(name="my_collection1")
+        c2 = CollectionFactory.create(name="my_collection2")
+        c3 = CollectionFactory.create(name="secret_collection")
+        c1.posts.set([p1])
+        c2.posts.set([p2])
+        c3.posts.set([p3])
+
+        ps = PostSearch('collection_name="my*"')
+        posts = ps.get_posts()
+        post_ids = set(posts.values_list("pk", flat=True))
+
+        assert p1.pk in post_ids
+        assert p2.pk in post_ids
+        assert p3.pk not in post_ids
+
+
+@pytest.mark.django_db
 class TestPostAdvancedSearchParent:
     def test_parent_exists(self):
         # TODO
