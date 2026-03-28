@@ -120,10 +120,13 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
             previous_post = all_posts[i - 1] if i > 0 else None
             next_post = all_posts[i + 1] if i < len(all_posts) - 1 else None
 
-    posts = Post.posts.filter(pk=post_id).select_related("uploader")
+    posts = Post.posts
     if request.user.is_authenticated:
         favorites = Favorite.favorites.for_user(request.user.pk)
         posts = posts.annotate_favorites(favorites)
+
+    posts = posts.filter(pk=post_id).select_related("uploader")
+
     post = get_object_or_404(posts.prefetch_related("posttaghistory_set"))
     comments = post.comment_set.order_by("-post_date").select_related("user")
 

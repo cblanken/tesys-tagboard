@@ -20,6 +20,7 @@ from .enums import RatingLevel
 from .enums import SupportedMediaType
 from .enums import TokenArgRelation
 from .models import Post
+from .models import PostQuerySet
 from .models import Tag
 from .models import TagAlias
 from .models import TagCategory
@@ -763,7 +764,7 @@ class NamedToken:
         else:
             validator = self.category.value.arg_validator
 
-        if self.arg:
+        if validator and self.arg:
             validator(self.arg)
 
     def arg_with_wildcards(self):
@@ -1270,9 +1271,9 @@ class PostSearch:
 
         return search_conditions
 
-    def get_posts(self) -> QuerySet[Post]:
+    def get_posts(self) -> PostQuerySet:
         token_categories = [x.category for x in self.tokens]
-        posts = Post.posts
+        posts = Post.posts.all()
         if PostSearchTokenCategory.COMMENT_COUNT in token_categories:
             posts = posts.annotate_comment_count()
         if PostSearchTokenCategory.FAV_COUNT in token_categories:
@@ -1288,7 +1289,7 @@ class PostSearch:
             for condition in search_conditions:
                 posts = posts.filter(condition)
             return posts.distinct()
-        return Post.posts.all()
+        return posts
 
     def autocomplete(
         self,
@@ -1310,13 +1311,13 @@ class PostSearch:
         # Don't yield autocompletion for duplicate filter or tag
         if len(list(filter(lambda tok: tok.name == partial, self.tokens))) > 1:
             tag_token_names = [
-                tok.name
+                str(tok.name)
                 for tok in self.tokens
                 if tok.category is PostSearchTokenCategory.TAG
             ]
         else:
             tag_token_names = [
-                tok.name
+                str(tok.name)
                 for tok in self.tokens
                 # Yield autocomplete item if name matches partial exactly
                 if tok.category is PostSearchTokenCategory.TAG and tok.name != partial
