@@ -122,7 +122,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
 
     posts = Post.posts.filter(pk=post_id).select_related("uploader")
     if request.user.is_authenticated:
-        favorites = Favorite.objects.for_user(request.user.pk)
+        favorites = Favorite.favorites.for_user(request.user.pk)
         posts = posts.annotate_favorites(favorites)
     post = get_object_or_404(posts.prefetch_related("posttaghistory_set"))
     comments = post.comment_set.order_by("-post_date").select_related("user")
@@ -503,7 +503,7 @@ def delete_collection(
 def add_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
     try:
         post = Post.posts.get(pk=post_id)
-        favorite = Favorite.objects.create(post=post, user=request.user)
+        favorite = Favorite.favorites.create(post=post, user=request.user)
         favorite.save()
 
         post.favorited = True
@@ -521,7 +521,7 @@ def add_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
 def remove_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
     try:
         post = Post.posts.get(pk=post_id)
-        Favorite.objects.get(post=post, user=request.user).delete()
+        Favorite.favorites.get(post=post, user=request.user).delete()
 
         kwargs = {"post": post}
         return FavoriteToggleComponent.render_to_response(

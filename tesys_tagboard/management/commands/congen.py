@@ -386,7 +386,7 @@ def create_random_user_favorites(
             favorites.append(fav)
             fav_count += 1
 
-    Favorite.objects.bulk_create(favorites)
+    Favorite.favorites.bulk_create(favorites)
     console.print(f"Created {fav_count} favorites for {len(users)} users.")
 
 

@@ -429,7 +429,7 @@ class PostQuerySet(models.QuerySet):
                     post_blur_tag_overlap.values("pk"), output_field=BooleanField()
                 ),
             )
-            favorites = Favorite.objects.for_user(user)
+            favorites = Favorite.favorites.for_user(user)
             posts = posts.exclude(tags__in=user.filter_tags.all()).annotate_favorites(
                 favorites
             )
@@ -821,6 +821,17 @@ class Comment(models.Model):
         return f'<Comment: user: {self.user}, text: "{self.text}">'
 
 
+class FavoriteManager(models.Manager):
+    def get_queryset(self):
+        return FavoriteQuerySet(self.model, using=self._db)
+
+    def for_user(self, user_id):
+        return self.get_queryset().for_user(user_id)
+
+    def with_gallery_data(self):
+        return self.get_queryset().with_gallery_data()
+
+
 class FavoriteQuerySet(models.QuerySet):
     def for_user(self, user_id):
         return self.filter(user=user_id)
@@ -836,7 +847,7 @@ class Favorite(models.Model):
 
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    objects = FavoriteQuerySet.as_manager()
+    favorites = FavoriteManager()
 
     class Meta:
         verbose_name = _("favorite")

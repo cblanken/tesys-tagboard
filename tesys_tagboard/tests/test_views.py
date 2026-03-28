@@ -932,7 +932,7 @@ class TestFavorites:
         post = PostFactory.create()
         response = client.put(self.add_url(post.pk))
         assert response.status_code == HTTPStatus.FORBIDDEN
-        assert not Favorite.objects.filter(post=post, user=user).exists()
+        assert not Favorite.favorites.filter(post=post, user=user).exists()
 
     def test_add_favorite(self, client, user_with_add_favorite):
         """Users with the add_favorite permission may create new favorites for
@@ -940,7 +940,9 @@ class TestFavorites:
         client.force_login(user_with_add_favorite)
         post = PostFactory.create()
         client.put(self.add_url(post.pk))
-        assert Favorite.objects.filter(post=post, user=user_with_add_favorite).exists()
+        assert Favorite.favorites.filter(
+            post=post, user=user_with_add_favorite
+        ).exists()
 
     def test_add_multiple_favorites(self, client, user_with_add_favorite):
         """Users with the add_favorite permission may create multiple new favorites for
@@ -952,7 +954,7 @@ class TestFavorites:
             assert response.status_code == HTTPStatus.OK
 
         for post in posts:
-            assert Favorite.objects.filter(
+            assert Favorite.favorites.filter(
                 post=post, user=user_with_add_favorite
             ).exists()
 
@@ -962,7 +964,7 @@ class TestFavorites:
         bad_id = 9999
         response = client.put(self.add_url(bad_id))
         assert response.status_code == HTTPStatus.NOT_FOUND
-        assert not Favorite.objects.filter(
+        assert not Favorite.favorites.filter(
             post__pk=bad_id, user=user_with_add_favorite
         ).exists()
 
@@ -973,7 +975,9 @@ class TestFavorites:
         favorite = FavoriteFactory.create()
         response = client.put(self.delete_url(favorite.post.pk))
         assert response.status_code == HTTPStatus.FORBIDDEN
-        assert Favorite.objects.filter(post=favorite.post, user=favorite.user).exists()
+        assert Favorite.favorites.filter(
+            post=favorite.post, user=favorite.user
+        ).exists()
 
     def test_delete_favorite(self, client, user_with_delete_favorite):
         """Users with the delete_favorite permission may delete their own favorites"""
@@ -981,7 +985,7 @@ class TestFavorites:
         favorite = FavoriteFactory(user=user_with_delete_favorite)
         response = client.put(self.delete_url(favorite.post.pk))
         assert response.status_code == HTTPStatus.OK
-        assert not Favorite.objects.filter(
+        assert not Favorite.favorites.filter(
             post=favorite.post, user=favorite.user
         ).exists()
 
