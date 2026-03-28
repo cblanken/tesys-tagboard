@@ -148,7 +148,7 @@ def main(  # noqa: PLR0913
         progress.add_task(description="Deleting old DB data...", total=None)
         TagCategory.objects.filter(~Q(name="artist") & ~Q(name="copyright")).delete()
         Tag.tags.all().delete()
-        TagAlias.objects.all().delete()
+        TagAlias.aliases.all().delete()
         Post.posts.all().delete()
         User.objects.exclude(is_staff=True).delete()
         Collection.objects.all().delete()
@@ -302,7 +302,7 @@ def create_random_tag_aliases(tags: QuerySet[Tag], percent: float = 0.1):
             TagAlias(name=f"alias_{i}_{tag.name}", tag=tag)
             for i, tag in enumerate(picked_tags)
         ]
-        TagAlias.objects.bulk_create(tag_aliases, ignore_conflicts=True)
+        TagAlias.aliases.bulk_create(tag_aliases, ignore_conflicts=True)
     console.print(f"Created {len(tag_aliases)} tag aliases.")
 
 

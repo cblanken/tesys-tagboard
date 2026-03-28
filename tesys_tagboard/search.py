@@ -164,9 +164,9 @@ def autocomplete_tag_aliases(
     exclude_aliases: QuerySet[TagAlias] | None = None,
 ) -> Generator[AutocompleteItem]:
     if include_partial is not None:
-        aliases = TagAlias.objects.filter(name__icontains=include_partial)
+        aliases = TagAlias.aliases.filter(name__icontains=include_partial)
     if exclude_partial is not None:
-        aliases = TagAlias.objects.exclude(name__icontains=exclude_partial)
+        aliases = TagAlias.aliases.exclude(name__icontains=exclude_partial)
     if exclude_alias_names is not None:
         aliases = aliases.exclude(name__in=exclude_alias_names)
     if exclude_aliases is not None:
@@ -1329,7 +1329,7 @@ class PostSearch:
                 exclude_tag_names=tag_token_names,
             )
             tag_alias_autocompletions = autocomplete_tag_aliases(
-                TagAlias.objects.for_user(user),
+                TagAlias.aliases.for_user(user),
                 partial,
                 exclude_alias_names=tag_token_names,
             )
@@ -1341,7 +1341,7 @@ class PostSearch:
             )
 
             tag_alias_autocompletions = autocomplete_tag_aliases(
-                TagAlias.objects.all(), partial, exclude_alias_names=tag_token_names
+                TagAlias.aliases.all(), partial, exclude_alias_names=tag_token_names
             )
 
         tag_autocompletions = take(self.max_tags, tag_autocompletions)

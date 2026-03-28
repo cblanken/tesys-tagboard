@@ -104,7 +104,7 @@ class TestTagAutocomplete:
 @pytest.mark.django_db
 class TestTagAliasAutocomplete:
     def test_autocomplete_included_by_name_partial(self, db):
-        aliases = autocomplete_tag_aliases(TagAlias.objects.all(), "blue")
+        aliases = autocomplete_tag_aliases(TagAlias.aliases.all(), "blue")
         alias_names = [alias.alias for alias in aliases]
         assert "bluejeans" in alias_names
         assert "gray-blue" in alias_names
@@ -116,7 +116,7 @@ class TestTagAliasAutocomplete:
 
     def test_autocomplete_excluded_by_name_partial(self, db):
         aliases = autocomplete_tag_aliases(
-            TagAlias.objects.all(), exclude_partial="red"
+            TagAlias.aliases.all(), exclude_partial="red"
         )
         alias_names = [alias.alias for alias in aliases]
         assert "red_v._blue" not in alias_names
@@ -127,7 +127,7 @@ class TestTagAliasAutocomplete:
 
     def test_autocomplete_excluded_by_alias_name(self, db):
         aliases = autocomplete_tag_aliases(
-            TagAlias.objects.all(),
+            TagAlias.aliases.all(),
             exclude_alias_names=["Justin K", "Solomon S", "Z. Zolan"],
         )
         alias_names = [alias.alias for alias in aliases]
@@ -137,9 +137,9 @@ class TestTagAliasAutocomplete:
 
     def test_autocomplete_excluded_by_alias(self, db):
         copyright_category = TagCategory.objects.get(name="copyright")
-        exclude_aliases = TagAlias.objects.filter(tag__category=copyright_category)
+        exclude_aliases = TagAlias.aliases.filter(tag__category=copyright_category)
         aliases = autocomplete_tag_aliases(
-            TagAlias.objects.all(), exclude_aliases=exclude_aliases
+            TagAlias.aliases.all(), exclude_aliases=exclude_aliases
         )
 
         for alias_item in aliases:

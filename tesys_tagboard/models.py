@@ -197,6 +197,15 @@ class Tag(models.Model):
         return f"<Tag - {self.name}, category: {self.category}>"
 
 
+class TagAliasManager(models.Manager):
+    def get_queryset(self):
+        return TagAliasQuerySet(self.model, using=self._db)
+
+    def for_user(self, user: User):
+        """Retrive TagAliases excluding any filtered tags from the User's settings"""
+        return self.get_queryset().for_user(user)
+
+
 class TagAliasQuerySet(models.QuerySet):
     def for_user(self, user: User):
         """Retrive TagAliases excluding any filtered tags from the User's settings"""
@@ -209,7 +218,7 @@ class TagAlias(models.Model):
     name = models.CharField(max_length=100, validators=[tag_name_validator])
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
-    objects = TagAliasQuerySet.as_manager()
+    aliases = TagAliasManager()
 
     class Meta:
         verbose_name = _("tag alias")

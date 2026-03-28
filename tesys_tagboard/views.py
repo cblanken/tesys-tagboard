@@ -361,7 +361,7 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
         alias_query = request.GET.get("aliases", "")
         aliases = (
-            TagAlias.objects.filter(name__icontains=alias_query)
+            TagAlias.aliases.filter(name__icontains=alias_query)
             .select_related("tag", "tag__category")
             .order_by(F("tag__category__name").asc(nulls_first=True))
         )
@@ -415,7 +415,7 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
     form = CreateTagAliasForm(request.POST)
     if form.is_valid():
         alias_name = form.cleaned_data.get("name")
-        if TagAlias.objects.filter(name=alias_name).exists():
+        if TagAlias.aliases.filter(name=alias_name).exists():
             return HttpResponseBadRequest("That alias already exists")
         form.save()
         msg = f"The tag alias, {alias_name}, was created!"
@@ -685,14 +685,14 @@ def tag_search_autocomplete(
                     partial,
                 ),
                 autocomplete_tag_aliases(
-                    TagAlias.objects.for_user(request.user),
+                    TagAlias.aliases.for_user(request.user),
                     partial,
                 ),
             )
         else:
             items = chain(
                 autocomplete_tags(Tag.tags.all(), partial),
-                autocomplete_tag_aliases(TagAlias.objects.all(), partial),
+                autocomplete_tag_aliases(TagAlias.aliases.all(), partial),
             )
         context = {"items": items}
         return TemplateResponse(request, "posts/search_autocomplete.html", context)

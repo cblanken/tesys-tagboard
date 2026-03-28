@@ -223,7 +223,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
             ]
         )
 
-        TagAlias.objects.bulk_create(
+        TagAlias.aliases.bulk_create(
             [
                 TagAlias(name="arctic", tag=Tag.tags.get(name="arctic-white")),
                 TagAlias(name="gray", tag=Tag.tags.get(name="grey")),

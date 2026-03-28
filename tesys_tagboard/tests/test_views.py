@@ -186,7 +186,7 @@ class TestCreateTagAliasView:
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.FOUND
 
-        alias = TagAlias.objects.get(name=alias_name)
+        alias = TagAlias.aliases.get(name=alias_name)
         assert alias.name == alias_name
         assert alias.tag == tag
 
@@ -200,20 +200,20 @@ class TestCreateTagAliasView:
         data = {"name": duped_alias.name, "tag": duped_alias.tag.pk}
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.BAD_REQUEST
-        assert TagAlias.objects.filter(name=duped_alias.name).count() == 1
+        assert TagAlias.aliases.filter(name=duped_alias.name).count() == 1
 
     def test_tag_alias_create_cannot_edit_alias(self, client, user_with_add_tagalias):
         """The create-tagalias endpoint should not be able to edit an existing alias"""
         client.force_login(user_with_add_tagalias)
 
         existing_alias = TagAliasFactory.create()
-        before_alias = TagAlias.objects.get(name=existing_alias.name)
+        before_alias = TagAlias.aliases.get(name=existing_alias.name)
         other_tag = TagFactory.create()
         data = {"name": existing_alias.name, "tag": other_tag.pk}
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
-        after_alias = TagAlias.objects.get(name=existing_alias.name)
+        after_alias = TagAlias.aliases.get(name=existing_alias.name)
         assert before_alias.tag == after_alias.tag
 
 
