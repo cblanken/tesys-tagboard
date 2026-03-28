@@ -376,7 +376,7 @@ class TestPostAdvancedSearchTags:
         PostFactory.create_batch(10)
         ps = PostSearch("")
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.all())) == 0
+        assert len(posts.difference(Post.posts.all())) == 0
 
     def test_only_include_tags(self):
         common_tag = TagFactory.create()
@@ -395,9 +395,9 @@ class TestPostAdvancedSearchTags:
 
         ps = PostSearch(f"{included_tag.name}")
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == 0
         assert len(
-            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+            posts.difference(Post.posts.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
     def test_include_tag_with_category(self):
@@ -423,9 +423,9 @@ class TestPostAdvancedSearchTags:
         )
         ps = PostSearch(query)
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == 0
         assert len(
-            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+            posts.difference(Post.posts.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
     def test_include_tag_with_nested_categories(self):
@@ -456,9 +456,9 @@ class TestPostAdvancedSearchTags:
         )
         ps = PostSearch(query)
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == 0
         assert len(
-            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+            posts.difference(Post.posts.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
     def test_exclude_tag_with_category(self):
@@ -667,9 +667,9 @@ class TestPostAdvancedSearchTagAliases:
 
         ps = PostSearch(f"alias={included_tag_alias.name}")
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == 0
         assert len(
-            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+            posts.difference(Post.posts.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
     def test_include_tag_alias_with_wildcard(self):
@@ -692,9 +692,9 @@ class TestPostAdvancedSearchTagAliases:
 
         ps = PostSearch("alias=blu*er")
         posts = ps.get_posts()
-        assert len(posts.difference(Post.objects.filter(tags__in=[included_tag]))) == 0
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == 0
         assert len(
-            posts.difference(Post.objects.filter(tags__in=[not_included_tag]))
+            posts.difference(Post.posts.filter(tags__in=[not_included_tag]))
         ) == len(not_included_posts)
 
     def test_exclude_tag_alias_with_wildcard(self):
@@ -716,11 +716,11 @@ class TestPostAdvancedSearchTagAliases:
 
         ps = PostSearch("-alias=blu*er")
         posts = ps.get_posts()
-        assert len(
-            posts.difference(Post.objects.filter(tags__in=[included_tag]))
-        ) == len(not_included_posts)
+        assert len(posts.difference(Post.posts.filter(tags__in=[included_tag]))) == len(
+            not_included_posts
+        )
         assert (
-            len(posts.difference(Post.objects.filter(tags__in=[not_included_tag]))) == 0
+            len(posts.difference(Post.posts.filter(tags__in=[not_included_tag]))) == 0
         )
 
 
@@ -1142,9 +1142,7 @@ class TestPostAdvancedSearchRatingLabel:
         ps = PostSearch(f"rating_label={rating_level.name.lower()}")
         posts = ps.get_posts()
 
-        assert not posts.difference(
-            Post.objects.filter(rating_level=rating_level.value)
-        )
+        assert not posts.difference(Post.posts.filter(rating_level=rating_level.value))
 
     def test_rating_bad_label(self):
         with pytest.raises(ValidationError):
@@ -1163,7 +1161,7 @@ class TestPostAdvancedSearchRatingNumber:
         ps = PostSearch(f"rating_num={rating_level}")
         posts = ps.get_posts()
 
-        assert not posts.difference(Post.objects.filter(rating_level=rating_level))
+        assert not posts.difference(Post.posts.filter(rating_level=rating_level))
 
     @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
     def test_rating_num_greater_than(self, rating_level):
@@ -1175,7 +1173,7 @@ class TestPostAdvancedSearchRatingNumber:
         ps = PostSearch(f"rating_num>{rating_level}")
         posts = ps.get_posts()
 
-        assert not posts.difference(Post.objects.filter(rating_level__gt=rating_level))
+        assert not posts.difference(Post.posts.filter(rating_level__gt=rating_level))
 
     @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
     def test_rating_num_less_than(self, rating_level):
@@ -1187,7 +1185,7 @@ class TestPostAdvancedSearchRatingNumber:
         ps = PostSearch(f"rating_num<{rating_level}")
         posts = ps.get_posts()
 
-        assert not posts.difference(Post.objects.filter(rating_level__lt=rating_level))
+        assert not posts.difference(Post.posts.filter(rating_level__lt=rating_level))
 
 
 @pytest.mark.django_db

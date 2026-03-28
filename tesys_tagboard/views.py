@@ -104,7 +104,7 @@ def home(request: HttpRequest) -> TemplateResponse:
     context = {
         "links": links,
         "markdown_html": SafeString(md.convert(markdown_content)),
-        "post_count": Post.objects.count(),
+        "post_count": Post.posts.count(),
     }
     return TemplateResponse(request, "pages/home.html", context)
 
@@ -112,7 +112,7 @@ def home(request: HttpRequest) -> TemplateResponse:
 @require(["GET"], login=False)
 def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpResponse:
     # GET request
-    all_posts = Post.objects.order_by("post_date").values("pk", "post_date")
+    all_posts = Post.posts.order_by("post_date").values("pk", "post_date")
     previous_post = None
     next_post = None
     for i, post in enumerate(all_posts):
@@ -120,7 +120,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
             previous_post = all_posts[i - 1] if i > 0 else None
             next_post = all_posts[i + 1] if i < len(all_posts) - 1 else None
 
-    posts = Post.objects.filter(pk=post_id).select_related("uploader")
+    posts = Post.posts.filter(pk=post_id).select_related("uploader")
     if request.user.is_authenticated:
         favorites = Favorite.objects.for_user(request.user.pk)
         posts = posts.annotate_favorites(favorites)
@@ -173,7 +173,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
         "collections": Collection.objects.for_user(request.user.pk),
         "tag_history": tag_history,
         "source_history": source_history,
-        "child_posts": Post.objects.filter(parent=post).with_gallery_data(request.user),
+        "child_posts": Post.posts.with_gallery_data(request.user).filter(parent=post),
     }
 
     return TemplateResponse(request, "pages/post.html", context)
@@ -185,7 +185,7 @@ def edit_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
     user: User | AnonymousUser = request.user
-    post = get_object_or_404(Post.objects.filter(pk=post_id))
+    post = get_object_or_404(Post.posts.filter(pk=post_id))
     if not (user.is_authenticated or user.has_perm("edit", post)):
         return HttpResponseForbidden(
             f'The user "{user.get_username()}" is not allowed to edit this post'
@@ -226,7 +226,7 @@ def delete_post(
     if not user.has_perm("tesys_tagboard.delete_post"):
         return HttpResponseForbidden("User not allowed to delete this post")
     try:
-        post = Post.objects.get(pk=post_id)
+        post = Post.posts.get(pk=post_id)
         post.delete()
         msg = f"The post with ID {post_id} has been successfully deleted"
         messages.add_message(request, messages.INFO, msg)
@@ -273,7 +273,7 @@ def toggle_comment_lock(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
     try:
-        post = Post.objects.get(pk=post_id)
+        post = Post.posts.get(pk=post_id)
         post.locked_comments = not post.locked_comments
         post.save()
         return TemplateResponse(
@@ -287,7 +287,7 @@ def toggle_comment_lock(
 @require(["GET", "POST"], login=False)
 def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     user: User | AnonymousUser = request.user
-    posts = Post.objects.with_gallery_data(user)
+    posts = Post.posts.with_gallery_data(user)
     tags: QuerySet[Tag] | None = None
 
     context = {}
@@ -446,7 +446,7 @@ def collection(
     user = request.user
     collection = get_object_or_404(Collection.objects.filter(pk=collection_id))
     if user == collection.user or collection.public is True:
-        posts = Post.objects.with_gallery_data(request.user).filter(
+        posts = Post.posts.with_gallery_data(request.user).filter(
             pk__in=collection.posts.values_list("pk", flat=True)
         )
         pager = Paginator(posts, 25, 5)
@@ -502,7 +502,7 @@ def delete_collection(
 @permission_required(["tesys_tagboard.add_favorite"], raise_exception=True)
 def add_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
     try:
-        post = Post.objects.get(pk=post_id)
+        post = Post.posts.get(pk=post_id)
         favorite = Favorite.objects.create(post=post, user=request.user)
         favorite.save()
 
@@ -520,7 +520,7 @@ def add_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
 @permission_required(["tesys_tagboard.delete_favorite"], raise_exception=True)
 def remove_favorite(request: HtmxHttpRequest, post_id: int) -> HttpResponse:
     try:
-        post = Post.objects.get(pk=post_id)
+        post = Post.posts.get(pk=post_id)
         Favorite.objects.get(post=post, user=request.user).delete()
 
         kwargs = {"post": post}
@@ -539,7 +539,7 @@ def add_post_to_collection(
 ) -> HttpResponse:
     try:
         collection = Collection.objects.get(user=request.user, pk=collection_id)
-        post = Post.objects.get(pk=request.POST.get("post"))
+        post = Post.posts.get(pk=request.POST.get("post"))
         collection.posts.add(post)
         collection.save()
 
@@ -562,7 +562,7 @@ def remove_post_from_collection(
 ) -> HttpResponse:
     try:
         collection = Collection.objects.get(user=request.user, pk=collection_id)
-        post = Post.objects.get(pk=request.POST.get("post"))
+        post = Post.posts.get(pk=request.POST.get("post"))
         collection.posts.remove(post)
         collection.save()
 
@@ -582,7 +582,7 @@ def remove_post_from_collection(
 def add_comment(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
-    post = get_object_or_404(Post.objects.filter(pk=post_id))
+    post = get_object_or_404(Post.posts.filter(pk=post_id))
     if post.locked_comments:
         return HttpResponseForbidden("The comments for this post are locked")
 

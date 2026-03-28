@@ -149,7 +149,7 @@ def main(  # noqa: PLR0913
         TagCategory.objects.filter(~Q(name="artist") & ~Q(name="copyright")).delete()
         Tag.objects.all().delete()
         TagAlias.objects.all().delete()
-        Post.objects.all().delete()
+        Post.posts.all().delete()
         User.objects.exclude(is_staff=True).delete()
         Collection.objects.all().delete()
 
@@ -188,10 +188,10 @@ def main(  # noqa: PLR0913
     media_files = get_media_files_from_disk(media_dir_path, max_files=max_posts)
     create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
 
-    create_random_post_collections(Post.objects.all(), max_collections=max_collections)
+    create_random_post_collections(Post.posts.all(), max_collections=max_collections)
 
     create_random_user_favorites(
-        Post.objects.all(),
+        Post.posts.all(),
         User.objects.all(),
         max_favorites_per_user=max_favorites_per_user,
     )
@@ -467,7 +467,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         transient=True,
     ) as progress:
         progress.add_task(description="Creating posts...", total=None)
-        created_posts = Post.objects.bulk_create(posts)
+        created_posts = Post.posts.bulk_create(posts)
     console.print(f"Created {len(created_posts)} posts.")
 
     with Progress(

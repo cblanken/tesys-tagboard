@@ -413,7 +413,7 @@ class TestPostView:
         url = self.delete_url(post.pk)
         response = client.delete(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-        assert Post.objects.filter(pk=post.pk).exists()
+        assert Post.posts.filter(pk=post.pk).exists()
 
     def test_delete_post_with_perm(self, client, user_with_delete_post):
         """Users with the `delete_post` permission may delete posts"""
@@ -423,7 +423,7 @@ class TestPostView:
         url = self.delete_url(post.pk)
         response = client.delete(url)
         assert response.status_code == HTTPStatus.FOUND
-        assert not Post.objects.filter(pk=post.pk).exists()
+        assert not Post.posts.filter(pk=post.pk).exists()
 
     def test_edit_post_only_title(self, client, user_with_change_post):
         post = PostFactory.create()
@@ -657,10 +657,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "png")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.FORBIDDEN
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts
 
@@ -673,7 +673,7 @@ class TestUploadView:
 
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        assert Post.objects.filter(title=title_text).exists()
+        assert Post.posts.filter(title=title_text).exists()
 
     def test_create_post_with_too_long_title(self, client, user_with_add_post):
         client.force_login(user_with_add_post)
@@ -684,7 +684,7 @@ class TestUploadView:
 
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
-        assert not Post.objects.filter(title=title_text).exists()
+        assert not Post.posts.filter(title=title_text).exists()
 
     def test_create_png_img_post(self, client, user_with_add_post):
         client.force_login(user_with_add_post)
@@ -692,10 +692,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "png")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -705,10 +705,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "jpeg")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -718,10 +718,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "webp")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -731,10 +731,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "tif")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -744,10 +744,10 @@ class TestUploadView:
         img_file = get_uploaded_test_media_file("1x1", "gif")
         data = {"file": img_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -757,10 +757,10 @@ class TestUploadView:
         audio_file = get_uploaded_test_media_file("1s", "mp3", cat=MediaCategory.AUDIO)
         data = {"file": audio_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -770,10 +770,10 @@ class TestUploadView:
         audio_file = get_uploaded_test_media_file("1s", "wav", cat=MediaCategory.AUDIO)
         data = {"file": audio_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -783,10 +783,10 @@ class TestUploadView:
         video_file = get_uploaded_test_media_file("1s", "webm", cat=MediaCategory.VIDEO)
         data = {"file": video_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -796,10 +796,10 @@ class TestUploadView:
         video_file = get_uploaded_test_media_file("1s", "mpg", cat=MediaCategory.VIDEO)
         data = {"file": video_file}
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
 
         assert after_posts == before_posts + 1
 
@@ -814,7 +814,7 @@ class TestUploadView:
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
 
-        post = Post.objects.filter(tags__in=tag_ids).distinct().first()
+        post = Post.posts.filter(tags__in=tag_ids).distinct().first()
         assert set(tag_ids) == set(post.tags.values_list("pk", flat=True))
 
     def test_create_post_with_tags_src_and_rating(self, client, user_with_add_post):
@@ -834,7 +834,7 @@ class TestUploadView:
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
 
-        post = Post.objects.filter(tags__in=tag_ids).distinct().first()
+        post = Post.posts.filter(tags__in=tag_ids).distinct().first()
         assert set(tag_ids) == set(post.tags.values_list("pk", flat=True))
         assert post.rating_level == RatingLevel.SAFE.value
         assert post.src_url == "https://www.example.com"
@@ -853,10 +853,10 @@ class TestUploadView:
             "rating_level": RatingLevel.SAFE.value,
         }
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
         assert after_posts == before_posts
 
     def test_create_post_with_invalid_rating_level(self, client, user_with_add_post):
@@ -869,10 +869,10 @@ class TestUploadView:
             "rating_level": 99999,
         }
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
         assert after_posts == before_posts
 
     def test_create_post_with_invalid_tag_ids(self, client, user_with_add_post):
@@ -890,10 +890,10 @@ class TestUploadView:
             "tagset": tag_ids,
         }
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.OK
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
         assert after_posts == before_posts + 1
 
     def test_create_post_with_invalid_tag_values(self, client, user_with_add_post):
@@ -910,10 +910,10 @@ class TestUploadView:
             "tagset": tag_ids,
         }
 
-        before_posts = Post.objects.all().count()
+        before_posts = Post.posts.all().count()
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
-        after_posts = Post.objects.all().count()
+        after_posts = Post.posts.all().count()
         assert after_posts == before_posts
 
 

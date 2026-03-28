@@ -300,9 +300,51 @@ def csv_to_tag_ids(tags_csv: str) -> Sequence[int]:
         return tag_ids
 
 
-class PostQuerySet(models.QuerySet):
-    def annotate_favorites(self, favorites: QuerySet[Favorite]) -> QuerySet[Post]:
+class PostManager(models.Manager):
+    def get_queryset(self):
+        return PostQuerySet(self.model, using=self._db)
+
+    def all(self):
+        return self.get_queryset()
+
+    def annotate_child_posts(self):
+        """Adds `child_post_ids` annotation to a QuerySet of Posts which contains a
+        list of post ID's that are linked as children posts.
+        """
+        return self.get_queryset().annotate_child_posts()
+
+    def annotate_fav_count(self):
+        return self.get_queryset().annotate_fav_count()
+
+    def annotate_comment_count(self):
+        return self.get_queryset().annotate_comment_count()
+
+    def annotate_favorites(self, favorites: QuerySet[Favorite]):
         """Adds the `favorited` annotation to a QuerySet of Posts"""
+        return self.get_queryset().annotate_favorites(favorites)
+
+    def has_tags(self, tags: QuerySet[Tag]):
+        """Return Posts tagged with _all_ of the provided `tags`"""
+        return self.get_queryset().has_tags(tags)
+
+    def annotate_tag_count(self):
+        return self.get_queryset().annotate_tag_count()
+
+    def uploaded_by(self, user):
+        """Return Posts uploaded by `user`"""
+        return self.get_queryset().uploaded_by(user)
+
+    def with_media_id(self, media_id: int):
+        """Return Posts matching the given `media_id`"""
+        return self.get_queryset().with_media_id(media_id)
+
+    def with_gallery_data(self, user):
+        """Return PostQuerySet including prefetched data such as media and tags"""
+        return self.get_queryset().with_gallery_data(user)
+
+
+class PostQuerySet(models.QuerySet):
+    def annotate_favorites(self, favorites: QuerySet[Favorite]):
         return self.annotate(
             favorited=Case(
                 When(
@@ -314,11 +356,8 @@ class PostQuerySet(models.QuerySet):
         )
 
     def annotate_child_posts(self):
-        """Adds `child_post_ids` annotation to a QuerySet of Posts which contains a
-        list of post ID's that are linked as children posts.
-        """
         child_posts_subquery = (
-            Post.objects.filter(parent=OuterRef("pk"))
+            Post.posts.filter(parent=OuterRef("pk"))
             .only("pk")
             .annotate(child_id_array=ArrayAgg("pk"))
         ).values("child_id_array")[:1]
@@ -330,15 +369,12 @@ class PostQuerySet(models.QuerySet):
         )
 
     def uploaded_by(self, user):
-        """Return Posts uploaded by `user`"""
         return self.filter(user=user)
 
     def with_media_id(self, media_id: int):
-        """Return Posts matching the given `media_id`"""
         return self.filter(media__id=media_id)
 
     def with_gallery_data(self, user: User):
-        """Return PostQuerySet including prefetched data such as media and tags"""
         prefetch_tags = Tag.objects.select_related("category").only(
             "name", "id", "category", "post_count"
         )
@@ -387,7 +423,6 @@ class PostQuerySet(models.QuerySet):
         return posts
 
     def has_tags(self, tags: QuerySet[Tag]):
-        """Return Posts tagged with _all_ of the provided `tags`"""
         filter_expr = self
         for tag in tags:
             filter_expr = filter_expr & self.filter(tags__in=[tag.pk])
@@ -425,7 +460,7 @@ class Post(models.Model):
     type = models.CharField(max_length=20, choices=media_choices)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
 
-    objects = PostQuerySet.as_manager()
+    posts = PostManager()
 
     class Meta:
         verbose_name = _("post")

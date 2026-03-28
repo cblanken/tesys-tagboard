@@ -1272,7 +1272,7 @@ class PostSearch:
 
     def get_posts(self) -> QuerySet[Post]:
         token_categories = [x.category for x in self.tokens]
-        posts = Post.objects.all()
+        posts = Post.posts
         if PostSearchTokenCategory.COMMENT_COUNT in token_categories:
             posts = posts.annotate_comment_count()
         if PostSearchTokenCategory.FAV_COUNT in token_categories:
@@ -1288,7 +1288,7 @@ class PostSearch:
             for condition in search_conditions:
                 posts = posts.filter(condition)
             return posts.distinct()
-        return Post.objects.all()
+        return Post.posts.all()
 
     def autocomplete(
         self,
