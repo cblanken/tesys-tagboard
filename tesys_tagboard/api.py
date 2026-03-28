@@ -23,7 +23,7 @@ def hello(request):
 
 @api.get("/tags", response=list[TagSchema])
 def get_tags(request):
-    return Tag.objects.all()
+    return Tag.tags.all()
 
 
 @api.post("/tags")
@@ -42,7 +42,7 @@ def create_tag(request, params: TagIn):
         if category is None:
             return {"error": "That tag category doesn't exist"}
 
-    tag = Tag.objects.create(
+    tag = Tag.tags.create(
         name=params.name,
         category=category,
         rating_level=params.rating_level,

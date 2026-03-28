@@ -93,10 +93,10 @@ def user_detail_view(
             user.blur_rating_level = form.cleaned_data.get("blur_rating_level")
 
             if filter_tagset := form.cleaned_data.get("filter_tags"):
-                user.filter_tags.set(Tag.objects.in_tagset(filter_tagset))
+                user.filter_tags.set(Tag.tags.in_tagset(filter_tagset))
 
             if blur_tagset := form.cleaned_data.get("blur_tags"):
-                user.blur_tags.set(Tag.objects.in_tagset(blur_tagset))
+                user.blur_tags.set(Tag.tags.in_tagset(blur_tagset))
 
             user.save()
         else:

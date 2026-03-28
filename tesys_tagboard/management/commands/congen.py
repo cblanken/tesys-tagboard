@@ -147,7 +147,7 @@ def main(  # noqa: PLR0913
     ) as progress:
         progress.add_task(description="Deleting old DB data...", total=None)
         TagCategory.objects.filter(~Q(name="artist") & ~Q(name="copyright")).delete()
-        Tag.objects.all().delete()
+        Tag.tags.all().delete()
         TagAlias.objects.all().delete()
         Post.posts.all().delete()
         User.objects.exclude(is_staff=True).delete()
@@ -183,7 +183,7 @@ def main(  # noqa: PLR0913
 
     create_random_tags(max_tags)
 
-    create_random_tag_aliases(Tag.objects.all())
+    create_random_tag_aliases(Tag.tags.all())
 
     media_files = get_media_files_from_disk(media_dir_path, max_files=max_posts)
     create_random_posts(media_files, user_select_max=50, max_posts=max_posts)
@@ -281,8 +281,8 @@ def create_random_tags(n: int = 500):
             Tag(name=name, category=choice(TagCategory.objects.all()))
             for name in categorized_random_tag_names
         ]
-        Tag.objects.bulk_create(simple_tags, ignore_conflicts=True)
-        Tag.objects.bulk_create(tags_with_categories, ignore_conflicts=True)
+        Tag.tags.bulk_create(simple_tags, ignore_conflicts=True)
+        Tag.tags.bulk_create(tags_with_categories, ignore_conflicts=True)
     console.print(f"Created {len(tags_with_categories)} tags.")
 
 
@@ -393,7 +393,7 @@ def create_random_user_favorites(
 def create_random_posts(  # noqa: C901, PLR0912, PLR0915
     media_files: Iterable[Path], user_select_max=100, max_posts=1000
 ):
-    tag_options = list(Tag.objects.all())
+    tag_options = list(Tag.tags.all())
     users = User.objects.all()
     uploaders = choices(users, k=user_select_max)
     posts = []

@@ -128,6 +128,23 @@ class TagCategory(models.Model):
         return path
 
 
+class TagManager(models.Manager):
+    def get_queryset(self):
+        return TagQuerySet(self.model, using=self._db)
+
+    def for_post(self, post: Post):
+        """Return tags and related category data for a specific `post`"""
+        return self.get_queryset().for_post(post)
+
+    def in_tagset(self, tagset: list[int] | None):
+        """Return tags matching one of the IDs in `tagset`"""
+        return self.get_queryset().in_tagset(tagset)
+
+    def for_user(self, user: User):
+        """Retrive Tags excluding any filtered tags from the User's settings"""
+        return self.get_queryset().for_user(user)
+
+
 class TagQuerySet(models.QuerySet):
     def for_post(self, post: Post):
         return self.select_related("category").filter(post=post)
@@ -136,10 +153,10 @@ class TagQuerySet(models.QuerySet):
         return self.select_related("category").filter(pk__in=tagset)
 
     def as_list(self) -> list[int]:
+        """Return a list of IDs of a TagQuerySet"""
         return [t.pk for t in self]
 
     def for_user(self, user: User):
-        """Retrive Tags excluding any filtered tags from the User's settings"""
         filter_tag_ids = user.filter_tags.values_list("pk", flat=True)
         return self.exclude(pk__in=filter_tag_ids)
 
@@ -164,7 +181,7 @@ class Tag(models.Model):
     """
     rating_level = models.PositiveSmallIntegerField(default=0, blank=True)
 
-    objects = TagQuerySet.as_manager()
+    tags = TagManager()
 
     class Meta:
         verbose_name = _("tag")
@@ -280,7 +297,7 @@ def update_tag_post_counts():
     )
 
     tcount_tags = [Tag(pk=tc["pk"], post_count=tc["post_count"]) for tc in tcounts]
-    Tag.objects.bulk_update(tcount_tags, fields=["post_count"])
+    Tag.tags.bulk_update(tcount_tags, fields=["post_count"])
 
 
 def tags_to_csv(tags: Iterable[Tag]) -> str:
@@ -375,7 +392,7 @@ class PostQuerySet(models.QuerySet):
         return self.filter(media__id=media_id)
 
     def with_gallery_data(self, user: User):
-        prefetch_tags = Tag.objects.select_related("category").only(
+        prefetch_tags = Tag.tags.select_related("category").only(
             "name", "id", "category", "post_count"
         )
         posts = (
@@ -401,7 +418,7 @@ class PostQuerySet(models.QuerySet):
         )
         if user.is_authenticated:
             post_blur_tag_overlap = (
-                Tag.objects.select_related("category")
+                Tag.tags.select_related("category")
                 .filter(post=OuterRef("pk"))
                 .only("pk")
                 .intersection(user.blur_tags.only("pk").all())

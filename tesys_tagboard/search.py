@@ -1324,7 +1324,7 @@ class PostSearch:
 
         if user:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.for_user(user),
+                Tag.tags.for_user(user),
                 partial,
                 exclude_tag_names=tag_token_names,
             )
@@ -1335,7 +1335,7 @@ class PostSearch:
             )
         else:
             tag_autocompletions = autocomplete_tags(
-                Tag.objects.all(),
+                Tag.tags.all(),
                 partial,
                 exclude_tag_names=tag_token_names,
             )

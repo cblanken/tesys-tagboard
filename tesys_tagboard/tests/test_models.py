@@ -13,7 +13,7 @@ class TestLikeLookup:
         tag3 = TagFactory.create(name="333abc")
         tag4 = TagFactory.create(name="abcgg")
 
-        tags = Tag.objects.filter(name__like="%abc")
+        tags = Tag.tags.filter(name__like="%abc")
         assert tag1 in tags
         assert tag2 in tags
         assert tag3 in tags
@@ -24,7 +24,7 @@ class TestLikeLookup:
         tag2 = TagFactory.create(name="ab123c")
         tag3 = TagFactory.create(name="a456bc")
 
-        tags = Tag.objects.filter(name__like="ab%c")
+        tags = Tag.tags.filter(name__like="ab%c")
         assert tag1 in tags
         assert tag2 in tags
         assert tag3 not in tags
@@ -34,7 +34,7 @@ class TestLikeLookup:
         tag2 = TagFactory.create(name="abc123")
         tag3 = TagFactory.create(name="123abc")
 
-        tags = Tag.objects.filter(name__like="abc%")
+        tags = Tag.tags.filter(name__like="abc%")
         assert tag1 in tags
         assert tag2 in tags
         assert tag3 not in tags
@@ -48,7 +48,7 @@ class TestLikeLookup:
         tag6 = TagFactory.create(name="STARTabMIDDLE123END")
         tag7 = TagFactory.create(name="STARTabcMIDDLE23END")
 
-        tags = Tag.objects.filter(name__like="%abc%123%")
+        tags = Tag.tags.filter(name__like="%abc%123%")
         assert tag1 in tags
         assert tag2 in tags
         assert tag3 in tags
@@ -63,7 +63,7 @@ class TestLikeLookup:
         tag3 = TagFactory.create(name="abc")
         tag4 = TagFactory.create(name="abc123")
 
-        tags = Tag.objects.filter(name__like="--abc%")
+        tags = Tag.tags.filter(name__like="--abc%")
         assert tag1 in tags
         assert tag2 in tags
         assert tag3 not in tags

@@ -130,7 +130,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
     comments_pager = Paginator(comments, 10, 5)
     comments_page_num = request.GET.get("page", 1)
     comments_page = comments_pager.get_page(comments_page_num)
-    tags = Tag.objects.for_post(post)
+    tags = Tag.tags.for_post(post)
 
     post_tag_snapshots = post.posttaghistory_set.order_by("mod_time")
     post_tag_history_tag_ids = [
@@ -142,7 +142,7 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
     # Collect tag_history tags in a single DB call
     history_tags_by_id = {
         tag.pk: tag
-        for tag in Tag.objects.select_related("category").filter(
+        for tag in Tag.tags.select_related("category").filter(
             pk__in=tag_history_unique_ids
         )
     }
@@ -210,7 +210,7 @@ def edit_post(
         post.rating_level = rating_level
 
     if tagset := form.cleaned_data.get("tagset"):
-        tags = Tag.objects.in_tagset(tagset)
+        tags = Tag.tags.in_tagset(tagset)
         post.save_with_tag_history(request.user, tags)
 
     post.save()
@@ -249,7 +249,7 @@ def confirm_tagset(request: HtmxHttpRequest):
             try:
                 tagset_validator(tagset)
                 if tagset:
-                    tags = Tag.objects.in_tagset(tagset)
+                    tags = Tag.tags.in_tagset(tagset)
                     kwargs = {
                         "size": size,
                         "tags": tags,
@@ -303,7 +303,7 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             if user.is_authenticated:
                 posts = ps.get_posts().with_gallery_data(request.user)
                 tagset = request.POST.getlist("tagset")
-                tags = Tag.objects.in_tagset(tagset)
+                tags = Tag.tags.in_tagset(tagset)
             else:
                 posts = ps.get_posts()
     except ValidationError as err:
@@ -328,7 +328,7 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     categories = TagCategory.objects.order_by("-parent", "name")
     try:
         query = request.GET.get("q", "")
-        uncategorized_tags = Tag.objects.select_related("category").filter(
+        uncategorized_tags = Tag.tags.select_related("category").filter(
             category=None, name__icontains=query
         )
 
@@ -347,7 +347,7 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
         order_by_expr.append("name")
 
         categorized_tags = (
-            Tag.objects.select_related(*select_related_expr)
+            Tag.tags.select_related(*select_related_expr)
             .filter(Q(category__name__icontains=query) | Q(name__icontains=query))
             .filter(~Q(category=None))
             .order_by(*order_by_expr)
@@ -397,7 +397,7 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             )
         except TagCategory.DoesNotExist:
             tag_category = None
-        Tag.objects.create(
+        Tag.tags.create(
             name=create_tag_form.cleaned_data.get("name"),
             category=tag_category,
             rating_level=create_tag_form.cleaned_data.get("rating_level"),
@@ -681,7 +681,7 @@ def tag_search_autocomplete(
         if request.user.is_authenticated:
             items = chain(
                 autocomplete_tags(
-                    Tag.objects.for_user(request.user),
+                    Tag.tags.for_user(request.user),
                     partial,
                 ),
                 autocomplete_tag_aliases(
@@ -691,7 +691,7 @@ def tag_search_autocomplete(
             )
         else:
             items = chain(
-                autocomplete_tags(Tag.objects.all(), partial),
+                autocomplete_tags(Tag.tags.all(), partial),
                 autocomplete_tag_aliases(TagAlias.objects.all(), partial),
             )
         context = {"items": items}
@@ -805,7 +805,7 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
         except ValueError:
             rating_level = RatingLevel.UNRATED.value
         src_url = form.cleaned_data.get("src_url")
-        tags = Tag.objects.in_tagset(tagset)
+        tags = Tag.tags.in_tagset(tagset)
         if media_type := SupportedMediaType.select_by_mime(
             media_file.file.file.content_type
         ):

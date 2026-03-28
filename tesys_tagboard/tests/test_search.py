@@ -42,7 +42,7 @@ class TestSearchTokenCategories:
 @pytest.mark.django_db
 class TestTagAutocomplete:
     def test_autocomplete_included_by_name_partial(self, db):
-        tags = autocomplete_tags(Tag.objects.all(), "blue")
+        tags = autocomplete_tags(Tag.tags.all(), "blue")
         tag_names = [tag.name for tag in tags]
         assert "blue-jeans" in tag_names
         assert "blue" in tag_names
@@ -53,7 +53,7 @@ class TestTagAutocomplete:
         assert len(tag_names) == 6
 
     def test_autocomplete_partial_with_category(self, db):
-        tags = list(autocomplete_tags(Tag.objects.all(), "Peru:"))
+        tags = list(autocomplete_tags(Tag.tags.all(), "Peru:"))
         tag_names = [tag.name for tag in tags]
         assert len(tags) == 3
         assert "Huarez" in tag_names
@@ -63,7 +63,7 @@ class TestTagAutocomplete:
     def test_autocomplete_partial_with_nested_categories(self, db):
         tags = list(
             autocomplete_tags(
-                Tag.objects.all(),
+                Tag.tags.all(),
                 f"South_America{TAG_CATEGORY_DELIMITER}Peru{TAG_CATEGORY_DELIMITER}",
             )
         )
@@ -73,7 +73,7 @@ class TestTagAutocomplete:
         assert "Dos_de_Mayo" in tag_names
 
     def test_autocomplete_excluded_by_name_partial(self, db):
-        tags = autocomplete_tags(Tag.objects.all(), exclude_partial="blue")
+        tags = autocomplete_tags(Tag.tags.all(), exclude_partial="blue")
         tag_names = [tag.name for tag in tags]
         assert "blue-jeans" not in tag_names
         assert "blue" not in tag_names
@@ -83,7 +83,7 @@ class TestTagAutocomplete:
 
     def test_autocomplete_excluded_by_tag_name(self, db):
         tags = autocomplete_tags(
-            Tag.objects.all(), exclude_tag_names=["violet", "white", "yellow"]
+            Tag.tags.all(), exclude_tag_names=["violet", "white", "yellow"]
         )
         tag_names = [tag.name for tag in tags]
         assert "violet" not in tag_names
@@ -95,8 +95,8 @@ class TestTagAutocomplete:
 
     def test_autocomplete_excluded_by_tag(self, db):
         copyright_category = TagCategory.objects.get(name="copyright")
-        exclude_tags = Tag.objects.filter(category=copyright_category)
-        tag_items = autocomplete_tags(Tag.objects.all(), exclude_tags=exclude_tags)
+        exclude_tags = Tag.tags.filter(category=copyright_category)
+        tag_items = autocomplete_tags(Tag.tags.all(), exclude_tags=exclude_tags)
         for item in tag_items:
             assert item.name not in [tag.name for tag in exclude_tags]
 

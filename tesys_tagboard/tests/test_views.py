@@ -76,13 +76,13 @@ class TestCreateTagView:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         with pytest.raises(Tag.DoesNotExist):
-            Tag.objects.get(name=tag_name)
+            Tag.tags.get(name=tag_name)
 
     def test_create_basic_tag_with_perm(self, client, user_with_add_tag):
         """The user must have the add_tag permission to create tags"""
         client.force_login(user_with_add_tag)
 
-        tag_count = Tag.objects.all().count()
+        tag_count = Tag.tags.all().count()
         tag_name = "test_tag"
         data = {
             "name": tag_name,
@@ -91,11 +91,11 @@ class TestCreateTagView:
 
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.FOUND
-        tag = Tag.objects.get(name=tag_name)
+        tag = Tag.tags.get(name=tag_name)
         assert tag.name == tag_name
         assert tag.category is None
         assert tag.rating_level == 0
-        new_count = Tag.objects.all().count()
+        new_count = Tag.tags.all().count()
         assert new_count == tag_count + 1
 
     def test_create_basic_tag_defaults(self, client, user_with_add_tag):
@@ -107,7 +107,7 @@ class TestCreateTagView:
 
         response = client.post(self.url, data)
         assert response.status_code == HTTPStatus.FOUND
-        tag = Tag.objects.get(name=tag_name)
+        tag = Tag.tags.get(name=tag_name)
         assert tag.name == tag_name
         assert tag.category is None
         assert tag.rating_level == 0
@@ -125,7 +125,7 @@ class TestCreateTagView:
         assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
-            Tag.objects.get(name=tag_name)
+            Tag.tags.get(name=tag_name)
 
     def test_create_tag_with_too_large_rating_level(self, client, user_with_add_tag):
         """A tag should not be created with an invalid category value"""
@@ -140,7 +140,7 @@ class TestCreateTagView:
         assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
-            Tag.objects.get(name=tag_name)
+            Tag.tags.get(name=tag_name)
 
     def test_create_tag_with_negative_rating_level(self, client, user_with_add_tag):
         """A tag should not be created with an invalid category value"""
@@ -155,7 +155,7 @@ class TestCreateTagView:
         assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
-            Tag.objects.get(name=tag_name)
+            Tag.tags.get(name=tag_name)
 
 
 @pytest.mark.django_db(transaction=True)
@@ -173,7 +173,7 @@ class TestCreateTagAliasView:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         with pytest.raises(Tag.DoesNotExist):
-            Tag.objects.get(name=alias_name)
+            Tag.tags.get(name=alias_name)
 
     def test_create_basic_tag_alias_with_perm(self, client, user_with_add_tagalias):
         """A user with the add_tagalias permission should be able to create a

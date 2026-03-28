@@ -160,7 +160,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
             name="Cusco", parent=cusco_territory_category
         )
 
-        Tag.objects.bulk_create(
+        Tag.tags.bulk_create(
             [
                 Tag(name="alabaster"),
                 Tag(name="amaranth-pink"),
@@ -225,18 +225,18 @@ def django_db_setup(django_db_setup, django_db_blocker):
 
         TagAlias.objects.bulk_create(
             [
-                TagAlias(name="arctic", tag=Tag.objects.get(name="arctic-white")),
-                TagAlias(name="gray", tag=Tag.objects.get(name="grey")),
-                TagAlias(name="r_v._b", tag=Tag.objects.get(name="red_vs._blue")),
-                TagAlias(name="r_vs._b", tag=Tag.objects.get(name="red_vs._blue")),
-                TagAlias(name="red_v._blue", tag=Tag.objects.get(name="red_vs._blue")),
-                TagAlias(name="red_vs_blue", tag=Tag.objects.get(name="red_vs._blue")),
-                TagAlias(name="red_x_blue", tag=Tag.objects.get(name="red_vs._blue")),
-                TagAlias(name="blue-berry", tag=Tag.objects.get(name="blueberry")),
-                TagAlias(name="gray-blue", tag=Tag.objects.get(name="blue-gray")),
-                TagAlias(name="bluejeans", tag=Tag.objects.get(name="blue-jeans")),
-                TagAlias(name="Justin_K", tag=Tag.objects.get(name="Justin_Knope")),
-                TagAlias(name="Solomon_S", tag=Tag.objects.get(name="Solomon_Steven")),
-                TagAlias(name="Z._Zolan", tag=Tag.objects.get(name="Zammy_Zolan")),
+                TagAlias(name="arctic", tag=Tag.tags.get(name="arctic-white")),
+                TagAlias(name="gray", tag=Tag.tags.get(name="grey")),
+                TagAlias(name="r_v._b", tag=Tag.tags.get(name="red_vs._blue")),
+                TagAlias(name="r_vs._b", tag=Tag.tags.get(name="red_vs._blue")),
+                TagAlias(name="red_v._blue", tag=Tag.tags.get(name="red_vs._blue")),
+                TagAlias(name="red_vs_blue", tag=Tag.tags.get(name="red_vs._blue")),
+                TagAlias(name="red_x_blue", tag=Tag.tags.get(name="red_vs._blue")),
+                TagAlias(name="blue-berry", tag=Tag.tags.get(name="blueberry")),
+                TagAlias(name="gray-blue", tag=Tag.tags.get(name="blue-gray")),
+                TagAlias(name="bluejeans", tag=Tag.tags.get(name="blue-jeans")),
+                TagAlias(name="Justin_K", tag=Tag.tags.get(name="Justin_Knope")),
+                TagAlias(name="Solomon_S", tag=Tag.tags.get(name="Solomon_Steven")),
+                TagAlias(name="Z._Zolan", tag=Tag.tags.get(name="Zammy_Zolan")),
             ]
         )
