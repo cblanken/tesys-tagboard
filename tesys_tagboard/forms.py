@@ -107,7 +107,7 @@ class PostForm(forms.Form):
         required=False,
         assume_scheme="https",
         max_length=1024,
-        validators=[URLValidator(["https", "http"])],
+        validators=[URLValidator(["https", "http", "ftp"])],
     )
     rating_level = forms.ChoiceField(choices=RatingLevel.choices(), required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
