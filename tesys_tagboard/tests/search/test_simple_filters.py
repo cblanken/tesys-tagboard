@@ -1,6 +1,6 @@
-import contextlib
+"""Test module for simple (single token type) filters"""
+
 import datetime
-from itertools import chain
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -9,369 +9,21 @@ from django.utils import timezone
 from tesys_tagboard.enums import RatingLevel
 from tesys_tagboard.enums import SupportedMediaType
 from tesys_tagboard.models import Post
-from tesys_tagboard.models import Tag
-from tesys_tagboard.models import TagAlias
-from tesys_tagboard.models import TagCategory
 from tesys_tagboard.search import TAG_CATEGORY_DELIMITER
 from tesys_tagboard.search import PostSearch
-from tesys_tagboard.search import PostSearchTokenCategory
-from tesys_tagboard.search import TokenArgRelation
-from tesys_tagboard.search import autocomplete_tag_aliases
-from tesys_tagboard.search import autocomplete_tags
-
-from .factories import CollectionFactory
-from .factories import CommentFactory
-from .factories import FavoriteFactory
-from .factories import ImageFactory
-from .factories import PostFactory
-from .factories import TagAliasFactory
-from .factories import TagCategoryFactory
-from .factories import TagFactory
-from .factories import UserFactory
-
-
-class TestSearchTokenCategories:
-    def test_no_duplicate_aliases(self):
-        """Ensure available TokenCategory types don't have any duplicate aliases"""
-        token_aliases = list(
-            chain(*[tok.value.aliases for tok in PostSearchTokenCategory])
-        )
-        assert len(token_aliases) == len(set(token_aliases))
+from tesys_tagboard.tests.factories import CollectionFactory
+from tesys_tagboard.tests.factories import CommentFactory
+from tesys_tagboard.tests.factories import FavoriteFactory
+from tesys_tagboard.tests.factories import ImageFactory
+from tesys_tagboard.tests.factories import PostFactory
+from tesys_tagboard.tests.factories import TagAliasFactory
+from tesys_tagboard.tests.factories import TagCategoryFactory
+from tesys_tagboard.tests.factories import TagFactory
+from tesys_tagboard.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
-class TestTagAutocomplete:
-    def test_autocomplete_included_by_name_partial(self, db):
-        tags = autocomplete_tags(Tag.tags.all(), "blue")
-        tag_names = [tag.name for tag in tags]
-        assert "blue-jeans" in tag_names
-        assert "blue" in tag_names
-        assert "blue-gray" in tag_names
-        assert "blueberry" in tag_names
-        assert "red_vs._blue" in tag_names
-        assert "sky-blue" in tag_names
-        assert len(tag_names) == 6
-
-    def test_autocomplete_partial_with_category(self, db):
-        tags = list(autocomplete_tags(Tag.tags.all(), "Peru:"))
-        tag_names = [tag.name for tag in tags]
-        assert len(tags) == 3
-        assert "Huarez" in tag_names
-        assert "Pallasca" in tag_names
-        assert "Dos_de_Mayo" in tag_names
-
-    def test_autocomplete_partial_with_nested_categories(self, db):
-        tags = list(
-            autocomplete_tags(
-                Tag.tags.all(),
-                f"South_America{TAG_CATEGORY_DELIMITER}Peru{TAG_CATEGORY_DELIMITER}",
-            )
-        )
-        tag_names = [tag.name for tag in tags]
-        assert "Huarez" in tag_names
-        assert "Pallasca" in tag_names
-        assert "Dos_de_Mayo" in tag_names
-
-    def test_autocomplete_excluded_by_name_partial(self, db):
-        tags = autocomplete_tags(Tag.tags.all(), exclude_partial="blue")
-        tag_names = [tag.name for tag in tags]
-        assert "blue-jeans" not in tag_names
-        assert "blue" not in tag_names
-        assert "blue-gray" not in tag_names
-        assert "blueberry" not in tag_names
-        assert "sky-blue" not in tag_names
-
-    def test_autocomplete_excluded_by_tag_name(self, db):
-        tags = autocomplete_tags(
-            Tag.tags.all(), exclude_tag_names=["violet", "white", "yellow"]
-        )
-        tag_names = [tag.name for tag in tags]
-        assert "violet" not in tag_names
-        assert "white" not in tag_names
-        assert "yellow" not in tag_names
-        assert "white-rapids" in tag_names
-        assert "yellow-flowers" in tag_names
-        assert "violet-hyacinth" in tag_names
-
-    def test_autocomplete_excluded_by_tag(self, db):
-        copyright_category = TagCategory.objects.get(name="copyright")
-        exclude_tags = Tag.tags.filter(category=copyright_category)
-        tag_items = autocomplete_tags(Tag.tags.all(), exclude_tags=exclude_tags)
-        for item in tag_items:
-            assert item.name not in [tag.name for tag in exclude_tags]
-
-
-@pytest.mark.django_db
-class TestTagAliasAutocomplete:
-    def test_autocomplete_included_by_name_partial(self, db):
-        aliases = autocomplete_tag_aliases(TagAlias.aliases.all(), "blue")
-        alias_names = [alias.alias for alias in aliases]
-        assert "bluejeans" in alias_names
-        assert "gray-blue" in alias_names
-        assert "blue-berry" in alias_names
-        assert "red_v._blue" in alias_names
-        assert "red_vs_blue" in alias_names
-        assert "red_x_blue" in alias_names
-        assert len(alias_names) == 6
-
-    def test_autocomplete_excluded_by_name_partial(self, db):
-        aliases = autocomplete_tag_aliases(
-            TagAlias.aliases.all(), exclude_partial="red"
-        )
-        alias_names = [alias.alias for alias in aliases]
-        assert "red_v._blue" not in alias_names
-        assert "red_vs_blue" not in alias_names
-        assert "red_x_blue" not in alias_names
-        assert "r_v._b" in alias_names
-        assert "r_vs._b" in alias_names
-
-    def test_autocomplete_excluded_by_alias_name(self, db):
-        aliases = autocomplete_tag_aliases(
-            TagAlias.aliases.all(),
-            exclude_alias_names=["Justin K", "Solomon S", "Z. Zolan"],
-        )
-        alias_names = [alias.alias for alias in aliases]
-        assert "Justin K" not in alias_names
-        assert "Solomon S" not in alias_names
-        assert "Z. Zolan" not in alias_names
-
-    def test_autocomplete_excluded_by_alias(self, db):
-        copyright_category = TagCategory.objects.get(name="copyright")
-        exclude_aliases = TagAlias.aliases.filter(tag__category=copyright_category)
-        aliases = autocomplete_tag_aliases(
-            TagAlias.aliases.all(), exclude_aliases=exclude_aliases
-        )
-
-        for alias_item in aliases:
-            assert alias_item.alias not in [alias.name for alias in exclude_aliases]
-
-
-class TestTokenCategory:
-    def test_select_no_duplicate_names_or_aliases(self):
-        """The TokenCategory enum should not have any ambigious names or aliases"""
-        token_names: list[str] = []
-        for token_category in PostSearchTokenCategory:
-            assert token_category.value.name not in token_names
-            assert token_category.value.name not in token_category.value.aliases
-            for alias in token_category.value.aliases:
-                assert alias not in token_names
-
-            token_names.extend(
-                [token_category.value.name, *token_category.value.aliases]
-            )
-
-
-class TestPostAdvancedSearchQueryParsing:
-    def test_parse_empty_query(self):
-        ps = PostSearch("")
-        assert len(ps.tokens) == 0
-
-    def test_parse_single_tag(self):
-        ps = PostSearch("tag1")
-        assert len(ps.tokens) == 1
-        assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
-        assert not ps.tokens[0].negate
-
-    def test_parse_single_negated_tag(self):
-        ps = PostSearch("-tag1")
-        assert len(ps.tokens) == 1
-        assert ps.tokens[0].name == "tag1"
-        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
-        assert ps.tokens[0].negate
-
-    def test_parse_tag_with_category(self):
-        ps = PostSearch("category1:tag1")
-        assert len(ps.tokens) == 1
-        token = ps.tokens[0]
-        assert token.name == "category1:tag1"
-        assert token.category == PostSearchTokenCategory.TAG
-        assert not token.negate
-
-    def test_parse_negated_tag_with_category(self):
-        ps = PostSearch("-category1:tag1")
-        assert len(ps.tokens) == 1
-        token = ps.tokens[0]
-        assert token.name == "category1:tag1"
-        assert token.category == PostSearchTokenCategory.TAG
-        assert token.negate
-
-    def test_parse_tag_with_multiple_categories(self):
-        query = TAG_CATEGORY_DELIMITER.join(["root", "parent1", "parent2", "tag"])
-        ps = PostSearch(query)
-        assert len(ps.tokens) == 1
-        token = ps.tokens[0]
-        assert token.name == query
-        assert token.category == PostSearchTokenCategory.TAG
-        assert not token.negate
-
-    def test_parse_negated_tag_with_nested_categories(self):
-        query = TAG_CATEGORY_DELIMITER.join(["root", "parent1", "parent2", "tag"])
-        negated_query = "-" + query
-        ps = PostSearch(negated_query)
-        assert len(ps.tokens) == 1
-        token = ps.tokens[0]
-        assert token.name == query
-        assert token.category == PostSearchTokenCategory.TAG
-        assert token.negate
-
-    def test_parse_single_tag_with_wildcard(self):
-        ps = PostSearch("tag1*")
-        assert len(ps.tokens) == 1
-        assert ps.tokens[0].name == "tag1*"
-        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
-        assert not ps.tokens[0].negate
-
-    def test_parse_single_negated_tag_with_wildcard(self):
-        ps = PostSearch("-*negated_tag1")
-        assert len(ps.tokens) == 1
-        assert ps.tokens[0].name == "*negated_tag1"
-        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
-        assert ps.tokens[0].negate
-
-    def test_parse_multiple_tags(self):
-        ps = PostSearch("tag1 tag2 tag3")
-        assert len(ps.tokens) == 3
-        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
-        for tok in ps.tokens:
-            assert tok.category == PostSearchTokenCategory.TAG
-            assert not tok.negate
-
-    def test_parse_multiple_negated_tags(self):
-        ps = PostSearch("-tag1 -tag2 -tag3")
-        assert len(ps.tokens) == 3
-        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
-        for tok in ps.tokens:
-            assert tok.category == PostSearchTokenCategory.TAG
-            assert tok.negate
-
-    def test_parse_negated_and_non_negated_tags(self):
-        ps = PostSearch("tag1 tag2 -tag3")
-        assert len(ps.tokens) == 3
-        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
-
-        assert ps.tokens[0].category == PostSearchTokenCategory.TAG
-        assert not ps.tokens[0].negate
-
-        assert ps.tokens[1].category == PostSearchTokenCategory.TAG
-        assert not ps.tokens[1].negate
-
-        # Last tag is negated
-        assert ps.tokens[2].category == PostSearchTokenCategory.TAG
-        assert ps.tokens[2].negate
-
-    def test_parse_extra_space_between_tokens(self):
-        ps = PostSearch("tag1\t tag2   -tag3")
-        assert len(ps.tokens) == 3
-        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
-        for tok in ps.tokens:
-            assert tok.category == PostSearchTokenCategory.TAG
-
-    def test_parse_extra_space_start_and_end(self):
-        ps = PostSearch("    -tag1 tag2 -tag3\t ")
-        assert len(ps.tokens) == 3
-        assert {tok.name for tok in ps.tokens} == {"tag1", "tag2", "tag3"}
-        for tok in ps.tokens:
-            assert tok.category == PostSearchTokenCategory.TAG
-
-    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
-    def test_correctly_identify_tag_categories_by_name(
-        self, token_category: PostSearchTokenCategory
-    ):
-        if token_category.value.name:
-            # This test does not test validation, only token identification
-            with contextlib.suppress(ValidationError):
-                ps = PostSearch(f"{token_category.value.name}=100")
-                assert ps.tokens[0].category == token_category
-
-    @pytest.mark.parametrize("token_category", list(PostSearchTokenCategory))
-    def test_correctly_identify_tag_categories_by_alias(
-        self, token_category: PostSearchTokenCategory
-    ):
-        for alias in token_category.value.aliases:
-            # This test does not test validation, only token identification
-            with contextlib.suppress(ValidationError):
-                ps = PostSearch(f"{alias}=100")
-                assert ps.tokens[0].category == token_category
-
-    @pytest.mark.parametrize("arg_relation", list(TokenArgRelation))
-    def test_parse_filter_token_with_multiple_arg_relations(self, arg_relation):
-        arg_relation_char = arg_relation.value
-        query = f"id{arg_relation_char}100{arg_relation_char}200"
-        with pytest.raises(ValidationError):
-            PostSearch(query)
-
-
-@pytest.mark.django_db
-class TestPostAdvancedSearchAutocomplete:
-    def test_exclude_already_mentioned_tags(self):
-        ps = PostSearch("amber amaranth")
-        items = ps.autocomplete("am")
-        item_names = [x.name for x in items]
-        assert "amaranth-pink" in item_names
-        assert "amaranth-purple" in item_names
-        assert "amaranth" not in item_names
-        assert "amber" not in item_names
-
-    def test_include_tags_and_aliases(self):
-        ps = PostSearch("red")
-        items = list(ps.autocomplete())
-
-        # Tags
-        tag_names = [
-            item.name
-            for item in items
-            if item.token_category == PostSearchTokenCategory.TAG
-        ]
-        assert "red" in tag_names
-        assert "red_vs._blue" in tag_names
-
-        # Aliases
-        alias_names = [
-            item.alias
-            for item in items
-            if item.token_category == PostSearchTokenCategory.TAG_ALIAS
-        ]
-        assert "red_v._blue" in alias_names
-        assert "red_vs_blue" in alias_names
-        assert "red_x_blue" in alias_names
-
-    def test_exclude_negated_mentioned_tags(self):
-        ps = PostSearch("-green")
-        items = ps.autocomplete("gree")
-        item_names = [x.name for x in items]
-        assert "evergreen" in item_names
-        assert "lime-green" in item_names
-        assert "green" not in item_names
-
-    def test_yes_filters(self):
-        ps = PostSearch("")
-        items = list(ps.autocomplete(show_filters=True))
-        item_categories = {item.token_category for item in items}
-        for tc in PostSearchTokenCategory:
-            assert tc in item_categories
-
-    def test_no_filters(self):
-        ps = PostSearch("")
-        items = ps.autocomplete(show_filters=False)
-        item_categories = {item.token_category for item in items}
-        item_categories.remove(PostSearchTokenCategory.TAG)
-        item_categories.remove(PostSearchTokenCategory.TAG_ALIAS)
-        for tc in PostSearchTokenCategory:
-            assert tc not in item_categories
-
-    def test_complete_with_leading_negation(self):
-        ps = PostSearch("blue -blu")
-        items = ps.autocomplete("-blu")
-        item_names = [x.name for x in items]
-        assert "blue-jeans" in item_names
-        assert "blue-gray" in item_names
-        assert "blueberry" in item_names
-        assert "sky-blue" in item_names
-
-
-@pytest.mark.django_db
-class TestPostAdvancedSearchTags:
+class TestSearchTags:
     def test_empty_query(self):
         PostFactory.create_batch(10)
         ps = PostSearch("")
@@ -634,7 +286,7 @@ class TestPostAdvancedSearchTags:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedTagID:
+class TestTagID:
     def test_id_equal(self):
         post = PostFactory.create()
         tag = TagFactory.create()
@@ -646,7 +298,7 @@ class TestPostAdvancedTagID:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchTagAliases:
+class TestTagAliases:
     def test_include_only_tag_alias(self):
         """Ensure that PostSearch only returns posts that have a tag linked to a
         tag alias"""
@@ -725,7 +377,7 @@ class TestPostAdvancedSearchTagAliases:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchPostID:
+class TestPostID:
     def test_id_equal(self):
         post = PostFactory.create()
         ps = PostSearch(f"id={post.pk}")
@@ -766,7 +418,7 @@ class TestPostAdvancedSearchPostID:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCommentCount:
+class TestCommentCount:
     def test_comment_count_equal(self):
         post1 = PostFactory.create()
         post2 = PostFactory.create()
@@ -821,7 +473,7 @@ class TestPostAdvancedSearchCommentCount:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCommentedBy:
+class TestCommentedBy:
     def test_commented_by_user(self):
         post1 = PostFactory.create()
         post2 = PostFactory.create()
@@ -861,7 +513,7 @@ class TestPostAdvancedSearchCommentedBy:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchFavoritedCount:
+class TestFavoritedCount:
     def test_favorited_equal(self):
         post1, post2, post3, post4 = PostFactory.create_batch(4)
 
@@ -916,7 +568,7 @@ class TestPostAdvancedSearchFavoritedCount:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchTagCount:
+class TestTagCount:
     def test_tag_count_equal(self):
         post0, post1, post2, post3 = PostFactory.create_batch(4)
 
@@ -979,7 +631,7 @@ class TestPostAdvancedSearchTagCount:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchFiletype:
+class TestFiletype:
     def test_filetype_extension(self):
         gif_posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
         png_posts = PostFactory.create_batch(4, type=SupportedMediaType.PNG.name)
@@ -995,7 +647,7 @@ class TestPostAdvancedSearchFiletype:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchMimetype:
+class TestMimetype:
     def test_supported_mimetype(self):
         gif_posts = PostFactory.create_batch(3, type=SupportedMediaType.GIF.name)
         png_posts = PostFactory.create_batch(4, type=SupportedMediaType.PNG.name)
@@ -1023,7 +675,7 @@ class TestPostAdvancedSearchMimetype:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchHeight:
+class TestHeight:
     def test_image_height_equal(self):
         post0, post1, post2, post3 = PostFactory.create_batch(4)
 
@@ -1077,7 +729,7 @@ class TestPostAdvancedSearchHeight:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchWidth:
+class TestWidth:
     def test_image_width_equal(self):
         post0, post1, post2, post3 = PostFactory.create_batch(4)
 
@@ -1131,7 +783,7 @@ class TestPostAdvancedSearchWidth:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchRatingLabel:
+class TestRatingLabel:
     @pytest.mark.parametrize("rating_level", list(RatingLevel))
     def test_rating_valid_rating_labels(self, rating_level):
         PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
@@ -1150,7 +802,7 @@ class TestPostAdvancedSearchRatingLabel:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchRatingNumber:
+class TestRatingNumber:
     @pytest.mark.parametrize("rating_level", [r.value for r in RatingLevel])
     def test_rating_num_equal(self, rating_level):
         PostFactory.create_batch(10, rating_level=RatingLevel.SAFE)
@@ -1189,7 +841,7 @@ class TestPostAdvancedSearchRatingNumber:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchSource:
+class TestSource:
     def test_src_url_exact(self):
         post1 = PostFactory.create(src_url="https://test1.example.com")
         post2 = PostFactory.create(src_url="https://test2.example.com")
@@ -1247,7 +899,7 @@ class TestPostAdvancedSearchSource:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchPostedBy:
+class TestPostedBy:
     def test_uploaded_by_exact(self):
         post0, post1, post2, post3 = PostFactory.create_batch(4)
 
@@ -1297,7 +949,7 @@ class TestPostAdvancedSearchPostedBy:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchPostedOn:
+class TestPostedOn:
     def test_exact_date(self):
         """Confirm search by date only (YYYY-MM-DD) returns correct posts"""
         date1 = datetime.datetime(2020, 2, 22, tzinfo=timezone.get_default_timezone())
@@ -1413,7 +1065,7 @@ class TestPostAdvancedSearchPostedOn:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCollection:
+class TestCollection:
     def test_collection_yes(self):
         p1, p2, p3 = PostFactory.create_batch(3)
         c1, c2 = CollectionFactory.create_batch(2)
@@ -1448,7 +1100,7 @@ class TestPostAdvancedSearchCollection:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCollectionID:
+class TestCollectionID:
     def test_exact_id(self):
         p1, p2, p3 = PostFactory.create_batch(3)
         c1, c2, c3 = CollectionFactory.create_batch(3)
@@ -1517,7 +1169,7 @@ class TestPostAdvancedSearchCollectionID:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchCollectionName:
+class TestCollectionName:
     def test_name_simple(self):
         p1, p2, p3 = PostFactory.create_batch(3)
         c1, c2 = CollectionFactory.create_batch(2)
@@ -1568,7 +1220,7 @@ class TestPostAdvancedSearchCollectionName:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchParent:
+class TestParent:
     def test_has_parent(self):
         p1, p2, p3 = PostFactory.create_batch(3)
         p2.parent = p1
@@ -1612,7 +1264,7 @@ class TestPostAdvancedSearchParent:
 
 
 @pytest.mark.django_db
-class TestPostAdvancedSearchChildren:
+class TestChildren:
     def test_has_children(self):
         p1, p2, p3 = PostFactory.create_batch(3)
         p2.parent = p1
