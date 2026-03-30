@@ -822,6 +822,11 @@ class AutocompleteItem:
 
         return SafeString(self.name)
 
+    def get_default_search_token_operator(self) -> SafeString:
+        if len(self.token_category.value.allowed_arg_relations) > 0:
+            return SafeString(self.token_category.value.allowed_arg_relations[0].value)
+        return SafeString("")
+
 
 class PostSearch:
     """Class to model a Post search query

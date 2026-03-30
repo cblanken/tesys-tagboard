@@ -127,12 +127,13 @@
       let query = String(search_input.value)
 
       const autocompleted_name = e.currentTarget?.dataset.search_token
+      const default_token_operator = e.currentTarget?.dataset.default_search_token_operator
       if (autocompleted_name == undefined) {
         console.error("Search autocomplete failed to parse the provided query.");
         return
       }
 
-      let new_query = `${query.slice(0, active_token.start)}${autocompleted_name}${query.slice(active_token.end)}`;
+      let new_query = `${query.slice(0, active_token.start)}${autocompleted_name}${default_token_operator}${query.slice(active_token.end)}`;
       search_input.value = new_query;
 
       search_input.focus();

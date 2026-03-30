@@ -10,6 +10,7 @@
       <li data-id="{{ item.tag_id }}"
           data-name="{{ item.name }}"
           data-search_token="{{ item.get_search_token_string }}"
+          data-default_search_token_operator="{{ item.get_default_search_token_operator }}"
           tabindex="-1"
           style="{% if item.tag_category.bg %}background: {{ item.tag_category.bg }};
                  {% endif %} {% if item.tag_category.fg %}color: {{ item.tag_category.fg }};{% endif %}"
