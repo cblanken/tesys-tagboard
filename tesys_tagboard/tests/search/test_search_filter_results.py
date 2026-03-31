@@ -1309,3 +1309,7 @@ class TestChildren:
         assert p1.pk in post_ids
         assert p2.pk not in post_ids
         assert p3.pk not in post_ids
+
+
+class TestComplexQueries:
+    """Tests for complex queries using multiple token types"""
