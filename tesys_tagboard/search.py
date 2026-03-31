@@ -875,7 +875,8 @@ class PostSearch:
 
             self.tokens: list[NamedToken] = self.parse_query(self.query)
 
-    def parse_querydict(self, querydict: QueryDict) -> list[NamedToken]:
+    @staticmethod
+    def parse_querydict(querydict: QueryDict) -> list[NamedToken]:
         """Parses a post search query submitted via form instead of a query string.
 
         Each parameter should match an existing `TokenCategory` with the exception of
@@ -932,7 +933,8 @@ class PostSearch:
 
         return parsed_tokens
 
-    def parse_query(self, query: str) -> list[NamedToken]:
+    @staticmethod
+    def parse_query(query: str) -> list[NamedToken]:
         """Parses a post search query into named tokens.
 
         Arguments:
