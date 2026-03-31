@@ -28,7 +28,7 @@
         {% if user == request.user %}
           <!-- Action buttons -->
           <h2 class="py-4 upper">Account Options</h2>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
             <a class="btn btn-primary"
                href="{% url 'account_email' %}"
@@ -43,7 +43,7 @@
             {% partialdef user-settings inline %}
             <form id="user-settings" method="post" action="">
               {% csrf_token %}
-              <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-4 sm:grid sm:grid-cols-2">
                 <div class="p-4 bg-base-300 rounded-box tooltip"
                      data-tip="Posts with the following tags will not appear in searches. Note that posts with these tags will still appear in collections or in your own favorites and collection galleries. This setting only affect post searches.">
                   <label>
@@ -60,10 +60,10 @@
                 </div>
                 <div class="p-4 bg-base-300 rounded-box tooltip"
                      data-tip="Posts with the selected rating (or higher) will be blurred by default. Blurred posts can be seen by hovering over their thumbnail with the mouse or navigating to the related post's page.">
-                  <label class="flex gap-4">
+                  <label class="flex flex-wrap gap-4">
                     <span class="label">Blur Rating</span>
                     <select name="blur_rating_level"
-                            class="font-bold select select-md text-md w-fit">
+                            class="max-w-full font-bold select select-md text-md w-fit">
                       {% for rating_level in blur_rating_levels %}
                         <option value="{{ rating_level.value }}"
                                 {% if rating_level.value == user.blur_rating_level %}selected{% endif %}>
