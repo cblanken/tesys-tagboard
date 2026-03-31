@@ -33,7 +33,9 @@
             <a class="btn btn-primary"
                href="{% url 'account_email' %}"
                role="button">E-Mail</a>
-            <a class="btn btn-primary" href="{% url 'mfa_index' %}" role="button">MFA</a>
+            {% if ENABLE_MFA %}
+              <a class="btn btn-primary" href="{% url 'mfa_index' %}" role="button">MFA</a>
+            {% endif %}
           </div>
           <!-- End Action buttons -->
           <h2 class="py-4 upper">Settings</h2>
