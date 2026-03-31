@@ -49,7 +49,8 @@ if TYPE_CHECKING:
 TAG_CATEGORY_DELIMITER = settings.TAG_CATEGORY_DELIMITER
 MAX_TAG_CATEGORY_DEPTH = settings.MAX_TAG_CATEGORY_DEPTH
 VALID_ARG_RELATIONS = "".join([x.value for x in TokenArgRelation])
-SEARCH_ARG_QUOTE_PATTERN = re.compile(r"([" + settings.SEARCH_ARG_QUOTE + r"])")
+SEARCH_ARG_QUOTE = settings.SEARCH_ARG_QUOTE
+SEARCH_ARG_QUOTE_PATTERN = re.compile(r"([" + SEARCH_ARG_QUOTE + r"])")
 FILTER_SPLIT_PATTERN = re.compile(r"([" + VALID_ARG_RELATIONS + r"])")
 TOKEN_SPLIT_PATTERN = re.compile(r"\s+")
 
@@ -737,7 +738,7 @@ class NamedToken:
             named_token = cls(
                 token_category,
                 name=token_name,
-                arg=token_arg.replace(settings.SEARCH_ARG_QUOTE, ""),
+                arg=token_arg.replace(SEARCH_ARG_QUOTE, ""),
                 arg_relation_str=arg_relation,
                 negate=negate,
             )
