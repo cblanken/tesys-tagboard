@@ -28,6 +28,7 @@ Environment Variable                               Django Setting               
 :envvar:`DJANGO_ALLOWED_HOSTS`                     ``ALLOWED_HOSTS``
 :envvar:`DJANGO_DEBUG_TOOLBAR`                     ``DEBUG_TOOLBAR``                    ``True``
 :envvar:`DJANGO_DEBUG`                             ``DEBUG``                            ``False``              ``True``
+:envvar:`DJANGO_ENABLE_MFA`                        ``ENABLE_MFA``                       ``False``              ``False``
 :envvar:`DJANGO_HOMEPAGE_LINKS`                    ``HOMEPAGE_LINKS``
 :envvar:`DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`       ``SECURE_CONTENT_TYPE_NOSNIFF``                             ``True``
 :envvar:`DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`    ``SECURE_HSTS_INCLUDE_SUBDOMAINS``                          ``True``
@@ -162,6 +163,10 @@ TODO
 TODO
 
 .. envvar:: DJANGO_EMAIL_PORT
+
+TODO
+
+.. envvar:: DJANGO_ENABLE_MFA
 
 TODO
 

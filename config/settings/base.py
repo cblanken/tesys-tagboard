@@ -86,12 +86,6 @@ ROOT_URLCONF = "config.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
 
-# PROFILING
-# ------------------------------------------------------------------------------
-SILKY_PYTHON_PROFILER = env.bool("DJANGO_SILKY_PYTHON_PROFILER", default=False)
-SILKY_PYTHON_PROFILER_BINARY = env.bool(
-    "DJANGO_SILKY_PYTHON_PROFILER_BINARY", default=False
-)
 
 # APPS
 # ------------------------------------------------------------------------------
@@ -112,7 +106,6 @@ THIRD_PARTY_APPS = [
     "crispy_tailwind",
     "allauth",
     "allauth.account",
-    "allauth.mfa",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.discord",
     "rest_framework",
@@ -125,14 +118,27 @@ THIRD_PARTY_APPS = [
     "colorfield",
 ]
 
-if SILKY_PYTHON_PROFILER:
-    THIRD_PARTY_APPS.append("silk")
-
 LOCAL_APPS = [
     "tesys_tagboard",
     "tesys_tagboard.users",
     "tesys_tagboard.theme",
 ]
+
+# MFA
+# ------------------------------------------------------------------------------
+if ENABLE_MFA := env.bool("DJANGO_ENABLE_MFA", default=False):
+    THIRD_PARTY_APPS.append("allauth.mfa")
+
+# PROFILING
+# ------------------------------------------------------------------------------
+if SILKY_PYTHON_PROFILER := env.bool("DJANGO_SILKY_PYTHON_PROFILER", default=False):
+    THIRD_PARTY_APPS.append("silk")
+
+SILKY_PYTHON_PROFILER_BINARY = env.bool(
+    "DJANGO_SILKY_PYTHON_PROFILER_BINARY", default=False
+)
+
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
