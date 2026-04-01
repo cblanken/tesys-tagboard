@@ -1,4 +1,8 @@
 {% extends "base.html" %}
 
-{% block content %}
-{% endblock content %}
+{% block main %}
+  <div class="gap-4 justify-center p-2 m-auto max-w-2xl md:p-4 lg:p-8 h-fit">
+    {% block content %}
+    {% endblock content %}
+  </div>
+{% endblock main %}

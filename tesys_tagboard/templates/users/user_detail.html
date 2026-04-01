@@ -27,7 +27,7 @@
         </div>
         {% if user == request.user %}
           <!-- Action buttons -->
-          <h2 class="py-4 upper">Account Options</h2>
+          <h2 class="py-4 upper">Account Settings</h2>
           <div class="flex flex-wrap gap-2">
             <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
             <a class="btn btn-primary"
@@ -38,7 +38,7 @@
             {% endif %}
           </div>
           <!-- End Action buttons -->
-          <h2 class="py-4 upper">Settings</h2>
+          <h2 class="py-4 upper">Application Settings</h2>
           <div class="flex flex-col gap-6">
             {% partialdef user-settings inline %}
             <form id="user-settings" method="post" action="">

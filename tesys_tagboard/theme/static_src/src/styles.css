@@ -161,7 +161,7 @@
     gap: --spacing(4);
     background-color: var(--color-base-300);
     width: 100%;
-    padding: --spacing(12);
+    padding: --spacing(10) --spacing(8);
     border-radius: var(--radius-box);
     max-width: var(--container-lg);
     box-shadow: var(--shadow-xl);
