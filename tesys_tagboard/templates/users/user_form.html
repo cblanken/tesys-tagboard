@@ -1,21 +1,28 @@
 {% extends "base.html" %}
 
-{% load crispy_forms_tags %}
+{% load allauth crispy_forms_tags tailwind_filters %}
 
 {% block title %}
   {{ user.username }}
 {% endblock title %}
 {% block content %}
-  <h1>{{ user.username }}</h1>
-  <form class="form-horizontal"
-        method="post"
-        action="{% url 'users:update' %}">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <div class="control-group">
-      <div class="controls">
-        <button type="submit" class="btn btn-primary">Update</button>
+  <div class="flex flex-col items-center m-auto max-w-2xl">
+    <h1>{{ user.username }}</h1>
+    <form action="{% url 'users:update' %}" class="w-full form" method="post">
+      {% csrf_token %}
+      <div id="div_id_name">
+        <label class="label" for="id_name">Name of User</label>
+        <input class="w-full input"
+               id="id_name"
+               maxlength="255"
+               name="name"
+               value="{{ user.name }}" />
       </div>
-    </div>
-  </form>
+      <div class="control-group">
+        <div class="controls">
+          <button class="w-full btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
 {% endblock content %}

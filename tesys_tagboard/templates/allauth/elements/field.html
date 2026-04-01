@@ -22,7 +22,7 @@
 {% elif attrs.type == "radio" %}
 <div class="mb-3">
   <div>
-    <div class="form-check">
+    <div class="flex gap-3 items-center form-check">
       <input {% if attrs.required %}required{% endif %}
              {% if attrs.disabled %}disabled{% endif %}
              {% if attrs.readonly %}readonly{% endif %}
