@@ -116,7 +116,7 @@
     {% partialdef comments inline %}
     <div id="comments" class="mt-4 mb-8">
       {% partialdef add-comments inline %}
-      <div id="add-comments" class="flex flex-col gap-4">
+      <div id="add-comments">
         <div class="flex justify-between">
           <h2>Comments</h2>
           {% if perms.tesys_tagboard.edit_post and perms.tesys_tagboard.lock_comments %}
