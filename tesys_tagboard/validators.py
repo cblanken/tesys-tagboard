@@ -1,6 +1,7 @@
 import re
 from itertools import chain
 
+from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.regex_helper import _lazy_re_compile
@@ -16,6 +17,11 @@ phash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
 dhash_validator = validators.RegexValidator(r"^[0-9a-z]{16}$")
 tag_name_validator = validators.RegexValidator(
     _lazy_re_compile(r"^[a-zA-Z\d\:-_]+$"), message=_("Enter a valid tag name.")
+)
+
+tag_token_validator = validators.RegexValidator(
+    _lazy_re_compile(r"^[a-zA-Z\d\:-_" + settings.TAG_CATEGORY_DELIMITER + "]+$"),
+    message=_("Enter a valid tag token."),
 )
 tagset_name_validator = validators.RegexValidator(r"^[a-z\d\-_]+$")
 username_validator = validators.RegexValidator(

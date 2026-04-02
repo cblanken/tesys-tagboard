@@ -31,6 +31,7 @@ from .validators import mimetype_validator
 from .validators import positive_int_validator
 from .validators import rating_label_validator
 from .validators import tag_name_validator
+from .validators import tag_token_validator
 from .validators import username_validator
 from .validators import wildcard_collection_name_validator
 from .validators import wildcard_url_validator
@@ -248,7 +249,7 @@ class PostSearchTokenCategory(Enum):
             "The default (un-named) token. When a plain string without any operator "
             "is given it will be interpreted as a tag name."
         ),
-        arg_validator=tag_name_validator,
+        arg_validator=tag_token_validator,
     )
 
     TAG_ID = SimpleSearchTokenCategory(

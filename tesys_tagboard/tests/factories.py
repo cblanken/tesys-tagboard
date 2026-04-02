@@ -1,4 +1,5 @@
 import factory
+from factory.declarations import Sequence
 from factory.declarations import SubFactory
 from factory.django import DjangoModelFactory
 from factory.faker import Faker
@@ -46,7 +47,7 @@ class TagCategoryFactory(DjangoModelFactory[TagCategory]):
 
 
 class TagFactory(DjangoModelFactory[Tag]):
-    name = Faker("word")
+    name = Sequence(lambda n: f"tag{n}")
     category = None
     rating_level = Faker("enum", enum_cls=RatingLevel)
 
