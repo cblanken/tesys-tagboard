@@ -239,10 +239,17 @@ class WildcardSearchTokenCategory(SearchTokenBaseCategory):
             self.wildcard_arg_validator = self.arg_validator
 
 
+@dataclass(kw_only=True)
+class TagSearchTokenCategory(WildcardSearchTokenCategory):
+    """A dataclass for defining tag search tokens."""
+
+    allowed_arg_relations: tuple[TokenArgRelation, ...] = ()
+
+
 class PostSearchTokenCategory(Enum):
     """Enum for all the supported post search token categories"""
 
-    TAG = WildcardSearchTokenCategory(
+    TAG = TagSearchTokenCategory(
         name="",
         desc=_(
             # Translators: Description for the "wildcard" search token
