@@ -12,7 +12,7 @@
 {% block content %}
   <div class="flex flex-col gap-4 justify-center items-center max-w-svw">
     {% include "heading.html" with text="POSTS" %}
-    <div class="m-auto w-full h-36 md:max-w-lg lg:max-w-3xl min-h-fit">
+    <div class="m-auto w-full max-h-36 md:max-w-lg lg:max-w-3xl h-fit min-h-fit">
       <div class="flex gap-2 items-center place-items-end w-full">
         <form id="advanced-post-search"
               action="{% url 'posts' %}"
