@@ -69,10 +69,10 @@
     <div class="absolute right-0 md:static">{% component "theme_picker" %}{% endcomponent %}</div>
   </nav>
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-        class="max-w-screen overflow-x-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
-    <!-- Form for global search from tag widget popup -->
+        class="max-w-screen overflow-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
     {% comment %} need to add main.relative container for back-to-top btn {% endcomment %}
     <main class="relative">
+      <!-- Input for global search from tag widget popup -->
       <input id="tagSearchForm"
              class="hidden"
              type="hidden"
@@ -105,10 +105,10 @@
       {% endblock modal %}
       {% block inline_javascript %}
       {% endblock inline_javascript %}
-      <div class="back-to-top-wrapper">
+      <div class="back-to-top-wrapper size-full">
         <a id="back-to-top-btn"
            href="#top"
-           class="z-50 rounded-full border-2 lg:hidden back-to-top-link btn btn-xl btn-secondary bg-secondary/90 btn-square">
+           class="z-50 m-2 rounded-full border-2 lg:hidden back-to-top-link btn btn-xl btn-secondary bg-secondary/90 btn-square">
           {% include "icons/feather.html" with icon="arrow-up" %}
         </a>
       </div>

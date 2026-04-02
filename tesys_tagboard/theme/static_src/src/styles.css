@@ -341,7 +341,6 @@ rendered document size */
 .back-to-top-wrapper {
   position: absolute;
   top: 250vh;
-  left: --spacing(2);
   bottom: 0;
   width: 3rem;
   pointer-events: none;
