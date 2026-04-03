@@ -390,9 +390,15 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     return TemplateResponse(request, "pages/tags.html", context)
 
 
-@require(["POST"])
+@require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tag"], raise_exception=True)
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    if request.htmx:
+        create_tag_form = CreateTagForm(request.GET)
+        return TemplateResponse(
+            request, "modals/create_tag.html", context={"form": create_tag_form}
+        )
+
     create_tag_form = CreateTagForm(request.POST)
     if create_tag_form.is_valid():
         try:
@@ -406,16 +412,21 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
             category=tag_category,
             rating_level=create_tag_form.cleaned_data.get("rating_level"),
         )
-    else:
-        msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
-        messages.add_message(request, messages.WARNING, msg)
 
     return redirect(reverse("tags"))
 
 
-@require(["POST"])
+@require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagalias"], raise_exception=True)
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    if request.htmx:
+        create_tag_alias_form = CreateTagAliasForm()
+        return TemplateResponse(
+            request,
+            "modals/create_tag_alias.html",
+            context={"form": create_tag_alias_form},
+        )
+
     form = CreateTagAliasForm(request.POST)
     if form.is_valid():
         alias_name = form.cleaned_data.get("name")

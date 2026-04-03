@@ -1,0 +1,15 @@
+{% load component_tags %}
+
+<dialog id="modal_form_dialog"
+        closedby="any"
+        class="shadow-lg modal modal-middle">
+  <div class="modal-box bg-base-300">
+    <h2 class="px-4 w-full text-wrap-normal">{{ title }}</h2>
+    {% slot "body" required %}{% endslot %}
+    <div class="absolute top-2 right-2 m-0 modal-action">
+      <form method="dialog">
+        <button class="btn btn-error btn-square btn-soft">{% include "icons/feather.html" with icon="x" %}</button>
+      </form>
+    </div>
+  </div>
+</dialog>

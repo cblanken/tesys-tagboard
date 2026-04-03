@@ -185,7 +185,9 @@ class Tag(models.Model):
     """
 
     name = models.CharField(max_length=100, validators=[tag_name_validator])
-    category = models.ForeignKey(TagCategory, null=True, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        TagCategory, null=True, on_delete=models.CASCADE, blank=True
+    )
     description = models.TextField(max_length=255, blank=True, default="")
     post_count = models.PositiveIntegerField(default=0)
 

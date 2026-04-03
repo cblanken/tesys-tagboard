@@ -63,7 +63,6 @@
   </nav>
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
         class="flex flex-col max-w-screen overflow-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
-    {% comment %} need to add main.relative container for back-to-top btn {% endcomment %}
     <main class="relative grow">
       <!-- Input for global search from tag widget popup -->
       <input id="tagSearchForm"
@@ -134,9 +133,6 @@
         </p>
         <p>Media © to their respective creators</p>
       </div>
-    </section>
-    <section class="grow">
-      <h4 class="text-sm text-neutral-content/80"></h4>
     </section>
   </footer>
 </body>

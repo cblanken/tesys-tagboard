@@ -1,0 +1,9 @@
+{% load component_tags i18n %}
+
+{% comment %}Translators: Title for the create tag modal{% endcomment %}
+{% translate "Create Tag Ailas" as title %}
+{% component "modal_form" title=title form=form %}
+{% fill "body" %}
+{% include "forms/create_tag_alias.html" %}
+{% endfill %}
+{% endcomponent %}

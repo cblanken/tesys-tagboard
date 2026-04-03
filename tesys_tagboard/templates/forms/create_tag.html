@@ -1,0 +1,44 @@
+{% load i18n %}
+
+<form class="form"
+      id="create-tag"
+      action="{% url "create-tag" %}"
+      method="post">
+  {% csrf_token %}
+  <fieldset class="w-full fieldset">
+    <legend class="fieldset-legend">
+      {% translate 'Tag name' %}<span class="text-warning">*</span>
+    </legend>
+    <input type="text"
+           class="w-full input"
+           name="name"
+           placeholder="{% translate 'Tag name' %}" />
+  </fieldset>
+  <fieldset class="w-full fieldset">
+    <legend class="fieldset-legend">{% translate 'Category' %}</legend>
+    <select class="w-full select" name="category">
+      <option disabled selected>{% translate 'Pick a category' %}</option>
+      {% for category in categories %}<option value="{{ category.pk }}">{{ category.name|capfirst }}</option>{% endfor %}
+    </select>
+  </fieldset>
+  <fieldset class="w-full fieldset">
+    <legend class="fieldset-legend">{% translate 'Rating (optional)' %}</legend>
+    <select class="w-full select" name="rating_level">
+      <option disabled selected>{% translate 'Pick a rating level' %}</option>
+      {% for rating_level in rating_levels %}
+        <option value="{{ rating_level.value }}">{{ rating_level.name }} ({{ rating_level.value }})</option>
+      {% endfor %}
+    </select>
+  </fieldset>
+  <input type="submit"
+         value="{% translate 'Create Tag' %}"
+         class="my-2 w-full text-xl btn btn-lg btn-primary" />
+  {% if form.non_field_errors %}
+    <div role="alert" class="alert alert-error">
+      {% include "icons/feather.html" with icon="alert-circle" %}
+      <div class="grid grid-cols-1 gap-2">
+        {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</form>
