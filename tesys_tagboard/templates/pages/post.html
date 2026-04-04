@@ -94,8 +94,8 @@
           <td class="font-bold">Source</td>
           <td>
             {% if request.user.is_authenticated %}
-              {% if post.title %}
-                {% component "text_field_edit_toggle" input_name="src_url" text=post.src_url / %}
+              {% if post.src_url %}
+                {% component "text_field_edit_toggle" input_name="src_url" text=post.src_url is_link=True / %}
               {% else %}
                 {% component "text_field_edit_toggle" input_name="src_url" empty_text="Unknown" / %}
               {% endif %}

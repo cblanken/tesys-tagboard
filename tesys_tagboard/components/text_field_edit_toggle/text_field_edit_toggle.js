@@ -37,7 +37,7 @@
       toggle_edit_field(checkbox.checked);
     });
 
-    // The label is styled as a button, but doesn't propgate change event
+    // The label is styled as a button, but doesn't propagate the change event
     // of the related input without manually dispatching the event.
     edit_btn.addEventListener("click", e => {
       checkbox.dispatchEvent(new Event("change"));
@@ -61,8 +61,6 @@
         e.stopPropagation();
       }
     });
-
-
   };
 
   const setup = (forms) => {
