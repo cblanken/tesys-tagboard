@@ -69,9 +69,9 @@
     <div class="absolute right-0 md:static">{% component "theme_picker" %}{% endcomponent %}</div>
   </nav>
   <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-        class="max-w-screen overflow-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
+        class="flex flex-col max-w-screen overflow-clip xl:overflow-x-visible min-h-screen {% block bodyclass %}{% endblock bodyclass %}">
     {% comment %} need to add main.relative container for back-to-top btn {% endcomment %}
-    <main class="relative">
+    <main class="relative grow">
       <!-- Input for global search from tag widget popup -->
       <input id="tagSearchForm"
              class="hidden"
@@ -113,38 +113,38 @@
         </a>
       </div>
     </main>
-  </body>
-  <footer class="flex flex-wrap gap-8 justify-start p-4 mt-12 border-t-4 md:p-8 lg:justify-center lg:p-12 bg-base-200 border-t-accent/50 text-base-content/85">
-    <section>
-      <h4 class="text-xl">About</h4>
-      <ul class="grid grid-cols-1 gap-1 m-2 list-none">
-        <li>
-          <a href="https://github.com/cblanken/tesys-tagboard">Source Code</a>
-        </li>
-        <li>
-          <a href="https://tesys-tagboard.readthedocs.io/en/latest/">Documentation</a>
-        </li>
-        <li>
-          <a href={% url 'api-1.0.0:openapi-view' %}>API</a>
-        </li>
-        <li>
-          <a href="https://github.com/cblanken/tesys-tagboard/blob/main/LICENSE">License</a>
-        </li>
-      </ul>
-    </section>
-    <section class="grid grid-cols-1">
-      <p>
-        Tesy's Tagboard was made with <span class="px-1">{% include "icons/feather.html" with icon="heart" %}</span> by <a href="https://github.com/cblanken">cblanken</a> and all of the project's <a href="https://github.com/cblanken/tesys-tagboard/blob/main/CONTRIBUTORS.txt">contributors</a>.
-    </p>
-    <div>
-      <p>
-        Tesy's Tagboard © <a href="https://github.com/cblanken">cblanken</a> and <a href="https://github.com/cblanken/tesys-tagboard/blob/main/CONTRIBUTORS.txt">contributors</a> 2025–{% now "Y" %}
+    <footer class="flex flex-wrap gap-8 justify-start p-4 mt-12 border-t-4 md:p-8 lg:justify-center lg:p-12 bg-base-200 border-t-accent/50 text-base-content/85 shrink">
+      <section>
+        <h4 class="text-xl">About</h4>
+        <ul class="grid grid-cols-1 gap-1 m-2 list-none">
+          <li>
+            <a href="https://github.com/cblanken/tesys-tagboard">Source Code</a>
+          </li>
+          <li>
+            <a href="https://tesys-tagboard.readthedocs.io/en/latest/">Documentation</a>
+          </li>
+          <li>
+            <a href={% url 'api-1.0.0:openapi-view' %}>API</a>
+          </li>
+          <li>
+            <a href="https://github.com/cblanken/tesys-tagboard/blob/main/LICENSE">License</a>
+          </li>
+        </ul>
+      </section>
+      <section class="grid grid-cols-1">
+        <p>
+          Tesy's Tagboard was made with <span class="px-1">{% include "icons/feather.html" with icon="heart" %}</span> by <a href="https://github.com/cblanken">cblanken</a> and all of the project's <a href="https://github.com/cblanken/tesys-tagboard/blob/main/CONTRIBUTORS.txt">contributors</a>.
       </p>
-      <p>Media © to their respective creators</p>
-    </div>
-  </section>
-  <section class="grow">
-    <h4 class="text-sm text-neutral-content/80"></h4>
-  </section>
-</footer>
+      <div>
+        <p>
+          Tesy's Tagboard © <a href="https://github.com/cblanken">cblanken</a> and <a href="https://github.com/cblanken/tesys-tagboard/blob/main/CONTRIBUTORS.txt">contributors</a> 2025–{% now "Y" %}
+        </p>
+        <p>Media © to their respective creators</p>
+      </div>
+    </section>
+    <section class="grow">
+      <h4 class="text-sm text-neutral-content/80"></h4>
+    </section>
+  </footer>
+</body>
 </html>
