@@ -1,4 +1,5 @@
 <div id="theme-picker" class="relative dropdown">
+  {% csrf_token %}
   <div tabindex="0" role="button" class="m-1 btn">
     {% include "icons/feather.html" with icon="monitor" %}
     <span class="hidden md:block">Theme</span>

@@ -85,8 +85,8 @@ def add_default_groups(apps, schema_editor):
 
 def add_categories(apps, schema_editor):
     TagCategory = apps.get_model("tesys_tagboard.TagCategory")
-    TagCategory(name="artist", bg="#bae1ff").save()
-    TagCategory(name="copyright", bg="#ffd3b6").save()
+    TagCategory(name="artist", light_bg="#bae1ff", dark_bg="#315f82").save()
+    TagCategory(name="copyright", light_bg="#ffd3b6", dark_bg="#855b3f").save()
 
 
 class Migration(migrations.Migration):

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from http import HTTPStatus
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -839,3 +840,19 @@ def upload(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:  # noqa
 def search_help(request: HtmxHttpRequest) -> TemplateResponse:
     context = {"token_categories": list(PostSearchTokenCategory)}
     return TemplateResponse(request, "pages/help.html", context)
+
+
+@require(["POST"], login=False)
+async def set_theme(request: HtmxHttpRequest) -> HttpResponse:
+    if theme := request.POST.get("theme"):
+        if theme == "dark":
+            await request.session.aset("theme", "dark")
+        elif theme == "light":
+            await request.session.aset("theme", "light")
+        else:
+            return HttpResponseBadRequest()
+
+        return HttpResponse(
+            f"Theme successfully changed to {theme}", status=HTTPStatus.OK
+        )
+    return HttpResponseBadRequest("A theme name must be provided to set the theme.")

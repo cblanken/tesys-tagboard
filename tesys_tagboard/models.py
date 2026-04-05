@@ -87,13 +87,25 @@ class TagCategory(models.Model):
             "A parent tag category. Used for organizing tag categories into groups"
         ),
     )
-    bg = ColorField(
+    light_bg = ColorField(
         format="hex",
         null=True,
-        help_text=_("Background color for tags in this category"),
+        help_text=_("Background color for tags in this category in light mode"),
     )
-    fg = ColorField(
-        format="hex", null=True, help_text=_("Text color for tags in this category")
+    light_fg = ColorField(
+        format="hex",
+        null=True,
+        help_text=_("Text color for tags in this category in light mode"),
+    )
+    dark_bg = ColorField(
+        format="hex",
+        null=True,
+        help_text=_("Background color for tags in this category in dark mode"),
+    )
+    dark_fg = ColorField(
+        format="hex",
+        null=True,
+        help_text=_("Text color for tags in this category in dark mode"),
     )
 
     class Meta:
@@ -112,7 +124,7 @@ class TagCategory(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"<TagCategory - {self.name}, bg: {self.bg}, fg: {self.fg}, parent: {self.parent}>"  # noqa: E501
+        return f"<TagCategory - {self.name}, bg: {self.light_bg}, fg: {self.light_fg}, parent: {self.parent}>"  # noqa: E501
 
     def get_full_path(self, max_depth: int = 5) -> str:
         """Return the category chain up to the root or up to `max_depth` categories"""

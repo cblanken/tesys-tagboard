@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}"
-      data-theme="default"
+      data-theme="{{ request.session.theme }}"
       class="xl:overflow-x-auto overflow-x-clip touch-manipulation">
   <script>
     // Apply theme picker setting

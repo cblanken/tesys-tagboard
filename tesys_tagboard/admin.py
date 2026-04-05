@@ -44,14 +44,24 @@ class TagAliasAdmin(admin.ModelAdmin):
 
 @admin.register(TagCategory)
 class TagCategoryAdmin(admin.ModelAdmin):
-    list_display = ["pk", "name", "parent", "bg", "fg"]
+    list_display = [
+        "pk",
+        "name",
+        "parent",
+        "light_bg",
+        "light_fg",
+        "dark_bg",
+        "dark_fg",
+    ]
     search_fields = ["name", "pk"]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if form:
-            form.base_fields["bg"].required = False
-            form.base_fields["fg"].required = False
+            form.base_fields["light_bg"].required = False
+            form.base_fields["light_fg"].required = False
+            form.base_fields["dark_bg"].required = False
+            form.base_fields["dark_fg"].required = False
         return form
 
 

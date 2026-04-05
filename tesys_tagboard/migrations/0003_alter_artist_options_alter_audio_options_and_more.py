@@ -70,13 +70,23 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='tagcategory',
-            name='bg',
-            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Background color for tags in this category', image_field=None, max_length=25, null=True, samples=None),
+            name='light_bg',
+            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Background color for tags in this category in light mode', image_field=None, max_length=25, null=True, samples=None),
         ),
         migrations.AlterField(
             model_name='tagcategory',
-            name='fg',
-            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Text color for tags in this category', image_field=None, max_length=25, null=True, samples=None),
+            name='light_fg',
+            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Text color for tags in this category in light mode', image_field=None, max_length=25, null=True, samples=None),
+        ),
+        migrations.AlterField(
+            model_name='tagcategory',
+            name='dark_bg',
+            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Background color for tags in this category in dark mode', image_field=None, max_length=25, null=True, samples=None),
+        ),
+        migrations.AlterField(
+            model_name='tagcategory',
+            name='dark_fg',
+            field=colorfield.fields.ColorField(blank=True, default=None, help_text='Text color for tags in this category in dark mode', image_field=None, max_length=25, null=True, samples=None),
         ),
         migrations.AlterField(
             model_name='tagcategory',
