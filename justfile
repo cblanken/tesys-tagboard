@@ -114,9 +114,7 @@ run-async *args:
 
 # Reset the database and prompt for a new admin password
 db-reset superuser_name="admin":
-    just manage reset_db
-    just manage migrate
-    just manage createsuperuser --username {{superuser_name}} --email tesy-tagboard@example.com
+    just manage reset_db && just manage migrate && just manage createsuperuser --username {{superuser_name}} --email tesy-tagboard@example.com
 
 alias mkc := make-component
 # Create a new django-component with a given name
