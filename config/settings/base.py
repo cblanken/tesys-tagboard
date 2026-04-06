@@ -253,6 +253,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "tesys_tagboard.users.context_processors.allauth_settings",
+                "tesys_tagboard.context_processors.tagboard_settings",
             ],
             "loaders": [
                 (
@@ -399,8 +400,12 @@ TAILWIND_APP_NAME = "tesys_tagboard.theme"
 THEMES = [
     "light",
     "dark",
-    "wireframe",
 ]
+
+DEFAULT_THEME = env.str(
+    "DJANGO_DEFAULT_THEME", default="dark", choices=["light", "dark"]
+)
+ALTERNATE_THEME = "light" if DEFAULT_THEME == "dark" else "dark"
 
 TITLE = env.str("DJANGO_TITLE", default=" Tagboard")
 

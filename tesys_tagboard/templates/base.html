@@ -3,15 +3,8 @@
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}"
-      data-theme="{{ request.session.theme }}"
+      data-theme="{{ request.session.theme|default:DEFAULT_THEME }}"
       class="xl:overflow-x-auto overflow-x-clip touch-manipulation">
-  <script>
-    // Apply theme picker setting
-    let theme = window.localStorage.getItem("theme");
-    if (theme) {
-      document.querySelector("html").setAttribute("data-theme", theme);
-    };
-  </script>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />

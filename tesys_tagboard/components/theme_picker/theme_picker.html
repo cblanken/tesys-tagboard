@@ -1,26 +1,26 @@
-<div id="theme-picker" class="relative dropdown">
-  {% csrf_token %}
-  <div tabindex="0" role="button" class="m-1 btn">
-    {% include "icons/feather.html" with icon="monitor" %}
-    <span class="hidden md:block">Theme</span>
-    <svg width="12px"
-         height="12px"
-         class="inline-block w-2 h-2 opacity-60 fill-current"
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 2048 2048">
-      <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z" />
+{% load static custom_filters cache %}
+
+{% get_static_prefix as STATIC_PREFIX %}
+<label id="theme-picker" class="swap swap-rotate text-primary-content">
+  <input type="checkbox"
+         name="theme"
+         class="hidden theme-controller"
+         value="{% if request.session.theme != DEFAULT_THEME %}{{ DEFAULT_THEME }}{% else %}{{ ALTERNATE_THEME }}{% endif %}"
+         hx-post="{% url 'toggle-theme' %}"
+         hx-swap="none" />
+  {% if request.session.theme == "dark" %}
+    <svg class="swap-off feather {% if fill %}fill-current!{% endif %} size-8!">
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
     </svg>
-  </div>
-  <ul tabindex="-1"
-      class="absolute right-1 top-12 p-2 w-52 list-none shadow-2xl menu dropdown-content text-secondary-content rounded-box z-1 bg-secondary">
-    {% for theme in themes %}
-      <li>
-        <input type="radio"
-               name="theme-dropdown"
-               class="justify-start w-full theme-controller btn btn-secondary btn-sm btn-block btn-ghost"
-               aria-label="{{ theme|capfirst }}"
-               value="{{ theme }}" />
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+    <svg class="swap-on feather {% if fill %}fill-current!{% endif %} size-8!">
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
+    </svg>
+  {% else %}
+    <svg class="swap-off feather {% if fill %}fill-current!{% endif %} size-8!">
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
+    </svg>
+    <svg class="swap-on feather {% if fill %}fill-current!{% endif %} size-8!">
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
+    </svg>
+  {% endif %}
+</label>

@@ -62,7 +62,7 @@ urlpatterns = [
     path("upload/", views.upload, name="upload"),
     path("help/", views.search_help, name="help"),
     # Set theme
-    path("set-theme/", views.set_theme, name="set-theme"),
+    path("toggle-theme/", views.toggle_theme, name="toggle-theme"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
