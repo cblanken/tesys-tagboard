@@ -108,8 +108,6 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.discord",
-    "rest_framework",
-    "rest_framework.authtoken",
     "corsheaders",
     "django_htmx",
     "django_components",
