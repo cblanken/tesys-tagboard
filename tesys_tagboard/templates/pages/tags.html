@@ -9,7 +9,7 @@
   <main class="pb-24 m-auto max-w-[2400px]">
     {% include "heading.html" with text="TAGS" %}
     {% if request.user.is_authenticated %}
-      <div class="flex gap-4 items-center">
+      <div class="flex flex-wrap gap-4 items-center">
         <button hx-get="{% url 'create-tag' %}"
                 hx-target="#modal_form_wrapper"
                 hx-swap="innerHTML"

@@ -3,9 +3,11 @@
 <dialog id="modal_form_dialog"
         closedby="any"
         class="shadow-lg modal modal-middle">
-  <div class="modal-box bg-base-300">
+  <div class="flex flex-col gap-3 modal-box bg-base-300">
     <h2 class="px-4 w-full text-wrap-normal">{{ title }}</h2>
     {% slot "body" required %}{% endslot %}
+    <button class="place-self-end capitalize btn btn-lg btn-primary"
+            type="submit">{{ submit_btn_text|default:'submit' }}</button>
     <div class="absolute top-2 right-2 m-0 modal-action">
       <form method="dialog">
         <button class="btn btn-error btn-square btn-soft">{% include "icons/feather.html" with icon="x" %}</button>

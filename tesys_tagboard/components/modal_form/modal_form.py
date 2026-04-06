@@ -10,4 +10,5 @@ class ModalFormComponent(Component):
     def get_template_data(self, args, kwargs, slots, context):
         title = kwargs.get("title", "Form")
         form = kwargs.get("form")
-        return {"form": form, "title": title}
+        submit_btn_text = kwargs.get("submit_btn_text")
+        return {"form": form, "title": title, "submit_btn_text": submit_btn_text}

@@ -1,0 +1,23 @@
+<div class="grid grid-cols-1 gap-3 overflow-x-clip">
+  {{ errors }}
+  {% if errors and not fields %}
+    <div>
+      {% for field in hidden_fields %}{{ field }}{% endfor %}
+    </div>
+  {% endif %}
+  {% for field, errors in fields %}
+    <fieldset class="fieldset">
+      <legend class="w-full fieldset-legend">{{ field.label }}</legend>
+      <input type="text"
+             class="w-full input"
+             placeholder="Type here"
+             value="{{ field.value }}" />
+      {% if forloop.last %}
+        {% for field in hidden_fields %}{{ field }}{% endfor %}
+      {% endif %}
+    </fieldset>
+  {% endfor %}
+  {% if not fields and not errors %}
+    {% for field in hidden_fields %}{{ field }}{% endfor %}
+  {% endif %}
+</div>

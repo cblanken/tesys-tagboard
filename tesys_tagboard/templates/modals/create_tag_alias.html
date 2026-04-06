@@ -2,7 +2,9 @@
 
 {% comment %}Translators: Title for the create tag modal{% endcomment %}
 {% translate "Create Tag Ailas" as title %}
-{% component "modal_form" title=title form=form %}
+{% comment %}Translators: Submit button text for tag alias creation modal{% endcomment %}
+{% translate "Create" as submit_btn_text %}
+{% component "modal_form" title=title form=form submit_btn_text=submit_btn_text %}
 {% fill "body" %}
 {% include "forms/create_tag_alias.html" %}
 {% endfill %}
