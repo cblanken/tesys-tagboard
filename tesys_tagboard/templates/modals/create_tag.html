@@ -6,6 +6,6 @@
 {% translate "Create" as submit_btn_text %}
 {% component "modal_form" title=title form=form submit_btn_text=submit_btn_text %}
 {% fill "body" %}
-{{ form }}
+{{ form.as_div }}
 {% endfill %}
 {% endcomponent %}

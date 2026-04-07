@@ -433,43 +433,6 @@
   @apply focus:outline-none focus:border-2;
 }
 
-@layer base {
-  h1 {
-    @apply text-4xl font-bold mt-3 mb-1 font-heading tracking-widest;
-  }
-
-  h2 {
-    @apply text-3xl font-bold mt-3 mb-1 font-heading tracking-widest;
-  }
-
-  h3 {
-    @apply text-2xl font-bold mt-3 mb-1 font-heading tracking-widest;
-  }
-
-  ul:not(.dropdown-content) {
-    @apply list-disc list-outside ms-5;
-  }
-
-  li {
-    @apply leading-7;
-  }
-
-  a:not(.link) {
-    @apply border-b-2 border-b-accent;
-  }
-
-  a:not(.link):hover {
-    @apply bg-accent text-accent-content transition duration-100 ease-in-out;
-  }
-
-  p {
-    @apply leading-6 mb-3;
-  }
-
-  code {
-    @apply bg-neutral text-neutral-content pt-1;
-  }
-}
 
 @layer components {
   .form {
@@ -490,6 +453,7 @@
         margin-top: --spacing(1);
       }
     }
+
   }
 }
 

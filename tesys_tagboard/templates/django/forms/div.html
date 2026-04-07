@@ -6,16 +6,14 @@
     </div>
   {% endif %}
   {% for field, errors in fields %}
-    <fieldset class="fieldset">
-      <legend class="w-full fieldset-legend">{{ field.label }}</legend>
-      <input type="text"
-             class="w-full input"
-             placeholder="Type here"
-             value="{{ field.value }}" />
+    <div {% with classes=field.css_classes %}
+         class="p-2 {% if classes %}{{ classes }}{% endif %}"
+         {% endwith %}>
+      {{ field.as_field_group }}
       {% if forloop.last %}
         {% for field in hidden_fields %}{{ field }}{% endfor %}
       {% endif %}
-    </fieldset>
+    </div>
   {% endfor %}
   {% if not fields and not errors %}
     {% for field in hidden_fields %}{{ field }}{% endfor %}
