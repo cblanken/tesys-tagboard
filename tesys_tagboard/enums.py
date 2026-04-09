@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from enum import Enum
-from enum import IntEnum
 from enum import StrEnum
 from typing import Self
 
+from django.db.models import IntegerChoices
+from django.utils.translation import gettext_lazy as _
 
-class RatingLevel(IntEnum):
+
+class RatingLevel(IntegerChoices):
     """Rating levels for posts
     Default: UNRATED
 
@@ -14,25 +16,21 @@ class RatingLevel(IntEnum):
     to show only the desired posts
     """
 
-    SAFE = 0
-    UNRATED = 1
-    QUESTIONABLE = 50
-    EXPLICIT = 100
+    SAFE = 0, _("Safe")
+    UNRATED = 1, _("Unrated")
+    QUESTIONABLE = 50, _("Questionable")
+    EXPLICIT = 100, _("Explicit")
 
     @classmethod
-    def choices(cls):
-        return [(level.value, level.name) for level in cls]
-
-    @classmethod
-    def select(cls, name: str) -> RatingLevel | None:
+    def select(cls, label: str) -> Self | None:
         """Select rating level by label
 
         Lettercase is ignored
         """
-        name = name.strip()
-        selected_ratings = [r for r in RatingLevel if r.name.lower() == name.lower()]
+        label = label.strip()
+        selected_ratings = [r for r in cls if r.label.lower() == label.lower()]
         if len(selected_ratings) == 0:
-            msg = f'Not match for rating level called "{name}"'
+            msg = f'Not match for rating level called "{label}"'
             raise ValueError(msg)
         return selected_ratings[0]
 

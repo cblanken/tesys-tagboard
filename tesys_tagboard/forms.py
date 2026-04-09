@@ -33,7 +33,7 @@ class TagsetField(forms.Field):
         return tagset_to_array(value)
 
 
-class CreateTagForm(forms.ModelForm):
+class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = [
@@ -110,7 +110,7 @@ class PostForm(forms.Form):
         max_length=1024,
         validators=[URLValidator(["https", "http", "ftp"])],
     )
-    rating_level = forms.ChoiceField(choices=RatingLevel.choices(), required=False)
+    rating_level = forms.ChoiceField(choices=RatingLevel.choices, required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
@@ -142,4 +142,4 @@ class EditUserSettingsForm(forms.Form):
 
     filter_tags = TagsetField(required=False, widget=forms.HiddenInput)
     blur_tags = TagsetField(required=False, widget=forms.HiddenInput)
-    blur_rating_level = forms.ChoiceField(choices=RatingLevel.choices())
+    blur_rating_level = forms.ChoiceField(choices=RatingLevel.choices)

@@ -124,7 +124,13 @@ class TagCategory(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"<TagCategory - {self.name}, bg: {self.light_bg}, fg: {self.light_fg}, parent: {self.parent}>"  # noqa: E501
+        return f"{self.name}  ({self.get_full_path()})"
+
+    def __repr__(self) -> str:
+        return (
+            f"<TagCategory - {self.name}, bg: {self.light_bg}, fg: {self.light_fg},"
+            f"parent: {self.parent}>"
+        )
 
     def get_full_path(self, max_depth: int = 5) -> str:
         """Return the category chain up to the root or up to `max_depth` categories"""
@@ -173,98 +179,10 @@ class TagQuerySet(models.QuerySet):
         return self.exclude(pk__in=filter_tag_ids)
 
 
-class Tag(models.Model):
-    """Tags for Posts. They are used for "tagging" Posts and searching
-
-    Attributes
-        name: CharField
-        category: CharField(2)
-        description: TextField(255)
-        post_count: PositiveIntegerField
-        rating_level: PositiveSmallIntegerField
-    """
-
-    name = models.CharField(max_length=100, validators=[tag_name_validator])
-    category = models.ForeignKey(
-        TagCategory, null=True, on_delete=models.CASCADE, blank=True
-    )
-    description = models.TextField(max_length=255, blank=True, default="")
-    post_count = models.PositiveIntegerField(default=0)
-
-    """Rating levels to filter content. This field allows any tag to apply a rating
-    """
-    rating_level = models.PositiveSmallIntegerField(default=0, blank=True)
-
-    tags = TagManager()
-
-    class Meta:
-        verbose_name = _("tag")
-        verbose_name_plural = _("tags")
-        ordering = ["category", "-post_count"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["name", "category"], name="unique_tag_name_cat"
-            ),
-        ]
-
-    def __str__(self) -> str:
-        return f"<Tag - {self.name}, category: {self.category}>"
-
-
-class TagAliasManager(models.Manager):
-    def get_queryset(self):
-        return TagAliasQuerySet(self.model, using=self._db)
-
-    def for_user(self, user: User):
-        """Retrive TagAliases excluding any filtered tags from the User's settings"""
-        return self.get_queryset().for_user(user)
-
-
-class TagAliasQuerySet(models.QuerySet):
-    def for_user(self, user: User):
-        """Retrive TagAliases excluding any filtered tags from the User's settings"""
-        return self.exclude(tag__in=user.filter_tags.all())
-
-
-class TagAlias(models.Model):
-    """Aliases for Tags"""
-
-    name = models.CharField(max_length=100, validators=[tag_name_validator])
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-    aliases = TagAliasManager()
-
-    class Meta:
-        verbose_name = _("tag alias")
-        verbose_name_plural = _("tag aliases")
-        ordering = ["name"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["name", "tag"], name="unique_tagalias_name_tag"
-            ),
-        ]
-
-    def __str__(self) -> str:
-        return f"<TagAlias - {self.name}, tag: {self.tag}>"
-
-
-class DefaultPostTag(models.Model):
-    """Default Tags applied to new Posts"""
-
-    tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
-
-    class Meta:
-        verbose_name = _("default post tag")
-        verbose_name_plural = _("default post tags")
-
-    def __str__(self) -> str:
-        return f"<DefaultPostTag - {self.tag}>"
-
-
 class Artist(models.Model):
     """Model for Artists to identify all artwork from a particular source"""
 
-    tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
+    tag = models.OneToOneField("Tag", on_delete=models.CASCADE, primary_key=True)
     bio = models.TextField(blank=True, default="")
     user = models.ForeignKey(AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
@@ -486,10 +404,10 @@ class Post(models.Model):
     uploader = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     post_date = models.DateTimeField(default=now, editable=False)
     edit_date = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField("Tag", blank=True)
     rating_level = models.PositiveSmallIntegerField(
         default=RatingLevel.UNRATED,
-        choices=RatingLevel.choices(),
+        choices=RatingLevel.choices,
     )
     src_url = models.URLField(max_length=255, blank=True, default="")
     locked_comments = models.BooleanField(default=False, blank=True)
@@ -552,6 +470,96 @@ class Post(models.Model):
             case MediaCategory.VIDEO:
                 return self.video
         return None
+
+
+class Tag(models.Model):
+    """Tags for Posts. They are used for "tagging" Posts and searching
+
+    Attributes
+        name: CharField
+        category: CharField(2)
+        description: TextField(255)
+        post_count: PositiveIntegerField
+        rating_level: PositiveSmallIntegerField
+    """
+
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
+    category = models.ForeignKey(
+        TagCategory, null=True, on_delete=models.CASCADE, blank=True
+    )
+    description = models.TextField(max_length=255, blank=True, default="")
+    post_count = models.PositiveIntegerField(default=0)
+
+    """Rating levels to filter content. This field allows any tag to apply a rating
+    """
+    rating_level = models.PositiveSmallIntegerField(
+        default=0, choices=RatingLevel.choices, blank=True
+    )
+
+    tags = TagManager()
+
+    class Meta:
+        verbose_name = _("tag")
+        verbose_name_plural = _("tags")
+        ordering = ["category", "-post_count"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "category"], name="unique_tag_name_cat"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"<Tag - {self.name}, category: {self.category}>"
+
+
+class TagAliasManager(models.Manager):
+    def get_queryset(self):
+        return TagAliasQuerySet(self.model, using=self._db)
+
+    def for_user(self, user: User):
+        """Retrive TagAliases excluding any filtered tags from the User's settings"""
+        return self.get_queryset().for_user(user)
+
+
+class TagAliasQuerySet(models.QuerySet):
+    def for_user(self, user: User):
+        """Retrive TagAliases excluding any filtered tags from the User's settings"""
+        return self.exclude(tag__in=user.filter_tags.all())
+
+
+class TagAlias(models.Model):
+    """Aliases for Tags"""
+
+    name = models.CharField(max_length=100, validators=[tag_name_validator])
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    aliases = TagAliasManager()
+
+    class Meta:
+        verbose_name = _("tag alias")
+        verbose_name_plural = _("tag aliases")
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "tag"], name="unique_tagalias_name_tag"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"<TagAlias - {self.name}, tag: {self.tag}>"
+
+
+class DefaultPostTag(models.Model):
+    """Default Tags applied to new Posts"""
+
+    tag = models.OneToOneField(Tag, on_delete=models.CASCADE, primary_key=True)
+
+    class Meta:
+        verbose_name = _("default post tag")
+        verbose_name_plural = _("default post tags")
+
+    def __str__(self) -> str:
+        return f"<DefaultPostTag - {self.tag}>"
 
 
 def add_tag_history(tags: QuerySet[Tag], post: Post, user):

@@ -34,7 +34,7 @@ class User(AbstractUser):
     blur_tags = models.ManyToManyField(Tag, related_name="blur_tags_users", blank=True)
     blur_rating_level = models.PositiveSmallIntegerField(
         default=RatingLevel.EXPLICIT,
-        choices=RatingLevel.choices(),
+        choices=RatingLevel.choices,
         db_comment="An integer matching one of the options for a Post's rating_level",
     )
 
