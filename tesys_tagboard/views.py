@@ -29,6 +29,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 from .components.add_tagset.add_tagset import AddTagsetComponent
 from .components.comment.comment import CommentComponent
@@ -40,9 +41,9 @@ from .enums import SupportedMediaType
 from .forms import AddCommentForm
 from .forms import CreateCollectionForm
 from .forms import CreateTagAliasForm
-from .forms import CreateTagForm
 from .forms import EditCommentForm
 from .forms import PostForm
+from .forms import TagForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
 from .models import Audio
@@ -331,10 +332,10 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     categories = TagCategory.objects.order_by("-parent", "name")
     try:
-        query = request.GET.get("q", "")
-        uncategorized_tags = Tag.tags.select_related("category").filter(
-            category=None, name__icontains=query
-        )
+        query = request.GET.get("q", "").strip()
+        uncategorized_tags = Tag.tags.select_related("category").filter(category=None)
+        if query != "":
+            uncategorized_tags = uncategorized_tags.filter(name__icontains=query)
 
         select_related_expr = ["category"]
         select_related_expr.extend(
@@ -393,27 +394,46 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tag"], raise_exception=True)
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    if request.htmx:
-        create_tag_form = CreateTagForm(request.GET)
+    if request.method == "GET" and request.htmx:
         return TemplateResponse(
-            request, "modals/create_tag.html", context={"form": create_tag_form}
+            request,
+            "modals/create_tag.html",
+            context={
+                "form": TagForm(),
+                "action_url": reverse("create-tag"),
+                "method": "post",
+            },
         )
 
-    create_tag_form = CreateTagForm(request.POST)
-    if create_tag_form.is_valid():
-        try:
-            tag_category = TagCategory.objects.get(
-                pk=create_tag_form.cleaned_data.get("category")
+    if request.method == "POST":
+        create_tag_form = TagForm(request.POST)
+        if create_tag_form.is_valid():
+            name = create_tag_form.cleaned_data.get("name")
+            Tag.tags.create(
+                name=name,
+                category=create_tag_form.cleaned_data.get("category"),
+                rating_level=create_tag_form.cleaned_data.get("rating_level"),
             )
-        except TagCategory.DoesNotExist:
-            tag_category = None
-        Tag.tags.create(
-            name=create_tag_form.cleaned_data.get("name"),
-            category=tag_category,
-            rating_level=create_tag_form.cleaned_data.get("rating_level"),
+
+            return TemplateResponse(
+                request,
+                "alerts/success.html",
+                context={"text": _('The "%s" tag was created successfully.') % name},
+            )
+
+        return TemplateResponse(
+            request,
+            "alerts/error.html",
+            context={
+                "text": create_tag_form.errors.get(
+                    "__all__", [_("This tag could not be created")]
+                )[0]
+            },
         )
 
-    return redirect(reverse("tags"))
+    return HttpResponse(
+        "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
 @require(["GET", "POST"])

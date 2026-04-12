@@ -4,7 +4,7 @@
 {% translate "Create Tag" as title %}
 {% comment %}Translators: Submit button text for tag creation modal{% endcomment %}
 {% translate "Create" as submit_btn_text %}
-{% component "modal_form" title=title form=form submit_btn_text=submit_btn_text %}
+{% component "modal_form" title=title form=form submit_btn_text=submit_btn_text action_url=action_url %}
 {% fill "body" %}
 {{ form.as_div }}
 {% endfill %}

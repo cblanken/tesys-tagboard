@@ -504,7 +504,9 @@ class Tag(models.Model):
         ordering = ["category", "-post_count"]
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "category"], name="unique_tag_name_cat"
+                fields=["name", "category"],
+                name="unique_tag_name_cat",
+                nulls_distinct=False,
             ),
         ]
 

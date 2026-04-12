@@ -7,7 +7,6 @@ from django.contrib.auth.models import Permission
 from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
 from pytest_django.asserts import assertTemplateUsed
 
 from tesys_tagboard.enums import MediaCategory
@@ -117,12 +116,9 @@ class TestCreateTagView:
         client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
-        data = {"name": tag_name, "category": "ZZ"}
+        data = {"name": tag_name, "category": "ZZZZZ"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
-        assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
@@ -134,10 +130,7 @@ class TestCreateTagView:
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "999999"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
-        assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
@@ -149,10 +142,7 @@ class TestCreateTagView:
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "-1"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
-        assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
