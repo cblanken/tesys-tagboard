@@ -417,13 +417,13 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 
             return TemplateResponse(
                 request,
-                "alerts/success.html",
+                "messages/success.html",
                 context={"text": _('The "%s" tag was created successfully.') % name},
             )
 
         return TemplateResponse(
             request,
-            "alerts/error.html",
+            "messages/error.html",
             context={
                 "text": create_tag_form.errors.get(
                     "__all__", [_("This tag could not be created")]

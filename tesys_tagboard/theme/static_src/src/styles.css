@@ -6,7 +6,7 @@
 @plugin "@tailwindcss/typography";
 
 @plugin "daisyui" {
-  themes: all;
+  themes: light, dark --prefersdark --default;
   root: ":root";
   logs: true;
 }
@@ -50,7 +50,7 @@
 
 @plugin "daisyui/theme" {
   name: "dark";
-  default: false;
+  default: true;
   prefersdark: true;
   color-scheme: dark;
 
@@ -69,7 +69,6 @@
   --color-neutral-content: oklch(87.889% 0.006 275.524);
   --color-info: oklch(88.263% 0.093 212.846);
   --color-info-content: oklch(17.652% 0.018 212.846);
-  --color-success: oklch(87.099% 0.219 148.024);
   --color-success: oklch(0.8162 0.1579 148.024);
   --color-success-content: oklch(17.419% 0.043 148.024);
   --color-warning: oklch(95.533% 0.134 112.757);
