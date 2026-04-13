@@ -41,9 +41,9 @@ from .enums import RatingLevel
 from .enums import SupportedMediaType
 from .forms import AddCommentForm
 from .forms import CreateCollectionForm
-from .forms import CreateTagAliasForm
 from .forms import EditCommentForm
 from .forms import PostForm
+from .forms import TagAliasForm
 from .forms import TagForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
@@ -448,24 +448,52 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagalias"], raise_exception=True)
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    if request.htmx:
-        create_tag_alias_form = CreateTagAliasForm()
-        return TemplateResponse(
-            request,
-            "modals/create_tag_alias.html",
-            context={"form": create_tag_alias_form},
-        )
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag Alias")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag-alias")
+    method = "post"
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "method": method,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET" and request.htmx:
+        form = TagAliasForm()
+        ctx |= {"form": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
 
-    form = CreateTagAliasForm(request.POST)
-    if form.is_valid():
-        alias_name = form.cleaned_data.get("name")
-        if TagAlias.aliases.filter(name=alias_name).exists():
-            return HttpResponseBadRequest("That alias already exists")
-        form.save()
-        msg = f"The tag alias, {alias_name}, was created!"
-        messages.add_message(request, messages.WARNING, msg)
-        return redirect(reverse("tags"))
-    return HttpResponseBadRequest()
+    if request.method == "POST" and request.htmx:
+        form = TagAliasForm(request.POST)
+        ctx |= {"form": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            tag, created = TagAlias.aliases.get_or_create(
+                name=name,
+                tag=form.cleaned_data.get("tag"),
+            )
+
+            if created:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag alias "%s" was created successfully.') % tag.name,
+                )
+                modal_messages.append(msg)
+            else:
+                msg = Message(
+                    messages.WARNING,
+                    _('The tag alias "%s" already exists.') % tag.name,
+                )
+                modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
 @require(["GET"], login=False)

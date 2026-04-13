@@ -511,6 +511,11 @@ class Tag(models.Model):
         ]
 
     def __str__(self) -> str:
+        if category := self.category.get_full_path() if self.category else "":
+            return f"{self.name} ({category})"
+        return self.name
+
+    def __repr__(self) -> str:
         return f"<Tag - {self.name}, category: {self.category}>"
 
 

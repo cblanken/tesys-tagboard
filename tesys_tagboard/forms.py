@@ -48,10 +48,10 @@ class TagForm(forms.ModelForm):
         return self.cleaned_data["rating_level"]
 
 
-class CreateTagAliasForm(forms.ModelForm):
+class TagAliasForm(forms.ModelForm):
     class Meta:
         model = TagAlias
-        fields = ["name", "tag"]
+        fields = [TagAlias.name.field.name, TagAlias.tag.field.name]
 
 
 class CreateCollectionForm(forms.ModelForm):
