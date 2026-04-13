@@ -1,0 +1,24 @@
+<div class="clr-field">
+  <input class="input text-base-content colorfield_field coloris {{ id }} {% if class %}{{ class }}{% else %}form-control{% endif %}"
+         type="text"
+         data-coloris=""
+         data-coloris-options-json-script-id="{{ data_coloris_id }}"
+         id="{{ id }}"
+         name="{{ name }}"
+         placeholder="{% firstof value default '' %}"
+         value="{% firstof value default '' %}" />
+  <button type="button"
+          class="outline-2! outline-accent/75! size-10! static"
+          aria-labelledby="clr-open-label"></button>
+  {{ data_coloris_options|json_script:data_coloris_id }}
+</div>
+<script>
+  const options = {
+    "parent": "#modal_form_dialog",
+    "themeMode": "auto",
+    "closeButton": true,
+    "clearButton": true,
+    "wrap": true,
+  };
+  window.Coloris.set(options);
+</script>

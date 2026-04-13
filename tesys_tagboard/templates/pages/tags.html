@@ -24,6 +24,13 @@
           {% translate "Create Tag Alias" %}
           {% include "icons/feather.html" with icon="plus" %}
         </button>
+        <button hx-get="{% url 'create-tag-category' %}"
+                hx-target="#modal_form_wrapper"
+                hx-swap="innerHTML"
+                class="btn btn-success btn-lg btn-soft">
+          {% translate "Create Tag Category" %}
+          {% include "icons/feather.html" with icon="plus" %}
+        </button>
       </div>
     {% endif %}
     <label class="flex relative items-center self-center mt-12 w-full lg:min-w-100">

@@ -11,7 +11,7 @@
       {% endif %}
     {% endif %}
     {% if field.help_text %}
-      <div class="helptext"
+      <div class="text-sm helptext text-base-content/80"
            {% if field.auto_id %}id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>
     {% endif %}
     {{ field }}

@@ -36,6 +36,9 @@ urlpatterns = [
     path("tags/confirm/", views.confirm_tagset, name="confirm-tagset"),
     path("tags/create-tag/", views.create_tag, name="create-tag"),
     path("tags/create-alias/", views.create_tag_alias, name="create-tag-alias"),
+    path(
+        "tags/create-category/", views.create_tag_category, name="create-tag-category"
+    ),
     path("tags/autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
     path("favorites/add/<int:post_id>", views.add_favorite, name="add-favorite"),
     path(

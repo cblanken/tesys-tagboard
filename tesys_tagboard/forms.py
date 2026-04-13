@@ -10,6 +10,7 @@ from .enums import RatingLevel
 from .models import Collection
 from .models import Tag
 from .models import TagAlias
+from .models import TagCategory
 from .validators import rating_level_validator
 from .validators import tagset_name_validator
 from .validators import tagset_validator
@@ -52,6 +53,19 @@ class TagAliasForm(forms.ModelForm):
     class Meta:
         model = TagAlias
         fields = [TagAlias.name.field.name, TagAlias.tag.field.name]
+
+
+class TagCategoryForm(forms.ModelForm):
+    class Meta:
+        model = TagCategory
+        fields = [
+            TagCategory.name.field.name,
+            TagCategory.parent.field.name,
+            TagCategory.light_bg.field.name,
+            TagCategory.light_fg.field.name,
+            TagCategory.dark_bg.field.name,
+            TagCategory.dark_fg.field.name,
+        ]
 
 
 class CreateCollectionForm(forms.ModelForm):

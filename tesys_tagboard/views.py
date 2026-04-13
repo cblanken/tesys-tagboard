@@ -44,6 +44,7 @@ from .forms import CreateCollectionForm
 from .forms import EditCommentForm
 from .forms import PostForm
 from .forms import TagAliasForm
+from .forms import TagCategoryForm
 from .forms import TagForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
@@ -486,6 +487,61 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
                 msg = Message(
                     messages.WARNING,
                     _('The tag alias "%s" already exists.') % tag.name,
+                )
+                modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
+
+
+@require(["GET", "POST"])
+@permission_required(["tesys_tagboard.add_tagcategory"], raise_exception=True)
+def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag Category")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag-category")
+    method = "post"
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "method": method,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET" and request.htmx:
+        form = TagCategoryForm()
+        ctx |= {"form": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST" and request.htmx:
+        form = TagCategoryForm(request.POST)
+        ctx |= {"form": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            tag, created = TagCategory.objects.get_or_create(
+                name=name,
+                tag=form.cleaned_data.get("tag"),
+                light_bg=form.cleaned_data.get("light_bg"),
+                light_fg=form.cleaned_data.get("light_fg"),
+                dark_bg=form.cleaned_data.get("dark_bg"),
+                dark_fg=form.cleaned_data.get("dark_fg"),
+            )
+
+            if created:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag category "%s" was created successfully.') % tag.name,
+                )
+                modal_messages.append(msg)
+            else:
+                msg = Message(
+                    messages.WARNING,
+                    _('The tag category "%s" already exists.') % tag.name,
                 )
                 modal_messages.append(msg)
 

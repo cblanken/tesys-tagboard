@@ -10,16 +10,16 @@
     <h2 class="px-4 w-full text-wrap-normal">{{ title }}</h2>
     {% partialdef form-body inline %}
     <form id="modal-form"
-          class="flex relative flex-col"
+          class="flex overflow-auto relative flex-col pb-4"
           hx-indicator="#modal-form-spinner"
           hx-swap="outerHTML"
           hx-post="{{ action_url }}">
       {% csrf_token %}
-      {{ form }}
       <!-- Messages for success or failure after form submission -->
       {% if modal_messages %}
         {% include "messages/message_list.html" with messages=modal_messages %}
       {% endif %}
+      {{ form }}
     </form>
   {% endpartialdef %}
   <button class="flex justify-center my-2 capitalize btn btn-lg btn-primary"

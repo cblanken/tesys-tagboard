@@ -23,14 +23,20 @@
     {% tailwind_preload_css %}
     {% tailwind_css %}
     {% block css %}
-      <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      <!-- Global project styles -->
       <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet" />
+      <!-- Third-party CSS -->
+      <link href="{% static 'colorfield/coloris/coloris.css' %}"
+            media="all"
+            rel="stylesheet" />
     {% endblock css %}
     {% block javascript %}
-      <!-- Third-party javascript libraries go here -->
-      <script src="{% static 'js/vendor/htmx/htmx-2.0.8.min.js' %}"></script>
-      <!-- place project specific Javascript in this file -->
+      <!-- Global project Javascript -->
       <script defer src="{% static 'js/project.js' %}"></script>
+      <!-- Third-party JavaScript libraries -->
+      <script src="{% static 'js/vendor/htmx/htmx-2.0.8.min.js' %}"></script>
+      <script src="{% static 'colorfield/coloris/coloris.js' %}" defer></script>
+      <script src="{% static 'colorfield/colorfield.js' %}" defer></script>
     {% endblock javascript %}
   </head>
   <nav id="#top"

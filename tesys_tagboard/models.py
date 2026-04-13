@@ -91,21 +91,25 @@ class TagCategory(models.Model):
         format="hex",
         null=True,
         help_text=_("Background color for tags in this category in light mode"),
+        verbose_name=_("light mode background"),
     )
     light_fg = ColorField(
         format="hex",
         null=True,
         help_text=_("Text color for tags in this category in light mode"),
+        verbose_name=_("light mode text"),
     )
     dark_bg = ColorField(
         format="hex",
         null=True,
         help_text=_("Background color for tags in this category in dark mode"),
+        verbose_name=_("dark mode text"),
     )
     dark_fg = ColorField(
         format="hex",
         null=True,
         help_text=_("Text color for tags in this category in dark mode"),
+        verbose_name=_("dark mode text"),
     )
 
     class Meta:
