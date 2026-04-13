@@ -1,7 +1,7 @@
 <dialog id="modal_form_dialog"
         closedby="any"
-        class="shadow-lg modal modal-middle">
-  <div class="flex flex-col gap-3 modal-box bg-base-300">
+        class="shadow-lg modal lg:modal-middle">
+  <div class="flex flex-col gap-3 h-full rounded-none modal-box bg-base-300 w-dvw lg:w-fit lg:h-fit lg:max-h-8/10 lg:rounded-box">
     <div class="absolute top-2 right-2 m-0 modal-action">
       <form method="dialog">
         <button class="btn btn-error btn-square btn-soft">{% include "icons/feather.html" with icon="x" %}</button>
@@ -15,7 +15,7 @@
           hx-swap="outerHTML"
           hx-post="{{ action_url }}">
       {% csrf_token %}
-      {{ form.as_div }}
+      {{ form }}
       <!-- Messages for success or failure after form submission -->
       {% if modal_messages %}
         {% include "messages/message_list.html" with messages=modal_messages %}
