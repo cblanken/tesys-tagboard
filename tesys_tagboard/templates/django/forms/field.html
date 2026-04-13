@@ -5,16 +5,16 @@
       {% if field.label %}{{ field.legend_tag }}{% endif %}
     {% else %}
       {% if field.label %}
-        <span class="text-sm text-base-content/80">{{ field.label }}
+        <span class="text-base text-base-content">{{ field.label }}
           {% if field.required %}<span class="px-1 text-info">*</span>{% endif %}
         </span>
       {% endif %}
     {% endif %}
+    {{ field }}
     {% if field.help_text %}
-      <div class="text-sm helptext text-base-content/80"
+      <div class="text-sm ms-2 helptext text-base-content/80"
            {% if field.auto_id %}id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>
     {% endif %}
-    {{ field }}
     {% if field.errors %}
       <div class="px-2 font-bold bg-error text-error-content">
         {% for error in field.errors %}{{ error }}{% endfor %}
