@@ -1,0 +1,7 @@
+{% if messages %}
+  <ul class="my-2 mx-0 list-none messages">
+    {% for message in messages %}
+      <li {% if message.tags %}class="text-lg alert alert-soft {{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}

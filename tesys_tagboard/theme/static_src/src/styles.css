@@ -453,6 +453,21 @@
       }
     }
   }
+
+  .messages {
+    & > .info {
+      @apply alert-info;
+    }
+    & > .success {
+      @apply alert-success;
+    }
+    & > .warning {
+      @apply alert-warning;
+    }
+    & > .error {
+      @apply alert-error;
+    }
+  }
 }
 
 

@@ -1,0 +1,12 @@
+<form id="modal-form"
+      class="flex relative flex-col"
+      hx-indicator="#modal-form-spinner"
+      hx-swap="innerHTML"
+      hx-post="{{ action_url }}">
+  {% csrf_token %}
+  {{ form.as_div }}
+  <!-- Messages for success or failure after form submission -->
+  <div id="modal-form-messages my-2" class="h-fit">
+    {% for message in modal_messages %}{{ message }}{% endfor %}
+  </div>
+</form>

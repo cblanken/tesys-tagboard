@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
+from django.contrib.messages.storage.base import Message
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -394,43 +395,51 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tag"], raise_exception=True)
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag")
+    method = "post"
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "method": method,
+        "submit_btn_text": submit_btn_text,
+    }
     if request.method == "GET" and request.htmx:
-        return TemplateResponse(
-            request,
-            "modals/create_tag.html",
-            context={
-                "form": TagForm(),
-                "action_url": reverse("create-tag"),
-                "method": "post",
-            },
-        )
+        form = TagForm()
 
-    if request.method == "POST":
-        create_tag_form = TagForm(request.POST)
-        if create_tag_form.is_valid():
-            name = create_tag_form.cleaned_data.get("name")
-            Tag.tags.create(
+        ctx |= {"form": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST" and request.htmx:
+        form = TagForm(request.POST)
+        ctx |= {"form": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            tag, created = Tag.tags.get_or_create(
                 name=name,
-                category=create_tag_form.cleaned_data.get("category"),
-                rating_level=create_tag_form.cleaned_data.get("rating_level"),
+                category=form.cleaned_data.get("category"),
+                rating_level=form.cleaned_data.get("rating_level"),
             )
 
-            return TemplateResponse(
-                request,
-                "messages/success.html",
-                context={"text": _('The "%s" tag was created successfully.') % name},
-            )
+            if created:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag "%s" was created successfully.') % tag.name,
+                )
+                modal_messages.append(msg)
+            else:
+                msg = Message(
+                    messages.WARNING,
+                    _('The tag "%s" already exists.') % tag.name,
+                )
+                modal_messages.append(msg)
 
-        return TemplateResponse(
-            request,
-            "messages/error.html",
-            context={
-                "text": create_tag_form.errors.get(
-                    "__all__", [_("This tag could not be created")]
-                )[0]
-            },
-        )
-
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
     return HttpResponse(
         "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
     )
