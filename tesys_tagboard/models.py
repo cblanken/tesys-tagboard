@@ -13,6 +13,7 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import HashIndex
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.db.models import BooleanField
 from django.db.models import Case
@@ -798,8 +799,10 @@ class Collection(models.Model):
     """Collections of posts saved by users"""
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=128, validators=[collection_name_validator])
-    desc = models.TextField(max_length=1024)
+    name = models.CharField(
+        max_length=128, validators=[collection_name_validator, MaxLengthValidator(250)]
+    )
+    desc = models.TextField(max_length=1024, validators=[MaxLengthValidator(500)])
     posts = models.ManyToManyField(Post)
     public = models.BooleanField(default=True, blank=True)
 

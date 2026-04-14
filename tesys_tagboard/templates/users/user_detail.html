@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static component_tags %}
+{% load static component_tags i18n %}
 
 {% block title %}
   User:
@@ -94,7 +94,7 @@
       <div class="rounded-none lg:p-6 tab-content lg:bg-base-200">
         <div class="flex flex-col gap-4">
           {% if favorites_pager.object_list|length == 0 %}
-            <div class="text-lg text-placeholder">No favorites yet!</div>
+            <div class="text-lg text-placeholder">{% translate "No favorites yet!" %}</div>
           {% else %}
             <div class="flex flex-wrap gap-4 justify-center">
               {% component "post_gallery" pager=favorites_pager page=favorites_page query_page_arg_name=favorites_page_arg_name / %}
@@ -112,15 +112,17 @@
       <div class="hidden sm:block group-has-[input:checked]:block">Collections</div>
     </label>
     <div class="p-3 rounded-none lg:p-6 tab-content lg:bg-base-200">
+      {% if user == request.user %}
+        <div class="flex gap-2 items-center pb-4">
+          {% include "buttons/modal_form_create.html" with text=_("Create Collection") url="create-collection" %}
+        </div>
+      {% endif %}
       <div class="flex flex-col gap-8 md:flex-row">
-        {% if user == request.user %}
-          <div class="grow-0">{% component "create_collection" / %}</div>
-        {% endif %}
         {% partialdef collection-gallery inline %}
         <div id="user-collection-gallery"
              class="grid grid-cols-1 gap-4 w-full xl:grid-cols-2">
           {% if collections.count == 0 %}
-            <div class="text-3xl text-placeholder">No collections yet!</div>
+            <div class="text-2xl text-placeholder">{% translate "No collections yet!" %}</div>
           {% else %}
             {% for collection in collections %}
               {% component "collection_thumbnail" collection=collection %}

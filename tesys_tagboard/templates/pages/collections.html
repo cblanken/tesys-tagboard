@@ -8,8 +8,9 @@
 {% block content %}
   {% include "heading.html" with text="COLLECTIONS" %}
   {% if request.user.is_authenticated %}
-    <a class="text-xl link"
-       href="{% url 'users:detail' username=request.user.username %}?tab=collections">Create a collection!</a>
+    <div class="flex gap-2 items-center pb-4">
+      {% include "buttons/modal_form_create.html" with text=_("Create Collection") url="create-collection" %}
+    </div>
   {% endif %}
   <div class="flex flex-col gap-4 justify-center py-4">
     {% component "pager" with pager=pager page=page / %}

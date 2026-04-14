@@ -10,7 +10,8 @@
     </div>
   </button>
   <ul tabindex="-1"
-      class="top-full mt-1 rounded-field dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+      class="top-full p-2 mt-1 rounded-field dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+    {% include "buttons/modal_form_create.html" with text=_("Create a collection") url="create-collection" %}
     {% if collections %}
       {% for collection in collections %}
         <div hx-on="click"
@@ -26,8 +27,6 @@
           {% endif %}
         </div>
       {% endfor %}
-    {% else %}
-      {% include "collections/picker_item.html" with text="You don't have any collections yet!" %}
     {% endif %}
   </ul>
 </div>

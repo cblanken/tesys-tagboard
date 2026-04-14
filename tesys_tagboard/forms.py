@@ -4,8 +4,6 @@ from django.core.validators import MaxLengthValidator
 from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
 
-from tesys_tagboard.users.models import User
-
 from .enums import RatingLevel
 from .models import Collection
 from .models import Tag
@@ -68,15 +66,14 @@ class TagCategoryForm(forms.ModelForm):
         ]
 
 
-class CreateCollectionForm(forms.ModelForm):
-    user = forms.ModelChoiceField(User.objects.all(), required=False)
-    public = forms.BooleanField(required=False, initial=True)
-    name = forms.CharField(max_length=200, validators=[MaxLengthValidator(100)])
-    desc = forms.CharField(required=False, validators=[MaxLengthValidator(250)])
-
+class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ["name", "desc", "public", "user"]
+        fields = [
+            Collection.name.field.name,
+            Collection.desc.field.name,
+            Collection.public.field.name,
+        ]
 
 
 class UploadMedia(forms.Form):

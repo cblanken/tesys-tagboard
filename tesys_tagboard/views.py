@@ -40,7 +40,7 @@ from .enums import MediaCategory
 from .enums import RatingLevel
 from .enums import SupportedMediaType
 from .forms import AddCommentForm
-from .forms import CreateCollectionForm
+from .forms import CollectionForm
 from .forms import EditCommentForm
 from .forms import PostForm
 from .forms import TagAliasForm
@@ -595,15 +595,40 @@ def collection(
 @require(["POST"])
 @permission_required(["tesys_tagboard.add_collection"], raise_exception=True)
 def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    create_collection_form = CreateCollectionForm(request.POST)
-    if create_collection_form.is_valid():
-        create_collection_form.instance.user = request.user
-        create_collection_form.save()
-    else:
-        return HttpUnprocessableContent()
+    title = _("Create Collection")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-collection")
+    method = "post"
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "method": method,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET" and request.htmx:
+        form = CollectionForm()
+        ctx |= {"form": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
 
-    user_url = reverse("users:detail", args=[request.user.get_username()])
-    return redirect(f"{user_url}?tab=collections")
+    if request.method == "POST" and request.htmx:
+        form = CollectionForm(request.POST)
+        ctx |= {"form": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            Collection.objects.create(user=request.user, **form.cleaned_data)
+            msg = Message(
+                messages.SUCCESS,
+                _('The collection "%s" was created successfully.') % name,
+            )
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Collection could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
 @require(["DELETE"])
