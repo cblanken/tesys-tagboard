@@ -17,6 +17,8 @@ from django.core.paginator import Paginator
 from django.db.models import F
 from django.db.models import OrderBy
 from django.db.models import Q
+from django.db.utils import DatabaseError
+from django.db.utils import IntegrityError
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -420,24 +422,30 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
         ctx |= {"form": form}
         if form.is_valid():
             name = form.cleaned_data.get("name")
-            tag, created = Tag.tags.get_or_create(
-                name=name,
-                category=form.cleaned_data.get("category"),
-                rating_level=form.cleaned_data.get("rating_level"),
-            )
-
-            if created:
+            try:
+                form.save()
+            except IntegrityError:
                 msg = Message(
-                    messages.SUCCESS,
-                    _('The tag "%s" was created successfully.') % tag.name,
+                    messages.ERROR,
+                    _(
+                        'The tag "%s" could not be created. Tags must '
+                        "have a unique name and category."
+                    )
+                    % name,
                 )
-                modal_messages.append(msg)
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _('The tag "%s" could not be created because of a database error.')
+                    % name,
+                )
             else:
                 msg = Message(
-                    messages.WARNING,
-                    _('The tag "%s" already exists.') % tag.name,
+                    messages.SUCCESS,
+                    _('The tag "%s" was created successfully.') % name,
                 )
-                modal_messages.append(msg)
+
+            modal_messages.append(msg)
 
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
@@ -472,23 +480,26 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
         ctx |= {"form": form}
         if form.is_valid():
             name = form.cleaned_data.get("name")
-            tag, created = TagAlias.aliases.get_or_create(
-                name=name,
-                tag=form.cleaned_data.get("tag"),
-            )
-
-            if created:
+            try:
+                form.save()
+            except IntegrityError:
                 msg = Message(
-                    messages.SUCCESS,
-                    _('The tag alias "%s" was created successfully.') % tag.name,
+                    messages.ERROR,
+                    _('The tag alias "%s" already exists.') % name,
                 )
-                modal_messages.append(msg)
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _("The tag alias could not be created because of a database error.")
+                    % name,
+                )
             else:
                 msg = Message(
-                    messages.WARNING,
-                    _('The tag alias "%s" already exists.') % tag.name,
+                    messages.SUCCESS,
+                    _('The tag alias "%s" was created successfully.') % name,
                 )
-                modal_messages.append(msg)
+
+            modal_messages.append(msg)
 
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
@@ -521,29 +532,36 @@ def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResp
     if request.method == "POST" and request.htmx:
         form = TagCategoryForm(request.POST)
         ctx |= {"form": form}
+
         if form.is_valid():
             name = form.cleaned_data.get("name")
-            tag, created = TagCategory.objects.get_or_create(
-                name=name,
-                tag=form.cleaned_data.get("tag"),
-                light_bg=form.cleaned_data.get("light_bg"),
-                light_fg=form.cleaned_data.get("light_fg"),
-                dark_bg=form.cleaned_data.get("dark_bg"),
-                dark_fg=form.cleaned_data.get("dark_fg"),
-            )
-
-            if created:
+            try:
+                form.save()
+            except IntegrityError:
                 msg = Message(
-                    messages.SUCCESS,
-                    _('The tag category "%s" was created successfully.') % tag.name,
+                    messages.ERROR,
+                    _(
+                        'The tag category "%s" could not be created. Tag categories '
+                        "must have a unique name and parent category."
+                    )
+                    % name,
                 )
-                modal_messages.append(msg)
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag category "%s" could not be created because of a '
+                        "database error."
+                    )
+                    % name,
+                )
             else:
                 msg = Message(
-                    messages.WARNING,
-                    _('The tag category "%s" already exists.') % tag.name,
+                    messages.SUCCESS,
+                    _('The tag "%s" was created successfully.') % name,
                 )
-                modal_messages.append(msg)
+
+            modal_messages.append(msg)
 
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
@@ -613,15 +631,36 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
         return TemplateResponse(request, "modals/form.html", ctx)
 
     if request.method == "POST":
-        form = CollectionForm(request.POST)
+        collection = Collection(user=request.user)
+        form = CollectionForm(request.POST, instance=collection)
         ctx |= {"form": form}
         if form.is_valid():
-            name = form.cleaned_data.get("name")
-            Collection.objects.create(user=request.user, **form.cleaned_data)
-            msg = Message(
-                messages.SUCCESS,
-                _('The collection "%s" was created successfully.') % name,
-            )
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be created. Collections must '
+                        "have a unique name and description."
+                    )
+                    % collection.name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be created because of a '
+                        "database error."
+                    )
+                    % collection.name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The collection "%s" was created successfully.')
+                    % collection.name,
+                )
             modal_messages.append(msg)
 
         ctx |= {"modal_messages": modal_messages}

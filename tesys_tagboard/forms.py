@@ -37,8 +37,8 @@ class TagForm(forms.ModelForm):
         model = Tag
         fields = [
             Tag.name.field.name,
-            Tag.rating_level.field.name,
             Tag.category.field.name,
+            Tag.rating_level.field.name,
         ]
 
     def clean_rating_level(self):
