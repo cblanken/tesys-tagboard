@@ -800,7 +800,7 @@ class Collection(models.Model):
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(
-        max_length=128, validators=[collection_name_validator, MaxLengthValidator(250)]
+        max_length=128, validators=[collection_name_validator, MaxLengthValidator(128)]
     )
     desc = models.TextField(max_length=1024, validators=[MaxLengthValidator(500)])
     posts = models.ManyToManyField(Post)

@@ -409,13 +409,13 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
         "method": method,
         "submit_btn_text": submit_btn_text,
     }
-    if request.method == "GET" and request.htmx:
+    if request.method == "GET":
         form = TagForm()
 
         ctx |= {"form": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
-    if request.method == "POST" and request.htmx:
+    if request.method == "POST":
         form = TagForm(request.POST)
         ctx |= {"form": form}
         if form.is_valid():
@@ -462,12 +462,12 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
         "method": method,
         "submit_btn_text": submit_btn_text,
     }
-    if request.method == "GET" and request.htmx:
+    if request.method == "GET":
         form = TagAliasForm()
         ctx |= {"form": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
-    if request.method == "POST" and request.htmx:
+    if request.method == "POST":
         form = TagAliasForm(request.POST)
         ctx |= {"form": form}
         if form.is_valid():
@@ -607,12 +607,12 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
         "method": method,
         "submit_btn_text": submit_btn_text,
     }
-    if request.method == "GET" and request.htmx:
+    if request.method == "GET":
         form = CollectionForm()
         ctx |= {"form": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
-    if request.method == "POST" and request.htmx:
+    if request.method == "POST":
         form = CollectionForm(request.POST)
         ctx |= {"form": form}
         if form.is_valid():
