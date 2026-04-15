@@ -15,53 +15,61 @@ admin_url = (
     f"{settings.ADMIN_URL}/" if settings.ADMIN_URL[-1] != "/" else settings.ADMIN_URL
 )
 
-urlpatterns = [
-    path("", views.home, name="home"),
-    path("posts/", views.posts, name="posts"),
-    path("posts/autocomplete/", views.post_search_autocomplete, name="autocomplete"),
-    path("posts/<int:post_id>/", views.post, name="post"),
+post_urls = [
+    path("", views.posts, name="posts"),
+    path("autocomplete/", views.post_search_autocomplete, name="autocomplete"),
+    path("<int:post_id>/", views.post, name="post"),
+    path("<int:post_id>/add-comment/", views.add_comment, name="post-add-comment"),
+    path("<int:post_id>/delete/", views.delete_post, name="post-delete"),
+    path("<int:post_id>/edit/", views.edit_post, name="post-edit"),
     path(
-        "posts/<int:post_id>/add-comment/", views.add_comment, name="post-add-comment"
-    ),
-    path("posts/<int:post_id>/delete/", views.delete_post, name="post-delete"),
-    path("posts/<int:post_id>/edit/", views.edit_post, name="post-edit"),
-    path(
-        "posts/<int:post_id>/comments/toggle_lock/",
+        "<int:post_id>/comments/toggle_lock/",
         views.toggle_comment_lock,
         name="post-toggle-comment-lock",
     ),
-    path("posts/comments/edit/", views.edit_comment, name="post-edit-comment"),
-    path("posts/comments/delete/", views.delete_comment, name="post-delete-comment"),
-    path("tags/", views.tags, name="tags"),
-    path("tags/confirm/", views.confirm_tagset, name="confirm-tagset"),
-    path("tags/create-tag/", views.create_tag, name="create-tag"),
-    path("tags/create-alias/", views.create_tag_alias, name="create-tag-alias"),
+    path("comments/edit/", views.edit_comment, name="post-edit-comment"),
+    path("comments/delete/", views.delete_comment, name="post-delete-comment"),
+]
+
+tag_urls = [
+    path("", views.tags, name="tags"),
+    path("confirm/", views.confirm_tagset, name="confirm-tagset"),
+    path("create-tag/", views.create_tag, name="create-tag"),
+    path("create-alias/", views.create_tag_alias, name="create-tag-alias"),
+    path("create-category/", views.create_tag_category, name="create-tag-category"),
+    path("autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
+]
+
+favorite_urls = [
+    path("add/<int:post_id>", views.add_favorite, name="add-favorite"),
+    path("remove/<int:post_id>", views.remove_favorite, name="remove-favorite"),
+]
+
+collection_urls = [
+    path("", views.collections, name="collections"),
+    path("<int:collection_id>/", views.collection, name="collection"),
     path(
-        "tags/create-category/", views.create_tag_category, name="create-tag-category"
+        "<int:collection_id>/delete/", views.delete_collection, name="delete-collection"
     ),
-    path("tags/autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
-    path("favorites/add/<int:post_id>", views.add_favorite, name="add-favorite"),
+    path("create/", views.create_collection, name="create-collection"),
     path(
-        "favorites/remove/<int:post_id>", views.remove_favorite, name="remove-favorite"
-    ),
-    path("collections/", views.collections, name="collections"),
-    path("collections/<int:collection_id>/", views.collection, name="collection"),
-    path(
-        "collections/<int:collection_id>/delete/",
-        views.delete_collection,
-        name="delete-collection",
-    ),
-    path("collections/create/", views.create_collection, name="create-collection"),
-    path(
-        "collections/<int:collection_id>/add/",
+        "<int:collection_id>/add/",
         views.add_post_to_collection,
         name="collection-add-post",
     ),
     path(
-        "collections/<int:collection_id>/remove/",
+        "<int:collection_id>/remove/",
         views.remove_post_from_collection,
         name="collection-remove-post",
     ),
+]
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("posts/", include(post_urls)),
+    path("tags/", include(tag_urls)),
+    path("favorites/", include(favorite_urls)),
+    path("collections/", include(collection_urls)),
     path("upload/", views.upload, name="upload"),
     path("help/", views.search_help, name="help"),
     # Set theme
