@@ -262,7 +262,9 @@
             <div class="place-self-start text-placeholder min-w-20 max-w-50">{{ history.mod_time|naturaltime }}</div>
             <div class="flex flex-wrap gap-1">
               {% for tag in history.tag_objects %}
-                {% component "tag" tag=tag size="sm" / %}
+                {% if tag %}
+                  {% component "tag" tag=tag size="sm" / %}
+                {% endif %}
               {% endfor %}
             </div>
           {% endfor %}

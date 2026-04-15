@@ -523,6 +523,18 @@ class Tag(models.Model):
     def __repr__(self) -> str:
         return f"<Tag - {self.name}, category: {self.category}>"
 
+    def get_full_path(self, max_depth: int = 5) -> str:
+        """Return the tag and category chain up to the root or up to a `max_depth`
+        of categories"""
+        if self.category:
+            return (
+                self.category.get_full_path(max_depth=max_depth)
+                + settings.TAG_CATEGORY_DELIMITER
+                + self.name
+            )
+
+        return self.name
+
 
 class TagAliasManager(models.Manager):
     def get_queryset(self):

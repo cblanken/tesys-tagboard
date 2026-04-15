@@ -157,14 +157,14 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
     }
 
     tag_history = [
-        [history_tags_by_id[int(tag_id)] for tag_id in tag_ids]
+        [history_tags_by_id.get(int(tag_id)) for tag_id in tag_ids]
         for tag_ids in post_tag_history_tag_ids
     ]
 
     tag_history = post.posttaghistory_set.order_by("-mod_time")
     for tag_snapshot in tag_history:
         tag_snapshot.tag_objects = [
-            history_tags_by_id[int(tag_id)]
+            history_tags_by_id.get(int(tag_id))
             for tag_id in csv_to_tag_ids(tag_snapshot.tags)
         ]
 
@@ -231,9 +231,6 @@ def edit_post(
 def delete_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
-    user = request.user
-    if not user.has_perm("tesys_tagboard.delete_post"):
-        return HttpResponseForbidden("User not allowed to delete this post")
     try:
         post = Post.posts.get(pk=post_id)
         post.delete()
@@ -403,23 +400,21 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     # Translators: label for "Create Tag" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-tag")
-    method = "post"
     modal_messages = []
     ctx = {
         "title": title,
         "action_url": action_url,
-        "method": method,
         "submit_btn_text": submit_btn_text,
     }
     if request.method == "GET":
         form = TagForm()
 
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
     if request.method == "POST":
         form = TagForm(request.POST)
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         if form.is_valid():
             name = form.cleaned_data.get("name")
             try:
@@ -454,6 +449,59 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     )
 
 
+@require(["GET", "DELETE"])
+@permission_required(["tesys_tagboard.delete_tag"], raise_exception=True)
+def delete_tag(
+    request: HtmxHttpRequest, tag_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        "method": "DELETE",
+        # Translators: title  for "Delete Tag" modal form
+        "title": _("Delete Tag"),
+        "action_url": reverse("delete-tag", args=[tag_id]),
+        # Translators: label for "Delete Tag" submit button
+        "submit_btn_text": _("Delete"),
+        "color": "danger",
+        # Translators: tag deletion confirmation message
+        "body": _(
+            "Are you sure you want to delete this tag? This action cannot be undone "
+            "except by an administrator."
+        ),
+    }
+    if request.method == "GET":
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "DELETE":
+        try:
+            tag = Tag.tags.get(pk=tag_id)
+            tag.delete()
+        except Tag.DoesNotExist:
+            msg = Message(messages.ERROR, _("A tag with the given ID does not exist."))
+        except DatabaseError:
+            msg = Message(
+                messages.ERROR,
+                _(
+                    'The tag with an ID of "%s" could not be deleted because of a '
+                    "database error."
+                )
+                % tag_id,
+            )
+        else:
+            msg = Message(
+                messages.SUCCESS,
+                _('The tag "%s" was deleted.') % tag.name,
+            )
+
+        modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
+
+
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagalias"], raise_exception=True)
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
@@ -462,22 +510,20 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
     # Translators: label for "Create Tag" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-tag-alias")
-    method = "post"
     modal_messages = []
     ctx = {
         "title": title,
         "action_url": action_url,
-        "method": method,
         "submit_btn_text": submit_btn_text,
     }
     if request.method == "GET":
         form = TagAliasForm()
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
     if request.method == "POST":
         form = TagAliasForm(request.POST)
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         if form.is_valid():
             name = form.cleaned_data.get("name")
             try:
@@ -516,22 +562,20 @@ def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResp
     # Translators: label for "Create Tag" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-tag-category")
-    method = "post"
     modal_messages = []
     ctx = {
         "title": title,
         "action_url": action_url,
-        "method": method,
         "submit_btn_text": submit_btn_text,
     }
     if request.method == "GET" and request.htmx:
         form = TagCategoryForm()
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
     if request.method == "POST" and request.htmx:
         form = TagCategoryForm(request.POST)
-        ctx |= {"form": form}
+        ctx |= {"body": form}
 
         if form.is_valid():
             name = form.cleaned_data.get("name")
@@ -617,23 +661,21 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
     # Translators: label for "Create Tag" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-collection")
-    method = "post"
     modal_messages = []
     ctx = {
         "title": title,
         "action_url": action_url,
-        "method": method,
         "submit_btn_text": submit_btn_text,
     }
     if request.method == "GET":
         form = CollectionForm()
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         return TemplateResponse(request, "modals/form.html", ctx)
 
     if request.method == "POST":
         collection = Collection(user=request.user)
         form = CollectionForm(request.POST, instance=collection)
-        ctx |= {"form": form}
+        ctx |= {"body": form}
         if form.is_valid():
             try:
                 form.save()
