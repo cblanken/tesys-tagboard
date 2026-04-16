@@ -1,7 +1,6 @@
 {% extends 'account/base_entrance.html' %}
 
-{% load i18n %}
-{% load allauth account %}
+{% load allauth account i18n %}
 
 {% block head_title %}
   {% trans 'Sign In' %}
@@ -10,8 +9,10 @@
   {% if not SOCIALACCOUNT_ONLY %}
     <form method="post" action="{% url 'account_login' %}" class="form">
       {% csrf_token %}
-      {% if form.errors %}<div class="text-error">{{ form.errors }}</div>{% endif %}
       <h1 class="text-center">{% translate 'Log In to your account' %}</h1>
+      {% if form.non_field_errors %}
+        {% include "django/forms/errors/list/default.html" with errors=form.non_field_errors %}
+      {% endif %}
       <!-- username -->
       <div>
         <label>{% translate 'Username' %}</label>
@@ -21,6 +22,7 @@
                class="w-full input"
                placeholder="Enter your username" />
       </div>
+      <div>{{ form.login.errors }}</div>
       <!-- password -->
       <div>
         <label>{% translate 'Password' %}</label>
@@ -30,6 +32,7 @@
                class="w-full input"
                placeholder="{% translate 'Enter your password' %}" />
       </div>
+      <div>{{ form.password.errors }}</div>
       <!-- Remember me and forgot password -->
       <div class="flex justify-between items-center">
         <label class="flex items-center">
@@ -38,6 +41,7 @@
         </label>
         <a href="{% url 'account_reset_password' %}" class="text-sm">{% translate 'Forgot password?' %}</a>
       </div>
+      <div>{{ form.remember.errors }}</div>
       <!-- submit -->
       <button type="submit" class="w-full btn btn-lg btn-primary">Log In</button>
       {% if SOCIALACCOUNT_ENABLED %}
