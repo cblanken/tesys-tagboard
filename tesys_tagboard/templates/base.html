@@ -40,7 +40,7 @@
     {% endblock javascript %}
   </head>
   <nav id="#top"
-       class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm h-6!">
+       class="flex justify-between px-2 navbar bg-primary text-primary-content shadow-sm h-6! mb-2 lg:mb-4">
     <div class="flex">
       <div class="text-left dropdown">
         <div tabindex="0" role="button" class="lg:hidden btn btn-ghost">
@@ -78,13 +78,13 @@
              method="post" />
       {% block body %}
         {% if messages %}
-          <div class="flex z-10 flex-col gap-2 px-4 pt-4 w-full">
+          <div class="flex z-10 flex-col gap-2 px-4 w-full">
             {% for message in messages %}
               <div class="django-message flex justify-between items-center text-wrap text-xl alert alert-info alert-soft {% if message.tags %}alert-{{ message.tags }}{% endif %}">
                 <div>{{ message.message }}</div>
                 <div class="flex gap-2 items-center">
                   <button type="button"
-                          class="btn-close btn btn-sm btn-error"
+                          class="btn-close btn btn-sm btn-ghost btn-error btn-square"
                           data-bs-dismiss="alert"
                           aria-label="Dismiss">{% include "icons/feather.html" with size="lg" icon="x" %}</button>
                 </div>
@@ -93,7 +93,7 @@
           </div>
         {% endif %}
         {% block main %}
-          <div class="p-2 m-auto md:p-3 lg:p-8 max-w-8xl">
+          <div class="px-4 m-auto md:px-6 lg:px-8 max-w-8xl">
             {% block content %}
             {% endblock content %}
           </div>
