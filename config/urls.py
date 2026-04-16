@@ -40,6 +40,16 @@ tag_urls = [
     path("autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
     path("tag/<int:tag_id>/delete/", views.delete_tag, name="delete-tag"),
     path("tag/<int:tag_id>/update/", views.update_tag, name="update-tag"),
+    path(
+        "alias/<int:tag_alias_id>/update/",
+        views.update_tag_alias,
+        name="update-tag-alias",
+    ),
+    path(
+        "alias/<int:tag_alias_id>/delete/",
+        views.delete_tag_alias,
+        name="delete-tag-alias",
+    ),
 ]
 
 favorite_urls = [

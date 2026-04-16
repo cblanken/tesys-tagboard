@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from django.utils.safestring import SafeString
 
     from tesys_tagboard.models import Tag
+    from tesys_tagboard.models import TagAlias
 
 
 @dataclass
@@ -21,6 +22,7 @@ class Action:
     display: str
     desc: str
     tag: Tag | None = None
+    alias: TagAlias | None = None
     arg: str = ""
 
     def render(
@@ -54,21 +56,42 @@ class TagComponent(Component):
             arg=search_query,
         )
 
-        update_action = Action(
-            "update",
-            display=_("Update"),
+        update_tag_action = Action(
+            "update-tag",
+            display=_("Update tag"),
             desc=_("Update this tag"),
             tag=tag,
         )
 
-        delete_action = Action(
-            "delete",
-            display=_("Delete"),
+        delete_tag_action = Action(
+            "delete-tag",
+            display=_("Delete tag"),
             desc=_("Delete this tag from all posts"),
             tag=tag,
         )
 
-        actions = [search_action, update_action, delete_action, *extra_actions]
+        actions = [search_action, update_tag_action, delete_tag_action]
+
+        if alias:
+            update_alias_action = Action(
+                "update-alias",
+                display=_("Update alias"),
+                desc=_("Update this tag alias"),
+                tag=tag,
+                alias=alias,
+            )
+            delete_alias_action = Action(
+                "delete-alias",
+                display=_("Delete alias"),
+                desc=_("Delete this tag alias"),
+                tag=tag,
+                alias=alias,
+            )
+
+            actions.extend([update_alias_action, delete_alias_action])
+
+        actions.extend(extra_actions)
+
         return {
             "tag": tag,
             "tag_search_query": search_query,

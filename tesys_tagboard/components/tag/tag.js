@@ -29,6 +29,7 @@
           const action = btn.dataset?.action;
           const arg = btn.dataset?.arg;
           const tag_id = btn.dataset?.tag;
+          const alias_id = btn.dataset?.alias;
 
           switch (action) {
             case "remove":
@@ -38,13 +39,21 @@
             case "search":
               window.location.replace(arg);
               break;
-            case "update":
+            case "update-tag":
               htmx.ajax("GET", `/tags/tag/${tag_id}/update/`, { target: "#modal_form_wrapper" });
               console.log(`Request to update the tag with id=${tag_id}.`)
               break;
-            case "delete":
+            case "delete-tag":
               htmx.ajax("GET", `/tags/tag/${tag_id}/delete/`, { target: "#modal_form_wrapper" });
               console.log(`Request to delete the tag with id=${tag_id}.`)
+              break;
+            case "update-alias":
+              htmx.ajax("GET", `/tags/alias/${alias_id}/update/`, { target: "#modal_form_wrapper" });
+              console.log(`Request to update the tag alias with id=${alias_id}.`)
+              break;
+            case "delete-alias":
+              htmx.ajax("GET", `/tags/alias/${alias_id}/delete/`, { target: "#modal_form_wrapper" });
+              console.log(`Request to delete the tag alias with id=${alias_id}.`)
               break;
             default:
               console.error(`The "${action}" action does not match a valid action.`);

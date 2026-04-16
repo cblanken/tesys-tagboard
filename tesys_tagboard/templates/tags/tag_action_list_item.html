@@ -3,6 +3,7 @@
           data-action="{{ action.name }}"
           data-arg="{{ action.arg }}"
           data-tag="{{ action.tag.pk }}"
+          {% if action.alias %}data-alias="{{ action.alias.pk }}"{% endif %}
           class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none">
     {{ action.display }}
   </button>

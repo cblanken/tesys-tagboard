@@ -605,6 +605,114 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
 
 
 @require(["GET", "POST"])
+@permission_required(["tesys_tagboard.change_tagalias"], raise_exception=True)
+def update_tag_alias(
+    request: HtmxHttpRequest, tag_alias_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        # Translators: title  for "Create Tag" modal form
+        "title": _("Update Tag Alias"),
+        # Translators: label for "Create Tag" submit button
+        "submit_btn_text": _("Update"),
+        "action_url": reverse("update-tag-alias", args=[tag_alias_id]),
+    }
+    try:
+        tag_alias: TagAlias = TagAlias.aliases.get(pk=tag_alias_id)
+    except TagAlias.DoesNotExist:
+        return HttpResponse("Tag alias could not be found", status=HTTPStatus.NOT_FOUND)
+
+    if request.method == "GET":
+        form = TagAliasForm(instance=tag_alias)
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = TagAliasForm(request.POST, instance=tag_alias)
+        ctx |= {"body": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag alias "%s" could not be updated because of a database '
+                        "error."
+                    )
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag alias "%s" was updated successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
+
+
+@require(["GET", "DELETE"])
+@permission_required(["tesys_tagboard.delete_tagalias"], raise_exception=True)
+def delete_tag_alias(
+    request: HtmxHttpRequest, tag_alias_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        "method": "DELETE",
+        # Translators: title  for "Delete Tag Alias" modal form
+        "title": _("Delete Tag Alias"),
+        "action_url": reverse("delete-tag-alias", args=[tag_alias_id]),
+        # Translators: label for "Delete Tag Alias" submit button
+        "submit_btn_text": _("Delete"),
+        "color": "danger",
+        # Translators: tag alias deletion confirmation message
+        "body": _(
+            "Are you sure you want to delete this tag alias? This action cannot be "
+            "undone except by an administrator."
+        ),
+    }
+    if request.method == "GET":
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "DELETE":
+        try:
+            tag_alias = TagAlias.aliases.get(pk=tag_alias_id)
+            tag_alias.delete()
+        except TagAlias.DoesNotExist:
+            msg = Message(
+                messages.ERROR, _("A tag alias with the given ID does not exist.")
+            )
+        except DatabaseError:
+            msg = Message(
+                messages.ERROR,
+                _(
+                    'The tag alias with an ID of "%s" could not be deleted because of '
+                    "a database error."
+                )
+                % tag_alias_id,
+            )
+        else:
+            msg = Message(
+                messages.SUCCESS,
+                _('The tag alias "%s" was deleted.') % tag_alias.name,
+            )
+
+        modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag could not be created", status=HTTPStatus.METHOD_NOT_ALLOWED
+    )
+
+
+@require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagcategory"], raise_exception=True)
 def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     # Translators: title  for "Create Tag" modal form
