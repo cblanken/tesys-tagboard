@@ -1,6 +1,6 @@
 {% if errors %}
-  <ul class="{{ error_class }}"
+  <ul class="alert alert-error alert-soft ms-0 p-4 ps-8 flex flex-col gap-2 items-start {{ error_class }}"
       {% if errors.field_id %}id="{{ errors.field_id }}_error"{% endif %}>
-    {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    {% for error in errors %}<li class="leading-5">{{ error }}</li>{% endfor %}
   </ul>
 {% endif %}
