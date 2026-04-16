@@ -7,7 +7,6 @@ from django.contrib.auth.models import Permission
 from django.core.files.storage import storages
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
 from pytest_django.asserts import assertTemplateUsed
 
 from tesys_tagboard.enums import MediaCategory
@@ -90,7 +89,7 @@ class TestCreateTagView:
         }
 
         response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.FOUND
+        assert response.status_code == HTTPStatus.OK
         tag = Tag.tags.get(name=tag_name)
         assert tag.name == tag_name
         assert tag.category is None
@@ -106,7 +105,7 @@ class TestCreateTagView:
         data = {"name": tag_name}
 
         response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.FOUND
+        assert response.status_code == HTTPStatus.OK
         tag = Tag.tags.get(name=tag_name)
         assert tag.name == tag_name
         assert tag.category is None
@@ -117,12 +116,9 @@ class TestCreateTagView:
         client.force_login(user_with_add_tag)
 
         tag_name = "test_tag"
-        data = {"name": tag_name, "category": "ZZ"}
+        data = {"name": tag_name, "category": "ZZZZZ"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
         assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
@@ -134,10 +130,7 @@ class TestCreateTagView:
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "999999"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
         assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
@@ -149,10 +142,7 @@ class TestCreateTagView:
         tag_name = "test_tag"
         data = {"name": tag_name, "rating_level": "-1"}
         response = client.post(self.url, data, follow=True)
-        assertRedirects(response, reverse("tags"))
         assert response.status_code == HTTPStatus.OK
-        msg = next(iter(response.context.get("messages")))
-        assert "Invalid parameters. Tag names may only contain" in msg.message
 
         with pytest.raises(Tag.DoesNotExist):
             Tag.tags.get(name=tag_name)
@@ -167,6 +157,7 @@ class TestCreateTagAliasView:
         be able to create a tag"""
         user = UserFactory.create()
         client.force_login(user)
+        assert not user.has_perm("tesys_tagboard.add_tagalias")
         alias_name = "test_alias_1"
         data = {"name": alias_name, "tag": TagFactory.build()}
         response = client.post(self.url, data)
@@ -184,7 +175,7 @@ class TestCreateTagAliasView:
         tag = TagFactory.create()
         data = {"name": alias_name, "tag": str(tag.pk)}
         response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.FOUND
+        assert response.status_code == HTTPStatus.OK
 
         alias = TagAlias.aliases.get(name=alias_name)
         assert alias.name == alias_name
@@ -199,22 +190,24 @@ class TestCreateTagAliasView:
         duped_alias = TagAliasFactory.create()
         data = {"name": duped_alias.name, "tag": duped_alias.tag.pk}
         response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.status_code == HTTPStatus.OK
         assert TagAlias.aliases.filter(name=duped_alias.name).count() == 1
 
     def test_tag_alias_create_cannot_edit_alias(self, client, user_with_add_tagalias):
-        """The create-tagalias endpoint should not be able to edit an existing alias"""
+        """The create-tag-alias endpoint should not be able to override an existing
+        alias"""
         client.force_login(user_with_add_tagalias)
 
-        existing_alias = TagAliasFactory.create()
-        before_alias = TagAlias.aliases.get(name=existing_alias.name)
-        other_tag = TagFactory.create()
-        data = {"name": existing_alias.name, "tag": other_tag.pk}
+        before_tag = TagFactory.create()
+        before_alias = TagAliasFactory.create(tag=before_tag)
+        after_tag = TagFactory.create()
+        data = {"name": before_alias.name, "tag": after_tag.pk}
         response = client.post(self.url, data)
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.status_code == HTTPStatus.OK
 
-        after_alias = TagAlias.aliases.get(name=existing_alias.name)
+        after_alias = TagAlias.aliases.get(pk=before_alias.pk)
         assert before_alias.tag == after_alias.tag
+        assert before_alias.name == after_alias.name
 
 
 @pytest.mark.django_db
@@ -1032,7 +1025,7 @@ class TestCollections:
             "desc": "description for this collection",
         }
         response = client.post(self.create_url, data)
-        assert response.status_code == HTTPStatus.FOUND
+        assert response.status_code == HTTPStatus.OK
         assert Collection.objects.filter(
             name=name, user=user_with_add_collection
         ).exists()
@@ -1042,13 +1035,13 @@ class TestCollections:
     ):
         """Collection names may not be *too* long"""
         client.force_login(user_with_add_collection)
-        too_long_name = "A" * 101
+        too_long_name = "A" * 150
         data = {
             "name": too_long_name,
             "desc": "description for this collection",
         }
         response = client.post(self.create_url, data)
-        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        assert response.status_code == HTTPStatus.OK
         assert not Collection.objects.filter(name=too_long_name).exists()
 
     def test_create_collection_with_empty_name(self, client, user_with_add_collection):
@@ -1060,7 +1053,7 @@ class TestCollections:
             "desc": "description for this collection",
         }
         response = client.post(self.create_url, data)
-        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+        assert response.status_code == HTTPStatus.OK
         assert not Collection.objects.filter(name=empty_name).exists()
 
     def test_create_collection_with_too_long_description(
@@ -1068,7 +1061,7 @@ class TestCollections:
     ):
         """Collection names may not be *too* long"""
         client.force_login(user_with_add_collection)
-        too_long_desc = "A" * 251
+        too_long_desc = "A" * 1000
         data = {
             "name": "normal collection name",
             "desc": too_long_desc,

@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from django_components import Component
 from django_components import register
 
@@ -22,7 +23,15 @@ class AddTagsetComponent(Component):
             "size": size,
             "add_tag_enabled": bool(add_tag_enabled),
             "tags": kwargs.get("tags"),
-            "actions": [Action("remove", "Remove this tag from the tag set", "")],
+            "actions": [
+                Action(
+                    "remove",
+                    # Translators: remove tag action
+                    _("Remove"),
+                    # Translators: remove tag action description
+                    _("Remove this tag from the tag set"),
+                )
+            ],
             "tagset_name": kwargs.get("tagset_name", "tagset"),
             "post_url": post_url,
             "autocomplete_url": autocomplete_url,

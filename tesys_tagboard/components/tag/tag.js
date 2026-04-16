@@ -1,6 +1,10 @@
 (function () { // Self invoking function to avoid variable clashing
 
-  const setup = () => {
+  const setup = (root) => {
+    if (root === undefined || root === null) {
+      console.warning(`Tags could not be initialized because an undefined root node was provided`);
+      return;
+    }
     let tagAction = (action, tag_id) => {
       return new CustomEvent("tagAction", {
         bubbles: true,
@@ -8,33 +12,52 @@
       });
     }
 
-    const tag_containers = document.querySelectorAll(".tag-container");
-    tag_containers.forEach(tag => {
-      tag.addEventListener("tagAction", e => {
+    const tag_containers = root.querySelectorAll(".tag-container");
+    if (!tag_containers) {
+      console.warning(`No tags found under ${root}`);
+      return;
+    }
+    tag_containers.forEach(tag_container => {
+      tag_container.addEventListener("tagAction", e => {
         if (e.detail.action == "remove") {
-          tag.remove();
+          tag_container.remove();
         }
       });
-    });
 
-    tag_containers.forEach(tag_container => {
       tag_container.querySelectorAll(".tag-actions button").forEach(btn => {
         htmx.on(btn, "click", (e) => {
           const action = btn.dataset?.action;
-          const tag_id = btn.datset?.tag_id;
+          const arg = btn.dataset?.arg;
+          const tag_id = btn.dataset?.tag;
 
-          if (action == "remove") {
-            let form = htmx.closest(htmx.find('form'), 'form');
-            form.dispatchEvent(new Event("confirmed-change"))
+          switch (action) {
+            case "remove":
+              let form = htmx.closest(htmx.find('form'), 'form');
+              form.dispatchEvent(new Event("confirmed-change"));
+              break;
+            case "search":
+              window.location.replace(arg);
+              break;
+            case "delete":
+              htmx.ajax("GET", `/tags/tag/${tag_id}/delete/`, { target: "#modal_form_wrapper" });
+              console.log(`Request to delete the tag with id=${tag_id}.`)
+              break;
+            default:
+              console.error(`The "${action}" action does not match a valid action.`);
           }
+
           btn.dispatchEvent(tagAction(action, tag_id));
         });
       });
     });
   };
 
-  setup();
-  document.addEventListener("htmx:afterSwap", e => {
-    setup();
+  setup(document);
+
+  // Re-initialize tags when reloaded into a search result container
+  document.addEventListener("htmx:afterSwap", (e) => {
+    if (Array.from(e.detail.elt.classList).includes("result-container")) {
+      setup(e.target);
+    }
   });
 })();

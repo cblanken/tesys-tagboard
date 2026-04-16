@@ -10,12 +10,15 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
+from django.contrib.messages.storage.base import Message
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import F
 from django.db.models import OrderBy
 from django.db.models import Q
+from django.db.utils import DatabaseError
+from django.db.utils import IntegrityError
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -29,6 +32,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 from .components.add_tagset.add_tagset import AddTagsetComponent
 from .components.comment.comment import CommentComponent
@@ -38,11 +42,12 @@ from .enums import MediaCategory
 from .enums import RatingLevel
 from .enums import SupportedMediaType
 from .forms import AddCommentForm
-from .forms import CreateCollectionForm
-from .forms import CreateTagAliasForm
-from .forms import CreateTagForm
+from .forms import CollectionForm
 from .forms import EditCommentForm
 from .forms import PostForm
+from .forms import TagAliasForm
+from .forms import TagCategoryForm
+from .forms import TagForm
 from .forms import TagsetForm
 from .forms import tagset_to_array
 from .models import Audio
@@ -152,14 +157,14 @@ def post(request: HtmxHttpRequest, post_id: int) -> TemplateResponse | HttpRespo
     }
 
     tag_history = [
-        [history_tags_by_id[int(tag_id)] for tag_id in tag_ids]
+        [history_tags_by_id.get(int(tag_id)) for tag_id in tag_ids]
         for tag_ids in post_tag_history_tag_ids
     ]
 
     tag_history = post.posttaghistory_set.order_by("-mod_time")
     for tag_snapshot in tag_history:
         tag_snapshot.tag_objects = [
-            history_tags_by_id[int(tag_id)]
+            history_tags_by_id.get(int(tag_id))
             for tag_id in csv_to_tag_ids(tag_snapshot.tags)
         ]
 
@@ -226,9 +231,6 @@ def edit_post(
 def delete_post(
     request: HtmxHttpRequest, post_id: int
 ) -> TemplateResponse | HttpResponse:
-    user = request.user
-    if not user.has_perm("tesys_tagboard.delete_post"):
-        return HttpResponseForbidden("User not allowed to delete this post")
     try:
         post = Post.posts.get(pk=post_id)
         post.delete()
@@ -331,10 +333,10 @@ def posts(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
 def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     categories = TagCategory.objects.order_by("-parent", "name")
     try:
-        query = request.GET.get("q", "")
-        uncategorized_tags = Tag.tags.select_related("category").filter(
-            category=None, name__icontains=query
-        )
+        query = request.GET.get("q", "").strip()
+        uncategorized_tags = Tag.tags.select_related("category").filter(category=None)
+        if query != "":
+            uncategorized_tags = uncategorized_tags.filter(name__icontains=query)
 
         select_related_expr = ["category"]
         select_related_expr.extend(
@@ -390,42 +392,226 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     return TemplateResponse(request, "pages/tags.html", context)
 
 
-@require(["POST"])
+@require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tag"], raise_exception=True)
 def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    create_tag_form = CreateTagForm(request.POST)
-    if create_tag_form.is_valid():
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag")
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET":
+        form = TagForm()
+
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = TagForm(request.POST)
+        ctx |= {"body": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag "%s" could not be created. Tags must '
+                        "have a unique name and category."
+                    )
+                    % name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _('The tag "%s" could not be created because of a database error.')
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag "%s" was created successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
+
+
+@require(["GET", "DELETE"])
+@permission_required(["tesys_tagboard.delete_tag"], raise_exception=True)
+def delete_tag(
+    request: HtmxHttpRequest, tag_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        "method": "DELETE",
+        # Translators: title  for "Delete Tag" modal form
+        "title": _("Delete Tag"),
+        "action_url": reverse("delete-tag", args=[tag_id]),
+        # Translators: label for "Delete Tag" submit button
+        "submit_btn_text": _("Delete"),
+        "color": "danger",
+        # Translators: tag deletion confirmation message
+        "body": _(
+            "Are you sure you want to delete this tag? This action cannot be undone "
+            "except by an administrator."
+        ),
+    }
+    if request.method == "GET":
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "DELETE":
         try:
-            tag_category = TagCategory.objects.get(
-                pk=create_tag_form.cleaned_data.get("category")
+            tag = Tag.tags.get(pk=tag_id)
+            tag.delete()
+        except Tag.DoesNotExist:
+            msg = Message(messages.ERROR, _("A tag with the given ID does not exist."))
+        except DatabaseError:
+            msg = Message(
+                messages.ERROR,
+                _(
+                    'The tag with an ID of "%s" could not be deleted because of a '
+                    "database error."
+                )
+                % tag_id,
             )
-        except TagCategory.DoesNotExist:
-            tag_category = None
-        Tag.tags.create(
-            name=create_tag_form.cleaned_data.get("name"),
-            category=tag_category,
-            rating_level=create_tag_form.cleaned_data.get("rating_level"),
-        )
-    else:
-        msg = "Invalid parameters. Tag names may only contain alphanumerics and colons (:), hyphens (-), or underscores (_)."  # noqa: E501
-        messages.add_message(request, messages.WARNING, msg)
+        else:
+            msg = Message(
+                messages.SUCCESS,
+                _('The tag "%s" was deleted.') % tag.name,
+            )
 
-    return redirect(reverse("tags"))
+        modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
-@require(["POST"])
+@require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagalias"], raise_exception=True)
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    form = CreateTagAliasForm(request.POST)
-    if form.is_valid():
-        alias_name = form.cleaned_data.get("name")
-        if TagAlias.aliases.filter(name=alias_name).exists():
-            return HttpResponseBadRequest("That alias already exists")
-        form.save()
-        msg = f"The tag alias, {alias_name}, was created!"
-        messages.add_message(request, messages.WARNING, msg)
-        return redirect(reverse("tags"))
-    return HttpResponseBadRequest()
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag Alias")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag-alias")
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET":
+        form = TagAliasForm()
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = TagAliasForm(request.POST)
+        ctx |= {"body": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _('The tag alias "%s" already exists.') % name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _("The tag alias could not be created because of a database error.")
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag alias "%s" was created successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
+
+
+@require(["GET", "POST"])
+@permission_required(["tesys_tagboard.add_tagcategory"], raise_exception=True)
+def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    # Translators: title  for "Create Tag" modal form
+    title = _("Create Tag Category")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-tag-category")
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET" and request.htmx:
+        form = TagCategoryForm()
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST" and request.htmx:
+        form = TagCategoryForm(request.POST)
+        ctx |= {"body": form}
+
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag category "%s" could not be created. Tag categories '
+                        "must have a unique name and parent category."
+                    )
+                    % name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag category "%s" could not be created because of a '
+                        "database error."
+                    )
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The tag "%s" was created successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
 @require(["GET"], login=False)
@@ -471,15 +657,59 @@ def collection(
 @require(["POST"])
 @permission_required(["tesys_tagboard.add_collection"], raise_exception=True)
 def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    create_collection_form = CreateCollectionForm(request.POST)
-    if create_collection_form.is_valid():
-        create_collection_form.instance.user = request.user
-        create_collection_form.save()
-    else:
-        return HttpUnprocessableContent()
+    title = _("Create Collection")
+    # Translators: label for "Create Tag" submit button
+    submit_btn_text = _("Create")
+    action_url = reverse("create-collection")
+    modal_messages = []
+    ctx = {
+        "title": title,
+        "action_url": action_url,
+        "submit_btn_text": submit_btn_text,
+    }
+    if request.method == "GET":
+        form = CollectionForm()
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
 
-    user_url = reverse("users:detail", args=[request.user.get_username()])
-    return redirect(f"{user_url}?tab=collections")
+    if request.method == "POST":
+        collection = Collection(user=request.user)
+        form = CollectionForm(request.POST, instance=collection)
+        ctx |= {"body": form}
+        if form.is_valid():
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be created. Collections must '
+                        "have a unique name and description."
+                    )
+                    % collection.name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be created because of a '
+                        "database error."
+                    )
+                    % collection.name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The collection "%s" was created successfully.')
+                    % collection.name,
+                )
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse(
+        "Collection could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+    )
 
 
 @require(["DELETE"])

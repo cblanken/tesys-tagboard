@@ -4,11 +4,11 @@ from django.core.validators import MaxLengthValidator
 from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
 
-from tesys_tagboard.users.models import User
-
 from .enums import RatingLevel
 from .models import Collection
+from .models import Tag
 from .models import TagAlias
+from .models import TagCategory
 from .validators import rating_level_validator
 from .validators import tagset_name_validator
 from .validators import tagset_validator
@@ -32,14 +32,14 @@ class TagsetField(forms.Field):
         return tagset_to_array(value)
 
 
-class CreateTagForm(forms.Form):
-    name = forms.CharField(
-        max_length=100, required=True, validators=[MaxLengthValidator(100)]
-    )
-    rating_level = forms.IntegerField(
-        initial=0, required=False, validators=[rating_level_validator]
-    )
-    category = forms.IntegerField(initial=None, required=False)
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = [
+            Tag.name.field.name,
+            Tag.category.field.name,
+            Tag.rating_level.field.name,
+        ]
 
     def clean_rating_level(self):
         if not self.cleaned_data.get("rating_level"):
@@ -47,21 +47,33 @@ class CreateTagForm(forms.Form):
         return self.cleaned_data["rating_level"]
 
 
-class CreateTagAliasForm(forms.ModelForm):
+class TagAliasForm(forms.ModelForm):
     class Meta:
         model = TagAlias
-        fields = ["name", "tag"]
+        fields = [TagAlias.name.field.name, TagAlias.tag.field.name]
 
 
-class CreateCollectionForm(forms.ModelForm):
-    user = forms.ModelChoiceField(User.objects.all(), required=False)
-    public = forms.BooleanField(required=False, initial=True)
-    name = forms.CharField(max_length=200, validators=[MaxLengthValidator(100)])
-    desc = forms.CharField(required=False, validators=[MaxLengthValidator(250)])
+class TagCategoryForm(forms.ModelForm):
+    class Meta:
+        model = TagCategory
+        fields = [
+            TagCategory.name.field.name,
+            TagCategory.parent.field.name,
+            TagCategory.light_bg.field.name,
+            TagCategory.light_fg.field.name,
+            TagCategory.dark_bg.field.name,
+            TagCategory.dark_fg.field.name,
+        ]
 
+
+class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ["name", "desc", "public", "user"]
+        fields = [
+            Collection.name.field.name,
+            Collection.desc.field.name,
+            Collection.public.field.name,
+        ]
 
 
 class UploadMedia(forms.Form):
@@ -109,7 +121,7 @@ class PostForm(forms.Form):
         max_length=1024,
         validators=[URLValidator(["https", "http", "ftp"])],
     )
-    rating_level = forms.ChoiceField(choices=RatingLevel.choices(), required=False)
+    rating_level = forms.ChoiceField(choices=RatingLevel.choices, required=False)
     tagset = TagsetField(required=False, widget=forms.HiddenInput)
 
 
@@ -141,4 +153,4 @@ class EditUserSettingsForm(forms.Form):
 
     filter_tags = TagsetField(required=False, widget=forms.HiddenInput)
     blur_tags = TagsetField(required=False, widget=forms.HiddenInput)
-    blur_rating_level = forms.ChoiceField(choices=RatingLevel.choices())
+    blur_rating_level = forms.ChoiceField(choices=RatingLevel.choices)

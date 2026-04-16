@@ -428,7 +428,7 @@ def create_random_posts(  # noqa: C901, PLR0912, PLR0915
         post = Post(
             title=fake.sentence(10),
             uploader=choice(uploaders),
-            rating_level=choice(RatingLevel.choices())[0],
+            rating_level=choice(RatingLevel.choices)[0],
             src_url=fake.word() + ".example.com",
             type=smt.name,
         )

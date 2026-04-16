@@ -1,0 +1,27 @@
+<div class="grid grid-cols-1 gap-3 overflow-x-clip">
+  {% if errors %}
+    <div class="flex flex-col gap-2">
+      {% for error in errors %}
+        {% include "messages/error.html" with text=error %}
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if errors and not fields %}
+    <div>
+      {% for field in hidden_fields %}{{ field }}{% endfor %}
+    </div>
+  {% endif %}
+  {% for field, errors in fields %}
+    <div {% with classes=field.css_classes %}
+         class="p-2 {% if classes %}{{ classes }}{% endif %}"
+         {% endwith %}>
+      {{ field.as_field_group }}
+      {% if forloop.last %}
+        {% for field in hidden_fields %}{{ field }}{% endfor %}
+      {% endif %}
+    </div>
+  {% endfor %}
+  {% if not fields and not errors %}
+    {% for field in hidden_fields %}{{ field }}{% endfor %}
+  {% endif %}
+</div>

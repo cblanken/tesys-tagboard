@@ -2,7 +2,7 @@
 
 <section class="flex flex-col gap-4 items-center my-4 w-full md:my-6">
   {% if page|length == 0 %}
-    <div class="text-2xl text-center text-placeholder">{% translate 'No posts match the given query!' %}</div>
+    <div class="text-2xl text-center text-placeholder">{% translate 'No posts yet!' %}</div>
   {% else %}
     {% component "pager" pager=pager page=page query_page_arg_name=query_page_arg_name / %}
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 5xl:grid-cols-6">

@@ -1,0 +1,7 @@
+<button hx-get="{% url url %}"
+        hx-target="#modal_form_wrapper"
+        hx-swap="innerHTML"
+        class="p-8 btn btn-success btn-lg btn-soft">
+  {{ text }}
+  {% include "icons/feather.html" with icon="plus" size="lg" %}
+</button>
