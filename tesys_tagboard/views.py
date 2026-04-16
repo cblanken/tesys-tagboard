@@ -449,6 +449,56 @@ def create_tag(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     )
 
 
+@require(["GET", "POST"])
+@permission_required(["tesys_tagboard.change_tag"], raise_exception=True)
+def update_tag(
+    request: HtmxHttpRequest, tag_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        # Translators: title  for "Create Tag" modal form
+        "title": _("Update Tag"),
+        # Translators: label for "Create Tag" submit button
+        "submit_btn_text": _("Update"),
+        "action_url": reverse("update-tag", args=[tag_id]),
+    }
+    try:
+        tag: Tag = Tag.tags.get(pk=tag_id)
+    except Tag.DoesNotExist:
+        return HttpResponse("Tag could not be found", status=HTTPStatus.NOT_FOUND)
+
+    if request.method == "GET":
+        form = TagForm(instance=tag)
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = TagForm(request.POST, instance=tag)
+        ctx |= {"body": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _('The tag "%s" could not be updated because of a database error.')
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The "%s" tag was updated successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
+
+
 @require(["GET", "DELETE"])
 @permission_required(["tesys_tagboard.delete_tag"], raise_exception=True)
 def delete_tag(

@@ -39,6 +39,7 @@ tag_urls = [
     path("create-category/", views.create_tag_category, name="create-tag-category"),
     path("autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
     path("tag/<int:tag_id>/delete/", views.delete_tag, name="delete-tag"),
+    path("tag/<int:tag_id>/update/", views.update_tag, name="update-tag"),
 ]
 
 favorite_urls = [

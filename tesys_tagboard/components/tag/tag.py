@@ -54,6 +54,13 @@ class TagComponent(Component):
             arg=search_query,
         )
 
+        update_action = Action(
+            "update",
+            display=_("Update"),
+            desc=_("Update this tag"),
+            tag=tag,
+        )
+
         delete_action = Action(
             "delete",
             display=_("Delete"),
@@ -61,7 +68,7 @@ class TagComponent(Component):
             tag=tag,
         )
 
-        actions = [search_action, delete_action, *extra_actions]
+        actions = [search_action, update_action, delete_action, *extra_actions]
         return {
             "tag": tag,
             "tag_search_query": search_query,
