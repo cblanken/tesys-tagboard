@@ -38,6 +38,10 @@
             case "search":
               window.location.replace(arg);
               break;
+            case "update":
+              htmx.ajax("GET", `/tags/tag/${tag_id}/update/`, { target: "#modal_form_wrapper" });
+              console.log(`Request to update the tag with id=${tag_id}.`)
+              break;
             case "delete":
               htmx.ajax("GET", `/tags/tag/${tag_id}/delete/`, { target: "#modal_form_wrapper" });
               console.log(`Request to delete the tag with id=${tag_id}.`)
