@@ -548,7 +548,7 @@ def delete_tag(
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
     return HttpResponse(
-        "Tag could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+        "Tag could not be created", status=HTTPStatus.METHOD_NOT_ALLOWED
     )
 
 
@@ -600,7 +600,7 @@ def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpRespons
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
     return HttpResponse(
-        "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
+        "Tag alias could not be created", status=HTTPStatus.METHOD_NOT_ALLOWED
     )
 
 
@@ -770,6 +770,114 @@ def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResp
     return HttpResponse(
         "Tag alias could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
     )
+
+
+@require(["GET", "POST"])
+@permission_required(["tesys_tagboard.change_tagcategory"], raise_exception=True)
+def update_tag_category(
+    request: HtmxHttpRequest, tag_category_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        # Translators: title  for "Update Tag Category" modal form
+        "title": _("Update Tag Category"),
+        # Translators: label for "Update Tag Category" submit button
+        "submit_btn_text": _("Update"),
+        "action_url": reverse("update-tag-category", args=[tag_category_id]),
+    }
+    try:
+        tag_category: TagCategory = TagCategory.objects.get(pk=tag_category_id)
+    except TagCategory.DoesNotExist:
+        return HttpResponse(
+            "Tag category could not be found", status=HTTPStatus.NOT_FOUND
+        )
+
+    if request.method == "GET":
+        form = TagCategoryForm(instance=tag_category)
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = TagCategoryForm(request.POST, instance=tag_category)
+        ctx |= {"body": form}
+        if form.is_valid():
+            name = form.cleaned_data.get("name")
+            try:
+                form.save()
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The tag category "%s" could not be updated because of a '
+                        "database error."
+                    )
+                    % name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The "%s" tag category was updated successfully.') % name,
+                )
+
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
+
+
+@require(["GET", "DELETE"])
+@permission_required(["tesys_tagboard.delete_tagcategory"], raise_exception=True)
+def delete_tag_category(
+    request: HtmxHttpRequest, tag_category_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        "method": "DELETE",
+        # Translators: title  for "Delete Tag Category" modal form
+        "title": _("Delete Tag Category"),
+        "action_url": reverse("delete-tag-category", args=[tag_category_id]),
+        # Translators: label for "Delete Tag" submit button
+        "submit_btn_text": _("Delete"),
+        "color": "danger",
+        # Translators: tag deletion confirmation message
+        "body": _(
+            "Are you sure you want to delete this tag category? This action cannot "
+            "be undone except by an administrator."
+        ),
+    }
+    if request.method == "GET":
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "DELETE":
+        try:
+            tag = TagCategory.objects.get(pk=tag_category_id)
+            tag.delete()
+        except TagCategory.DoesNotExist:
+            msg = Message(
+                messages.ERROR, _("A tag category with the given ID does not exist.")
+            )
+        except DatabaseError:
+            msg = Message(
+                messages.ERROR,
+                _(
+                    'The tag with an ID of "%s" could not be deleted because of a '
+                    "database error."
+                )
+                % tag_category_id,
+            )
+        else:
+            msg = Message(
+                messages.SUCCESS,
+                _('The tag "%s" was deleted.') % tag.name,
+            )
+
+        modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
 
 
 @require(["GET"], login=False)
