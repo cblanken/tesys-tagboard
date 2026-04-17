@@ -22,7 +22,7 @@
   </button>
   {% if actions %}
     <ul tabindex="-1"
-        class="top-full mt-1 rounded-field tag-actions dropdown-content bg-base-300 text-base-content first:rounded-t-field last:rounded-b-field">
+        class="top-full mt-1 tag-actions dropdown-content bg-base-300 text-base-content">
       {% for action in actions %}
         {% include "tags/tag_action_list_item.html" with action=action %}
       {% endfor %}

@@ -1,13 +1,13 @@
-<li class="relative p-0 w-full font-bold hover:rounded-none min-w-25 group menu z-1 hover:bg-accent hover:text-accent-content">
+<li class="relative p-0 w-full font-bold rounded-none text-nowrap min-w-25 group menu z-1">
   <button type="button"
           data-action="{{ action.name }}"
           data-arg="{{ action.arg }}"
           data-tag="{{ action.tag.pk }}"
           {% if action.alias %}data-alias="{{ action.alias.pk }}"{% endif %}
-          class="btn {% if size %}btn-{{ size }}{% endif %} justify-start hover:rounded-none">
+          class="btn {% if size %}btn-{{ size }}{% endif %} justify-start rounded-none">
     {{ action.display }}
+    <aside class="hidden absolute top-0 left-full py-1 px-2 min-h-full text-sm rounded-none group-hover:flex group-hover:justify-center group-hover:items-center h-content bg-info text-info-content max-w-60">
+      <div>{{ action.desc }}</div>
+    </aside>
   </button>
-  <aside class="hidden absolute top-0 left-full p-1 min-h-full text-sm rounded-none group-hover:block min-w-30 h-content bg-info text-info-content">
-    {{ action.desc }}
-  </aside>
 </li>
