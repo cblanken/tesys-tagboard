@@ -49,6 +49,16 @@ tag_alias_urls = [
 tag_category_urls = [
     # Tag category endpoints
     path("create/", views.create_tag_category, name="create-tag-category"),
+    path(
+        "update/<int:tag_category_id>",
+        views.update_tag_category,
+        name="update-tag-category",
+    ),
+    path(
+        "delete/<int:tag_category_id>",
+        views.delete_tag_category,
+        name="delete-tag-category",
+    ),
 ]
 
 tags_urls = [
