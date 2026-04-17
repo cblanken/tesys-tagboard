@@ -456,9 +456,9 @@ def update_tag(
 ) -> TemplateResponse | HttpResponse:
     modal_messages = []
     ctx = {
-        # Translators: title  for "Create Tag" modal form
+        # Translators: title  for "Update Tag" modal form
         "title": _("Update Tag"),
-        # Translators: label for "Create Tag" submit button
+        # Translators: label for "Update Tag" submit button
         "submit_btn_text": _("Update"),
         "action_url": reverse("update-tag", args=[tag_id]),
     }
@@ -555,9 +555,9 @@ def delete_tag(
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagalias"], raise_exception=True)
 def create_tag_alias(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    # Translators: title  for "Create Tag" modal form
+    # Translators: title  for "Create Tag Alias" modal form
     title = _("Create Tag Alias")
-    # Translators: label for "Create Tag" submit button
+    # Translators: label for "Create Tag Alias" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-tag-alias")
     modal_messages = []
@@ -611,9 +611,9 @@ def update_tag_alias(
 ) -> TemplateResponse | HttpResponse:
     modal_messages = []
     ctx = {
-        # Translators: title  for "Create Tag" modal form
+        # Translators: title  for "Update Tag Alias" modal form
         "title": _("Update Tag Alias"),
-        # Translators: label for "Create Tag" submit button
+        # Translators: label for "Update Tag Alias" submit button
         "submit_btn_text": _("Update"),
         "action_url": reverse("update-tag-alias", args=[tag_alias_id]),
     }
@@ -715,9 +715,9 @@ def delete_tag_alias(
 @require(["GET", "POST"])
 @permission_required(["tesys_tagboard.add_tagcategory"], raise_exception=True)
 def create_tag_category(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
-    # Translators: title  for "Create Tag" modal form
+    # Translators: title  for "Create Tag Category" modal form
     title = _("Create Tag Category")
-    # Translators: label for "Create Tag" submit button
+    # Translators: label for "Create Tag Category" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-tag-category")
     modal_messages = []
@@ -816,7 +816,7 @@ def collection(
 @permission_required(["tesys_tagboard.add_collection"], raise_exception=True)
 def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     title = _("Create Collection")
-    # Translators: label for "Create Tag" submit button
+    # Translators: label for "Create Collection" submit button
     submit_btn_text = _("Create")
     action_url = reverse("create-collection")
     modal_messages = []
