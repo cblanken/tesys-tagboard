@@ -32,24 +32,33 @@ post_urls = [
 ]
 
 tag_urls = [
+    # Endpoints for individual tags
+    # Tag endpoints
+    path("create/", views.create_tag, name="create-tag"),
+    path("delete/<int:tag_id>/", views.delete_tag, name="delete-tag"),
+    path("update/<int:tag_id>/", views.update_tag, name="update-tag"),
+]
+
+tag_alias_urls = [
+    # Tag alias endpoints
+    path("create/", views.create_tag_alias, name="create-tag-alias"),
+    path("delete/<int:tag_alias_id>/", views.delete_tag_alias, name="delete-tag-alias"),
+    path("update/<int:tag_alias_id>/", views.update_tag_alias, name="update-tag-alias"),
+]
+
+tag_category_urls = [
+    # Tag category endpoints
+    path("create/", views.create_tag_category, name="create-tag-category"),
+]
+
+tags_urls = [
+    # Endpoints related to tag operations
     path("", views.tags, name="tags"),
-    path("confirm/", views.confirm_tagset, name="confirm-tagset"),
-    path("create-tag/", views.create_tag, name="create-tag"),
-    path("create-alias/", views.create_tag_alias, name="create-tag-alias"),
-    path("create-category/", views.create_tag_category, name="create-tag-category"),
     path("autocomplete/", views.tag_search_autocomplete, name="tag-autocomplete"),
-    path("tag/<int:tag_id>/delete/", views.delete_tag, name="delete-tag"),
-    path("tag/<int:tag_id>/update/", views.update_tag, name="update-tag"),
-    path(
-        "alias/<int:tag_alias_id>/update/",
-        views.update_tag_alias,
-        name="update-tag-alias",
-    ),
-    path(
-        "alias/<int:tag_alias_id>/delete/",
-        views.delete_tag_alias,
-        name="delete-tag-alias",
-    ),
+    path("confirm/", views.confirm_tagset, name="confirm-tagset"),
+    path("tag/", include(tag_urls)),
+    path("alias/", include(tag_alias_urls)),
+    path("category/", include(tag_category_urls)),
 ]
 
 favorite_urls = [
@@ -79,7 +88,7 @@ collection_urls = [
 urlpatterns = [
     path("", views.home, name="home"),
     path("posts/", include(post_urls)),
-    path("tags/", include(tag_urls)),
+    path("tags/", include(tags_urls)),
     path("favorites/", include(favorite_urls)),
     path("collections/", include(collection_urls)),
     path("upload/", views.upload, name="upload"),
