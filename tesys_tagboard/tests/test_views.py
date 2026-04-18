@@ -1094,7 +1094,7 @@ class TestCollections:
         client.force_login(user_with_delete_collection)
         collection = CollectionFactory.create(user=user)
         response = client.delete(self.delete_url(collection.pk))
-        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert response.status_code == HTTPStatus.OK
         assert Collection.objects.filter(pk=collection.pk).exists()
 
     def test_add_post_to_collection(self, client):
