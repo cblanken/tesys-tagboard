@@ -923,6 +923,7 @@ def collection(
 @require(["POST"])
 @permission_required(["tesys_tagboard.add_collection"], raise_exception=True)
 def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
+    # Translators: label for "Create Collection" form
     title = _("Create Collection")
     # Translators: label for "Create Collection" submit button
     submit_btn_text = _("Create")
@@ -973,29 +974,121 @@ def create_collection(request: HtmxHttpRequest) -> TemplateResponse | HttpRespon
 
         ctx |= {"modal_messages": modal_messages}
         return TemplateResponse(request, "modals/form.html#form-body", ctx)
-    return HttpResponse(
-        "Collection could not be created", status=HTTPStatus.UNPROCESSABLE_CONTENT
-    )
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
 
 
-@require(["DELETE"])
+@require(["POST"])
+@permission_required(["tesys_tagboard.change_collection"], raise_exception=True)
+def update_collection(
+    request: HtmxHttpRequest, collection_id: int
+) -> TemplateResponse | HttpResponse:
+    modal_messages = []
+    ctx = {
+        # Translators: label for "Update Collection" form
+        "title": _("Update Collection"),
+        # Translators: label for "Update Collection" submit button
+        "action_url": reverse("update-collection", args=[collection_id]),
+        "submit_btn_text": _("Update"),
+    }
+    try:
+        collection: Collection = Collection.objects.get(
+            user=request.user, pk=collection_id
+        )
+    except Collection.DoesNotExist:
+        return HttpResponse(
+            "Collection could not be found", status=HTTPStatus.NOT_FOUND
+        )
+    if request.method == "GET":
+        form = CollectionForm(instance=collection)
+        ctx |= {"body": form}
+        return TemplateResponse(request, "modals/form.html", ctx)
+
+    if request.method == "POST":
+        form = CollectionForm(request.POST, instance=collection)
+        ctx |= {"body": form}
+        if form.is_valid():
+            try:
+                form.save()
+            except IntegrityError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be updated. Collections must '
+                        "have a unique name and description."
+                    )
+                    % collection.name,
+                )
+            except DatabaseError:
+                msg = Message(
+                    messages.ERROR,
+                    _(
+                        'The collection "%s" could not be updated because of a '
+                        "database error."
+                    )
+                    % collection.name,
+                )
+            else:
+                msg = Message(
+                    messages.SUCCESS,
+                    _('The collection "%s" was updated successfully.')
+                    % collection.name,
+                )
+            modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
+
+
+@require(["GET", "DELETE"])
 @permission_required(["tesys_tagboard.delete_collection"], raise_exception=True)
 def delete_collection(
     request: HtmxHttpRequest, collection_id: int
 ) -> TemplateResponse | HttpResponse:
-    try:
-        collection = Collection.objects.get(user=request.user, pk=collection_id)
-        collection.delete()
-        collections = request.user.collection_set.with_gallery_data()
-        context = {"collections": collections}
+    modal_messages = []
+    ctx = {
+        "method": "DELETE",
+        # Translators: title  for "Delete Collection" modal form
+        "title": _("Delete Tag Category"),
+        "action_url": reverse("delete-collection", args=[collection_id]),
+        # Translators: label for "Delete Collection" submit button
+        "submit_btn_text": _("Delete"),
+        "color": "danger",
+        # Translators: Collection deletion confirmation message
+        "body": _("Are you sure you want to delete this collection?"),
+    }
+    if request.method == "GET":
+        return TemplateResponse(request, "modals/form.html", ctx)
 
-        return TemplateResponse(
-            request, "users/user_detail.html#collection-gallery", context
-        )
-    except Collection.DoesNotExist:
-        return HttpResponseNotFound("That collection doesn't exist")
+    if request.method == "DELETE":
+        try:
+            collection = Collection.objects.get(user=request.user, pk=collection_id)
+            collection.delete()
+        except Collection.DoesNotExist:
+            msg = Message(
+                messages.ERROR,
+                _("A collection for the user with the given ID does not exist."),
+            )
+        except DatabaseError:
+            msg = Message(
+                messages.ERROR,
+                _(
+                    'The collection with an ID of "%s" could not be deleted because of '
+                    "a database error."
+                )
+                % collection_id,
+            )
+        else:
+            msg = Message(
+                messages.SUCCESS,
+                _('The collection "%s" was deleted.') % collection.name,
+            )
 
-    return redirect(reverse("collections"))
+        modal_messages.append(msg)
+
+        ctx |= {"modal_messages": modal_messages}
+        return TemplateResponse(request, "modals/form.html#form-body", ctx)
+    return HttpResponse("", status=HTTPStatus.METHOD_NOT_ALLOWED)
 
 
 @require(["PUT"])

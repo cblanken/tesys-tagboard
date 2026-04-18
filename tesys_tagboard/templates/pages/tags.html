@@ -11,13 +11,16 @@
     {% if request.user.is_authenticated %}
       <div class="flex flex-wrap gap-4 items-center">
         {% if perms.tesys_tagboard.add_tag %}
-          {% include "buttons/modal_form_create.html" with text=_("Create Tag") url="create-tag" %}
+          {% url "create-tag" as add_tag_url %}
+          {% include "buttons/modal_form_create.html" with text=_("Create Tag") url=add_tag_url %}
         {% endif %}
         {% if perms.tesys_tagboard.add_tagalias %}
-          {% include "buttons/modal_form_create.html" with text=_("Create Tag Alias") url="create-tag-alias" %}
+          {% url "create-tag-alias" as add_tag_alias_url %}
+          {% include "buttons/modal_form_create.html" with text=_("Create Tag Alias") url=add_tag_alias_url %}
         {% endif %}
         {% if perms.tesys_tagboard.add_tagcategory %}
-          {% include "buttons/modal_form_create.html" with text=_("Create Tag Category") url="create-tag-category" %}
+          {% url "create-tag-category" as add_tag_category_url %}
+          {% include "buttons/modal_form_create.html" with text=_("Create Tag Category") url=add_tag_category_url %}
         {% endif %}
       </div>
     {% endif %}

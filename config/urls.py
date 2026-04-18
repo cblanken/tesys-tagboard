@@ -80,6 +80,9 @@ collection_urls = [
     path("", views.collections, name="collections"),
     path("<int:collection_id>/", views.collection, name="collection"),
     path(
+        "<int:collection_id>/update/", views.update_collection, name="update-collection"
+    ),
+    path(
         "<int:collection_id>/delete/", views.delete_collection, name="delete-collection"
     ),
     path("create/", views.create_collection, name="create-collection"),

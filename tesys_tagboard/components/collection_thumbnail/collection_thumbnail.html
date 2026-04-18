@@ -21,10 +21,17 @@
     <div class="flex flex-col gap-4 justify-between h-full">
       <p class="overflow-y-auto max-h-42 overflow-x-clip text-wrap grow">{{ collection.desc }}</p>
       <div class="flex gap-2 justify-end items-end">
-        {% slot "delete_button" %}{% endslot %}
+        {% if perms.tesys_tagboard.delete_collection and request.user == collection.user %}
+          {% url "delete-collection" collection_id=collection.pk as delete_collection_url %}
+          {% include "buttons/modal_form_delete.html" with text=_("Delete") url=delete_collection_url %}
+        {% endif %}
+        {% if perms.tesys_tagboard.change_collection and request.user == collection.user %}
+          {% url "update-collection" collection_id=collection.pk as update_collection_url %}
+          {% include "buttons/modal_form_edit.html" with text=_("Edit") url=update_collection_url %}
+        {% endif %}
         <div class="card-actions">
-          <a class="w-20 btn btn-primary"
-             href="{% url 'collection' collection_id=collection.id %}">Open</a>
+          <a class="w-20 btn btn-lg btn-primary"
+             href="{% url 'collection' collection_id=collection.id %}">View</a>
         </div>
       </div>
     </div>
