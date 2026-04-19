@@ -42,6 +42,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   make \
   # psycopg dependencies
   libpq-dev \
+  # magic dependencies
+  libmagic1 \
   # Translations dependencies
   gettext \
   # Uncomment below lines to enable Sphinx output to latex and pdf
