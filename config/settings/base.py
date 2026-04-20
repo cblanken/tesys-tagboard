@@ -44,36 +44,39 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-if db_url := env.str("DATABASE_URL", default=""):
-    DATABASES = {"default": env.db_url("DATABASE_URL")}
-elif (
-    (postgres_host := env.str("POSTGRES_HOST", default=""))
-    and (postgres_port := env.str("POSTGRES_PORT", default=""))
-    and (postgres_db := env.str("POSTGRES_DB", default=""))
-    and (postgres_user := env.str("POSTGRES_USER", default=""))
-    and (postgres_pass := env.str("POSTGRES_PASSWORD", default=""))
-):
-    DATABASES: dict[str, dict] = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "tesys_tagboard",
-            "USER": postgres_user,
-            "PASSWORD": postgres_pass,
-            "HOST": postgres_host,
-            "PORT": postgres_port,
-        },
-        "OPTIONS": {
-            "pool": True,
-        },
-    }
-    DATABASES["default"]["ATOMIC_REQUESTS"] = True
+try:
+    db_url = env.str("DATABASE_URL")
+except environ.ImproperlyConfigured as err:
+    if (
+        (postgres_host := env.str("POSTGRES_HOST", default=""))
+        and (postgres_port := env.str("POSTGRES_PORT", default=""))
+        and (postgres_db := env.str("POSTGRES_DB", default=""))
+        and (postgres_user := env.str("POSTGRES_USER", default=""))
+        and (postgres_pass := env.str("POSTGRES_PASSWORD", default=""))
+    ):
+        DATABASES: dict[str, dict] = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "tesys_tagboard",
+                "USER": postgres_user,
+                "PASSWORD": postgres_pass,
+                "HOST": postgres_host,
+                "PORT": postgres_port,
+            },
+            "OPTIONS": {
+                "pool": True,
+            },
+        }
+        DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
-    os.environ["DATABASE_URL"] = (
-        f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
-    )
+        os.environ["DATABASE_URL"] = (
+            f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
+        )
+    else:
+        msg = "The DATABASE_URL or it's required components (POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD) were not available in the provided environment."
+        raise environ.ImproperlyConfigured(msg) from err
 else:
-    msg = "The DATABASE_URL or it's required components (POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD) were not available in the provided environment."
-    raise environ.ImproperlyConfigured(msg)
+    DATABASES = {"default": env.db_url("DATABASE_URL")}
 
 
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
