@@ -12,7 +12,7 @@ DJANGO_TITLE="Tagboard Demo"
 # Security
 # ------------------------------------------------------------------------------
 DJANGO_SECURE_SSL_REDIRECT=False
-DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:11611,https://localhost:11611,https://p52.nuthatch-kettle.ts.net
+DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:11611,https://localhost:11611
 
 # Authentication and registration
 # ------------------------------------------------------------------------------
