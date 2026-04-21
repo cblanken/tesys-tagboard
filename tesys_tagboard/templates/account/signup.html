@@ -13,46 +13,7 @@
       {% if form.non_field_errors %}
         {% include "django/forms/errors/list/default.html" with errors=form.non_field_errors %}
       {% endif %}
-      <!-- Username -->
-      <div>
-        <label>Username</label>
-        <input required
-               type="text"
-               name="username"
-               class="w-full input"
-               placeholder="Enter your username" />
-      </div>
-      <div>{{ form.username.errors }}</div>
-      <!-- Email -->
-      <div>
-        <label>Email</label>
-        <input required
-               type="email"
-               name="email"
-               class="w-full input"
-               placeholder="example@email.com" />
-      </div>
-      <div>{{ form.email.errors }}</div>
-      <!-- Password -->
-      <div>
-        <label>Password</label>
-        <input required
-               type="password"
-               name="password1"
-               class="w-full input"
-               placeholder="Enter your password" />
-      </div>
-      <div>{{ form.password1.errors }}</div>
-      <!-- Confirm Password -->
-      <div>
-        <label>Confirm Password</label>
-        <input required
-               type="password"
-               name="password2"
-               class="w-full input"
-               placeholder="Confirm your password" />
-      </div>
-      <div>{{ form.password2.errors }}</div>
+      {{ form }}
       <!-- Submit -->
       <button type="submit" class="btn btn-lg btn-primary">Sign Up</button>
     {% endif %}
