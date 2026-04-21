@@ -14,31 +14,19 @@
         {% include "django/forms/errors/list/default.html" with errors=form.non_field_errors %}
       {% endif %}
       <!-- username -->
-      <div>
-        <label>{% translate 'Username' %}</label>
-        <input required
-               type="text"
-               name="login"
-               class="w-full input"
-               placeholder="Enter your username" />
-      </div>
+      {{ form.login.label }}
+      {{ form.login }}
       <div>{{ form.login.errors }}</div>
       <!-- password -->
-      <div>
-        <label>{% translate 'Password' %}</label>
-        <input required
-               type="password"
-               name="password"
-               class="w-full input"
-               placeholder="{% translate 'Enter your password' %}" />
-      </div>
+      {{ form.password.label }}
+      {{ form.password }}
       <div>{{ form.password.errors }}</div>
       <!-- Remember me and forgot password -->
       <div class="flex justify-between items-center">
-        <label class="flex items-center">
-          <input type="checkbox" />
-          <span class="ml-2 text-sm" name="remember">{% translate 'Remember me' %}</span>
-        </label>
+        <div class="flex gap-2 items-center">
+          {{ form.remember }}
+          {{ form.remember.label }}
+        </div>
         <a href="{% url 'account_reset_password' %}" class="text-sm">{% translate 'Forgot password?' %}</a>
       </div>
       <div>{{ form.remember.errors }}</div>
