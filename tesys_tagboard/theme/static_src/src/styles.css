@@ -104,7 +104,7 @@
   font-display: block;
 
   src:
-    url("/static/fonts/pak_kumis/Pak Kumis.otf") format("opentype");
+    url("/static/fonts/pak_kumis/Pak_Kumis.otf") format("opentype");
 }
 
 @utility text-placeholder {
