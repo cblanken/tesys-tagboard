@@ -20,13 +20,11 @@ services:
       - postgres
       - redis
     env_file:
-      - path: ./.envs/.production/.postgres.example
-        required: true
-      - path: ./.envs/.production/.django.example
-        required: true
       - path: ./.envs/.production/.postgres
         required: false
       - path: ./.envs/.production/.django
+        required: false
+      - path: ./.env
         required: false
     command: /start
 
@@ -40,9 +38,9 @@ services:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
-      - path: ./.envs/.production/.postgres.example
-        required: true
       - path: ./.envs/.production/.postgres
+        required: false
+      - path: ./.env
         required: false
 
   redis:
