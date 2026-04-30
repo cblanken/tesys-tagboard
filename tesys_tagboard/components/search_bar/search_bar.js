@@ -24,9 +24,9 @@
       let search_results_ul = get_search_results();
       if (search_results_ul) {
         try {
-          htmx.remove(search_results_ul)
+          search_results_ul.remove()
         } catch (NotFoundError) {
-          console.error(`Couldn't find search results ul`)
+          console.warn(`Couldn't find search results ul`)
         }
       }
       reset_active_autocomplete_index()
@@ -56,19 +56,21 @@
             break;
           case "Enter":
             remove_results();
+            break;
           default:
+            break;
         }
       }
     });
 
 
-    htmx.on(search_input, "blur", (e) => {
+    search_input.addEventListener("blur", (e) => {
       if (!result_container.contains(e.relatedTarget)) {
         remove_results();
       }
     });
 
-    htmx.on(result_container, "htmx:afterSwap", (e) => {
+    result_container.addEventListener("htmx:after:settle", (e) => {
       reset_active_autocomplete_index();
     });
 
@@ -79,13 +81,13 @@
       dispatchEvent(event);
     });
 
-    htmx.on(search_input, "change", (e) => {
+    search_input.addEventListener("change", (e) => {
       result_container.querySelectorAll("li").forEach(li => {
-        htmx.on(li, "focus", (e) => {
+        li.addEventListener("focus", (e) => {
           // Focus correct autocomplete item
         });
 
-        htmx.on(li, "blur", (e) => {
+        li.addEventListener("blur", (e) => {
           if (!result_container.contains(e.relatedTarget)) {
             remove_results();
           }
@@ -139,12 +141,14 @@
       search_input.focus();
     }
 
-    htmx.on(root.querySelector(".result-container"), "htmx:afterSettle", (e) => {
+    root.querySelector(".result-container").addEventListener("htmx:after:settle", (e) => {
       let search_results = get_search_results();
       if (search_results) {
         Array.from(search_results.children).forEach(autocomplete_item => {
-          htmx.on(autocomplete_item, "click", add_autocomplete_item_to_input);
-          htmx.on(autocomplete_item, "keydown", (e) => {
+          autocomplete_item.addEventListener("click", (e) => {
+            add_autocomplete_item_to_input(e)
+          });
+          autocomplete_item.addEventListener("keydown", (e) => {
             e.preventDefault();
             switch (e.code) {
               case "Enter":

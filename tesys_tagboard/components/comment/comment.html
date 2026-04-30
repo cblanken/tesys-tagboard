@@ -14,7 +14,7 @@
       <div>{{ comment.post_date|naturaltime }}</div>
     </div>
   </div>
-  <div class="comment-body relative max-h-45 overflow-y-hidden sm:bg-i sm:overflow-y-auto sm:bg-clip-border sm:bg-none sm:text-base-content to-none bg-clip-text bg-linear-to-b text-transparent from-base-content from-65% to-transparent to-100% pb-2">
+  <div class="comment-body relative min-h-fit max-h-45 overflow-y-hidden sm:bg-i sm:overflow-y-auto sm:bg-clip-border sm:bg-none sm:text-base-content to-none bg-clip-text bg-linear-to-b text-transparent from-base-content from-65% to-transparent to-100% pb-2">
     <button class="absolute right-1 bottom-1 invisible text-sm show-more-btn btn btn-xs btn-info">Show more</button>
     <div class="px-1 my-2 w-full min-h-10">
       <div class="comment-text">{{ comment.text }}</div>

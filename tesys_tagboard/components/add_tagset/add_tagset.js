@@ -95,12 +95,12 @@
       search_input.focus();
     }
 
-    htmx.on(root.querySelector(".result-container"), "htmx:afterSettle", (e) => {
+    root.querySelector(".result-container").addEventListener("htmx:after:settle", (e) => {
       let search_results = get_search_results();
       if (search_results) {
         Array.from(search_results.children).forEach(autocomplete_item => {
-          htmx.on(autocomplete_item, "click", add_tag_to_set_handler);
-          htmx.on(autocomplete_item, "keydown", (e) => {
+          autocomplete_item.addEventListener("click", add_tag_to_set_handler);
+          autocomplete_item.addEventListener("keydown", (e) => {
             switch (e.code) {
               case "Enter":
                 e.preventDefault();
@@ -139,9 +139,11 @@
     setup();
   });
 
-  document.addEventListener("htmx:afterSwap", e => {
-    if (Array.from(e.detail.elt.classList).includes("add-tagset-container")) {
-      setup_tagset(e.detail.elt);
+  // Setup new add_tagset component when swapped in dynamically
+  document.addEventListener("htmx:after:settle", e => {
+    const tagset_container = e.target.closest(".add-tagset-container");
+    if (tagset_container !== null) {
+      setup_tagset(tagset_container);
     }
   });
 })();

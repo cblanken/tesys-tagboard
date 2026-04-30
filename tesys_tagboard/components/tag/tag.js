@@ -25,7 +25,7 @@
       });
 
       tag_container.querySelectorAll(".tag-actions button").forEach(btn => {
-        htmx.on(btn, "click", (e) => {
+        btn.addEventListener("click", (e) => {
           const action = btn.dataset?.action;
           const arg = btn.dataset?.arg;
           const tag_id = btn.dataset?.tag;
@@ -33,7 +33,7 @@
 
           switch (action) {
             case "remove":
-              let form = htmx.closest(htmx.find('form'), 'form');
+              let form = htmx.find('form').closest('form');
               form.dispatchEvent(new Event("confirmed-change"));
               break;
             case "search":
@@ -68,9 +68,9 @@
   setup(document);
 
   // Re-initialize tags when reloaded into a search result container
-  document.addEventListener("htmx:afterSwap", (e) => {
-    if (Array.from(e.detail.elt.classList).includes("result-container")) {
-      setup(e.target);
+  document.addEventListener("htmx:after:settle", (e) => {
+    if (e.target.querySelector(".tag-container")) {
+      setup(e.target)
     }
   });
 })();

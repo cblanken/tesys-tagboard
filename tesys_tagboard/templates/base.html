@@ -34,7 +34,12 @@
       <!-- Global project Javascript -->
       <script defer src="{% static 'js/project.js' %}"></script>
       <!-- Third-party JavaScript libraries -->
-      <script src="{% static 'js/vendor/htmx/htmx-2.0.8.min.js' %}"></script>
+      <!-- Stopgap to enable htmx 2.x behavior until 4.x migration is complete-->
+      <script src="{% static 'js/vendor/htmx/htmx-4.0.0-beta2.min.js' %}"></script>
+      <script>
+        htmx.config.implicitInheritance = true;
+        htmx.config.noSwap = [204, 304, '4xx', '5xx'];
+      </script>
       <script src="{% static 'colorfield/coloris/coloris.js' %}" defer></script>
       <script src="{% static 'colorfield/colorfield.js' %}" defer></script>
     {% endblock javascript %}
@@ -142,6 +147,6 @@
     </section>
   </footer>
   <div id="modal_form_wrapper"
-       hx-on::after-swap="modal_form_dialog.showModal()"></div>
+       hx-on::after:settle="modal_form_dialog.showModal()"></div>
 </body>
 </html>
