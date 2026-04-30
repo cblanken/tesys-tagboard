@@ -73,7 +73,7 @@ repos:
         entry: taplo lint
         language: python
         types: [toml]
-        args: [--default-schema-catalogs]
+        args: []
         require_serial: false
         additional_dependencies:
           - taplo
