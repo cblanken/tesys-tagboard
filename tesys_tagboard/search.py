@@ -836,6 +836,12 @@ class AutocompleteItem:
             return SafeString(self.token_category.value.allowed_arg_relations[0].value)
         return SafeString("")
 
+    def is_tag_item(self) -> bool:
+        return self.token_category in (
+            PostSearchTokenCategory.TAG,
+            PostSearchTokenCategory.TAG_ALIAS,
+        )
+
 
 class PostSearch:
     """Class to model a Post search query

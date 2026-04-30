@@ -12,9 +12,8 @@
           data-search_token="{{ item.get_search_token_string }}"
           data-default_search_token_operator="{{ item.get_default_search_token_operator }}"
           tabindex="-1"
-          style="{% if item.tag_category.bg %}background: {{ item.tag_category.bg }};
-                 {% endif %} {% if item.tag_category.fg %}color: {{ item.tag_category.fg }};{% endif %}"
-          class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border border-neutral/80 text-tag-content {% if item.token_category.name == "TAG" or item.token_category.name == "TAG_ALIAS" %}bg-tag-default{% else %}bg-filter text-filter-content{% endif %} last:border-b hover:brightness-115 focus:brightness-115">
+          {% if item.is_tag_item %} style="{% include 'search/tag_color_styles.html' with category=item.tag_category %}" {% endif %}
+          class="max-w-full rounded-none border-b-0 focus:font-bold focus:outline-none border border-neutral/80 text-tag-content {% if item.is_tag_item %}bg-tag text-tag-content{% else %}bg-filter text-filter-content{% endif %} last:border-b hover:brightness-115 focus:brightness-115">
         <div class="flex justify-between max-h-8 rounded-none">
           <div class="inline-flex overflow-hidden gap-2 items-center grow-0 max-w-9/10 h-fit min-h-10">
             {% if item.alias %}

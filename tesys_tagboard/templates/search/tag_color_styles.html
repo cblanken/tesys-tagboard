@@ -1,0 +1,7 @@
+{% if request.session.theme == 'dark' %}
+  {% if category.dark_bg %}background: {{ category.dark_bg }};{% endif %}
+  {% if category.dark_fg %}color: {{ category.dark_fg }};{% endif %}
+{% elif request.session.theme == 'light' %}
+  {% if category.light_bg %}background: {{ category.light_bg }};{% endif %}
+  {% if category.light_fg %}color: {{ category.light_fg }};{% endif %}
+{% endif %}

@@ -30,7 +30,6 @@
   --color-accent: oklch(59.939% 0.191 335.171);
   --color-accent: oklch(0.7978 0.1665 75.28);
   --color-accent: oklch(0.7978 0.1419 75.28);
-  --color-accent-content: oklch(11.988% 0.038 335.171);
   --color-accent-content: oklch(0.3191 0.0247 253.18);
   --color-neutral: oklch(19.616% 0.063 257.651);
   --color-neutral-content: oklch(83.923% 0.012 257.651);
@@ -47,7 +46,7 @@
   --color-tag: oklch(0.9171 0.0221 92.52); /* Tag background */
   --color-tag-content: oklch(0.42 0.05 2.41); /* Tag text */
   --color-filter: oklch(0.8444 0.1078 66.38); /* Search filter item background */
-  --color-filter-content: oklch(0.8444 0.1078 66.38); /* Search filter item text */
+  --color-filter-content: oklch(0.2162 0.0592 66.38); /* Search filter item text */
   --color-user: oklch(0.1822 0 0);
   --color-user-content: oklch(0.8975 0 0);
 
@@ -92,11 +91,10 @@
   /* Custom colors */
   --color-tag: oklch(0.3805 0.0399 274.85); /* Tag background */
   --color-tag-content: oklch(0.8986 0.0014 17.23); /* Tag text */
-  --color-filter: oklch(0.8444 0.1078 66.38); /* Search filter item background */
-  --color-filter-content: oklch(0.8444 0.1078 66.38); /* Search filter item text */
+  --color-filter: oklch(0.5691 0.0789 74.65); /* Search filter item background */
+  --color-filter-content: oklch(0.2426 0.0222 66.38); /* Search filter item text */
   --color-user: oklch(0.1822 0 0);
   --color-user-content: oklch(0.8975 0 0);
-
 
   --radius-selector: 1rem;
   --radius-field: 0.5rem;
@@ -124,9 +122,15 @@
   /* Containers */
   --container-8xl: 96rem;
 
-  /* Colors */
+  /* Custom Colors */
   --color-discord: #5865F2;
   --color-discord-content: oklch(0.9162 0 139.549);
+  --color-tag: oklch(0.3805 0.0399 274.85); /* Tag background */
+  --color-tag-content: oklch(0.8986 0.0014 17.23); /* Tag text */
+  --color-filter: oklch(0.8444 0.1078 66.38); /* Search filter item background */
+  --color-filter-content: oklch(0.8444 0.1078 66.38); /* Search filter item text */
+  --color-user: oklch(0.1822 0 0); /* User link background */
+  --color-user-content: oklch(0.8975 0 0); /* User link text */
 
 
   /* Keyframes */

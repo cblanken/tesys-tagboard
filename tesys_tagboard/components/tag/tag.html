@@ -2,8 +2,7 @@
   <button tabindex="0"
           {% if actions %}role="button"{% endif %}
           type="button"
-          style="{% if request.session.theme == 'dark' %}{% if category.dark_bg %}background: {{ category.dark_bg }};
-                 {% endif %} {% if category.dark_fg %}color: {{ category.dark_fg }};{% endif %} {% elif request.session.theme == 'light' %} {% if category.light_bg %}background: {{ category.light_bg }};{% endif %} {% if category.light_fg %}color: {{ category.light_fg }};{% endif %} {% endif %}"
+          style="{% include 'search/tag_color_styles.html' with category=category %}"
           class="btn {% if size == "xs" %}btn-xs{% elif size == "sm" %}btn-sm{% elif size == "lg" %}btn-lg{% else %}btn-md{% endif %}">
     <div class="inline-flex gap-1 items-center w-fit nowrap">
       {% if alias %}
