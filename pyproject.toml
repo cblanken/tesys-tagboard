@@ -168,6 +168,7 @@ docs = [
   "sphinx-design==0.7.0",
   "myst-parser==5.0.0",
   "sphinxcontrib-mermaid==2.0.1",
+  "sphinxext-opengraph[social-cards]>=0.13.0",
 ]
 
 [project]
