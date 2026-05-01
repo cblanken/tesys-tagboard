@@ -8,10 +8,13 @@
     // Set cursor to last position
     field_text_input.setSelectionRange(field_text_input.textContent.length-1, field_text_input.textContent.length-1);
 
+    const checkbox = form.querySelector("input[name='edit-enabled']");
+
     // Swap readonly comment text for editable field
     function toggle_edit_field(editing) {
       const edit_edit_btn = edit_btn.querySelector(".edit-btn_edit");
       const edit_cancel_btn = edit_btn.querySelector(".edit-btn_cancel");
+      checkbox.checked = editing
       if (editing) {
         edit_edit_btn.classList.add("hidden")
         edit_cancel_btn.classList.remove("hidden")
@@ -30,17 +33,10 @@
       }
     }
 
-    const checkbox = form.querySelector("input[name='edit-enabled']");
 
     // Toggle comment editable textarea
     checkbox.addEventListener("change", e => {
       toggle_edit_field(checkbox.checked);
-    });
-
-    // The label is styled as a button, but doesn't propagate the change event
-    // of the related input without manually dispatching the event.
-    edit_btn.addEventListener("click", e => {
-      checkbox.dispatchEvent(new Event("change"));
     });
 
     field_confirm_btn.addEventListener("click", e => {
