@@ -377,6 +377,9 @@ def tags(request: HtmxHttpRequest) -> TemplateResponse | HttpResponse:
     context = {
         "uncategorized_tags": uncategorized_tags,
         "tags_by_cat": tags_by_cat,
+        "tag_count": Tag.tags.count(),
+        "tag_alias_count": TagAlias.aliases.count(),
+        "tag_category_count": TagCategory.objects.count(),
         "tag_name": query,
         "aliases": aliases,
         "categories": categories,
