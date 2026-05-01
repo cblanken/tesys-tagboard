@@ -1433,19 +1433,20 @@ def search_help(request: HtmxHttpRequest) -> TemplateResponse:
 
 @require(["POST"], login=False)
 def toggle_theme(request: HtmxHttpRequest) -> HttpResponse:
-    current_theme = request.session.get("theme", settings.DEFAULT_THEME)
-    theme_checkbox_value = request.POST.get("theme", current_theme)
+    theme_checkbox_value = request.POST.get("theme")
 
-    theme_options = ["light", "dark"]
-    if theme_checkbox_value not in theme_options:
+    if theme_checkbox_value not in settings.THEMES:
         return HttpResponseBadRequest("Attempt to set theme to an invalid value")
 
-    current_theme_index = theme_options.index(current_theme)
-    new_theme_index = (
-        current_theme_index + 1 if bool(theme_checkbox_value) else current_theme_index
-    )
-    new_theme = theme_options[new_theme_index % len(theme_options)]
-    request.session["theme"] = new_theme
+    current_theme = request.session.get("theme")
+    other_theme = settings.THEMES[
+        (settings.THEMES.index(theme_checkbox_value) + 1) % len(settings.THEMES)
+    ]
+
+    if theme_checkbox_value == current_theme:
+        request.session["theme"] = other_theme
+    else:
+        request.session["theme"] = theme_checkbox_value
 
     return HttpResponse(
         f"Theme changed to {request.session['theme']}",

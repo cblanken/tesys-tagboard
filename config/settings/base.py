@@ -399,14 +399,12 @@ TAILWIND_APP_NAME = "tesys_tagboard.theme"
 
 # DaisyUI themes
 THEMES = [
-    "light",
     "dark",
+    "light",
 ]
 
-DEFAULT_THEME = env.str(
-    "DJANGO_DEFAULT_THEME", default="dark", choices=["light", "dark"]
-)
-ALTERNATE_THEME = "light" if DEFAULT_THEME == "dark" else "dark"
+DEFAULT_THEME = env.str("DJANGO_DEFAULT_THEME", default=THEMES[0], choices=THEMES)
+ALTERNATE_THEME = THEMES[(THEMES.index(DEFAULT_THEME) + 1) % len(THEMES)]
 
 TITLE = env.str("DJANGO_TITLE", default=" Tagboard")
 

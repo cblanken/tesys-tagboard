@@ -1,26 +1,26 @@
 {% load static custom_filters cache %}
 
 {% get_static_prefix as STATIC_PREFIX %}
-<label id="theme-picker" class="swap swap-rotate text-primary-content">
+<label id="theme-picker" class="swap swap-rotate text-primary-content/90">
   <input type="checkbox"
          name="theme"
          class="hidden theme-controller"
-         value="{% if request.session.theme != DEFAULT_THEME %}{{ DEFAULT_THEME }}{% else %}{{ ALTERNATE_THEME }}{% endif %}"
+         value="{% if request.session.theme == ALTERNATE_THEME %}{{ DEFAULT_THEME }}{% else %}{{ ALTERNATE_THEME }}{% endif %}"
          hx-post="{% url 'toggle-theme' %}"
          hx-swap="none" />
-  {% if request.session.theme == "dark" %}
+  {% if request.session.theme == ALTERNATE_THEME %}
     <svg class="swap-off feather {% if fill %}fill-current!{% endif %} size-8!">
-      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
     </svg>
     <svg class="swap-on feather {% if fill %}fill-current!{% endif %} size-8!">
-      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
     </svg>
   {% else %}
     <svg class="swap-off feather {% if fill %}fill-current!{% endif %} size-8!">
-      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
     </svg>
     <svg class="swap-on feather {% if fill %}fill-current!{% endif %} size-8!">
-      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#moon" />
+      <use href="{{ STATIC_PREFIX }}icons/feather-sprite.svg#sun" />
     </svg>
   {% endif %}
 </label>
